@@ -1,0 +1,82 @@
+[
+    {
+        "category" : 0,
+        "fines" : [
+            {"name" : "Usage abusif du klaxon",                             "price" : 30},
+            {"name" : "Franchir une ligne continue",                        "price" : 40},
+            {"name" : "Franchir une ligne continue",                        "price" : 40},
+            {"name" : "Circulation à contresens",                           "price" : 250},
+            {"name" : "Demi-tour non autorisé",                             "price" : 250},
+            {"name" : "Circulation hors-route",                             "price" : 170},
+            {"name" : "Non-respect des distances de sécurité",              "price" : 30},
+            {"name" : "Arrêt dangereux / interdit",                         "price" : 150},
+            {"name" : "Stationnement gênant / interdit",                    "price" : 70},
+            {"name" : "Non respect  de la priorité à droite",               "price" : 70},
+            {"name" : "Non-respect à un véhicule prioritaire",              "price" : 90},
+            {"name" : "Non-respect d\"un stop",                             "price" : 105},
+            {"name" : "Non-respect d\"un feu rouge",                        "price" : 130},
+            {"name" : "Dépassement dangereux",                              "price" : 100},
+            {"name" : "Véhicule non en état",                               "price" : 100},
+            {"name" : "Conduite sans permis",                               "price" : 1500},
+            {"name" : "Délit de fuite",                                     "price" : 800},
+            {"name" : "Excès de vitesse < 5 kmh",                           "price" : 90},
+            {"name" : "Excès de vitesse 5-15 kmh",                          "price" : 120},
+            {"name" : "Excès de vitesse 15-30 kmh",                         "price" : 180},
+            {"name" : "Excès de vitesse > 30 kmh",                          "price" : 300}
+        ]
+    },
+
+    {
+        "category" : 1,
+        "fines" : [
+            {"name" : "Entrave de la circulation",                          "price" : 110},
+            {"name" : "Dégradation de la voie publique",                    "price" : 90},
+            {"name" : "Trouble à l\"ordre publique",                        "price" : 90},
+            {"name" : "Entrave opération de police",                        "price" : 130},
+            {"name" : "Insulte envers / entre civils",                      "price" : 75},
+            {"name" : "Outrage à agent de police",                          "price" : 110},
+            {"name" : "Menace verbale ou intimidation envers civil",        "price" : 90},
+            {"name" : "Menace verbale ou intimidation envers policier",     "price" : 150},
+            {"name" : "Manifestation illégale",                             "price" : 250},
+            {"name" : "Tentative de corruption",                            "price" : 1500}
+        ]
+
+    },
+
+    {
+
+        "category" : 2,
+        "fines" : [
+            {"name" : "Arme blanche sortie en ville",                       "price" : 120},
+            {"name" : "Arme léthale sortie en ville",                       "price" : 300},
+            {"name" : "Port d\"arme non autorisé {défaut de license}",      "price" : 600},
+            {"name" : "Port d\"arme illégal",                               "price" : 700},
+            {"name" : "Pris en flag lockpick",                              "price" : 300},
+            {"name" : "Vol de voiture",                                     "price" : 1800},
+            {"name" : "Vente de drogue",                                    "price" : 1500},
+            {"name" : "Fabriquation de drogue",                             "price" : 1500},
+            {"name" : "Possession de drogue",                               "price" : 650},
+            {"name" : "Prise d\"ôtage civil",                               "price" : 1500},
+            {"name" : "Prise d\"ôtage agent de l\"état",                    "price" : 2000},
+            {"name" : "Braquage particulier",                               "price" : 650},
+            {"name" : "Braquage magasin",                                   "price" : 650},
+            {"name" : "Braquage de banque",                                 "price" : 1500},
+            {"name" : "Escroquerie à l\"entreprise",                        "price" : 2000}
+        ]
+
+    },
+
+    {
+
+        "category" : 3,
+        "fines" : [
+            {"name" : "Tir sur civil",                                      "price" : 2000},
+            {"name" : "Tir sur agent de l\"état" ,                          "price" : 2500},
+            {"name" : "Tentative de meurtre sur civil",                     "price" : 3000},
+            {"name" : "Tentative de meurtre sur agent de l\"état",          "price" : 5000},
+            {"name" : "Meurtre sur civil",                                  "price" : 10000},
+            {"name" : "Meurte sur agent de l\"état",                        "price" : 30000},
+            {"name" : "Meurtre involontaire" ,                              "price" : 1800}
+        ]
+    }
+]

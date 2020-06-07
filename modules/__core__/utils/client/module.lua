@@ -120,15 +120,15 @@ module.game.requestModel = function(model, cb)
   end
 
   local interval
-  
+
   RequestModel(model)
 
   interval = ESX.SetInterval(50, function()
-    
+
     if HasModelLoaded(model) then
 
       ESX.ClearInterval(interval)
-      
+
       if cb ~= nil then
         cb()
       end
@@ -468,7 +468,7 @@ module.game.ensureForcedComponents = function(ped, componentId, drawableId, text
   local forcedComponents = module.game.getForcedComponents(ped, componentId, drawableId, textureId)
 
   for k,v in pairs(forcedComponents) do
-    
+
     local compId = tonumber(k)
 
     for i=1, #v, 1 do
@@ -486,6 +486,53 @@ module.game.setEnforcedPedComponentVariation = function(ped, componentId, drawab
   paletteId = paletteId or 0
   SetPedComponentVariation(ped, componentId, drawableId, textureId, paletteId)
   return module.game.ensureForcedComponents(ped, componentId, drawableId, textureId)
+end
+
+module.game.getPlayerInFront = function() -- Gets player in front
+  local player            = PlayerId()
+	local player_ped        = GetPlayerPed(player)
+	local player_position   = GetEntityCoords(player_ped, false)
+	local player_offset     = GetOffsetFromEntityInWorldCoords(player_ped, 0.0, 1.2, 0.0)
+	local rayHandle         = StartShapeTestCapsule(player_position.x, player_position.y, player_position.z, player_offset.x, player_offset.y, player_offset.z, 1.0, 12, player_ped, 7)
+	local _, _, _, _, ped   = GetShapeTestResult(rayHandle)
+
+  return ped
+end
+
+module.game.getClosestPlayer = function() -- Gets closest target_player around player
+  local players = module.game.getPlayers()
+
+  local closest_distance   = -1
+  local closest_player     = -1
+  local player            = GetPlayerPed(-1)
+  local player_coords     = GetEntityCoords(player, 0)
+
+  for k,v in ipairs(players) do
+    local target = GetPlayerPed(v)
+
+    if target ~= player then
+      local target_coords = GetEntityCoords(target, 0)
+      local distance      = GetDistanceBetweenCoords(target_coords.x, target_coords.y, target_coords.z, player_coords.x, player_coords.y, player_coords.z, true)
+
+      if closest_distance == -1 or closest_distance > distance then
+        closest_distance = distance
+        closest_player = v
+      end
+    end
+  end
+
+  return closest_distance, closest_player
+
+end
+
+module.game.getPlayers = function() -- Gets all currently online players
+  local players = {}
+
+  for i = 0, #GetNumberOfPlayers(), 1 do -- Instead of fixed player number, less iterations
+    table.insert(players, i)
+  end
+
+  return players
 end
 
 -- UI
@@ -570,7 +617,7 @@ module.math.polar3DToWorld3D = function(center, polar, azimuth, radius)
 end
 
 module.math.world3DtoPolar3D = function(center, position)
-  
+
   local diff   = position - center
   local radius = #(diff)
   local p      = math.atan(diff.y / diff.x)

@@ -72,7 +72,7 @@ module.OpenBossMenu = function(society, close, options)
 	options = options or {}
 	local elements = {}
 
-	ESX.TriggerServerCallback('esx_society:isBoss', function(isBoss)
+	ESX.TriggerServerCallback('esx_society:isPlayerBoss', function(isBoss)
 		if isBoss then
 			local defaultOptions = {
 				withdraw = true,

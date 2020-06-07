@@ -12,6 +12,8 @@
   "input",
   "interact",
   "inventory",
+  "job-menu",
+  "job-police",
   "math",
   "migrate",
   "persistent",
