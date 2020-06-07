@@ -111,3 +111,9 @@ onClient("society:recruitTarget", function(society, player)
     -- Set "grade" to lowest
 
 end)
+
+onClient("society:washMoney", function(society, amount)
+
+    -- Add "amount" to wash money in "society"
+
+end)

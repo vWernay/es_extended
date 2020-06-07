@@ -74,7 +74,6 @@ module.openBossMenu = function(society, options)
 
 	request('society:isPlayerBoss', function(isBoss)
 		if isBoss then
-
 			local defaultOptions = {
 				withdraw = true,
 				deposit = true,
@@ -250,6 +249,45 @@ end
 
 module.closeDepositMenu = function()
 	deposit_menu:destroy()
+end
+
+module.openWashMenu = function(society)
+
+	module.wash_menu = Menu('wash_menu', {
+		title = "Wash Dirty Money",
+		float = "top|left",
+		elements = {
+			{name = "amount", label = "Amount", type = "text"},
+			{name = "submit", label = "Submit", type = "button"},
+			{name = "back", label = "Back", type = "button"}
+		}
+
+		module.wash_menu:on('ready', print("Wash Menu Ready"))
+
+		module.wash_menu:on('item.clicked', module.washItemClicked(society))
+	})
+
+end
+
+module.washItemClicked = function(item, index, society)
+
+	if item.name == "submit" then
+		local amount = item.name["amount"].value
+
+		if amount ~= "" then
+			if tonumber(amount) then
+				local amount = tonumber(amount)
+				emit('society:washMoney', society, amount)
+			else
+				ESX.ShowNotification("Please use a number value!", "SOCIETY NOTIFICATION", 10000)
+			end
+		end
+	end
+
+end
+
+module.closeWashMenu = function()
+	wash_menu:destroy()
 end
 
 module.openEmployeeMenu = function(society)
