@@ -20,7 +20,21 @@ onServer('esx:setJob', function(job)
 	module.RefreshBossHUD()
 end)
 
-on('esx_society:openBossMenu', function(society, close, options)
-	module.OpenBossMenu(society, close, options)
+on('society:openBossMenu', function(society, options)
+	module.OpenBossMenu(society, options)
 end)
 
+on('society:toggleSocietyHud', function( bool )
+
+	-- No idea what this does but it exists in client/module.lua
+	-- Rename bool to whatever this is supposed to do
+
+end)
+
+on('society:recruitPlayer', function(source, society)
+	local closestDistance, closestPlayer = ESX.Game.GetClosestPlayer()
+
+	if closestDistance < 5 and closestPlayer ~= -1 then
+		emit('society:recruitTarget', society, closestPlayer)
+	end
+end)

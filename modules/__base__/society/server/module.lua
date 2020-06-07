@@ -11,7 +11,6 @@
 --   This copyright should appear in every part of the project code
 
 
-
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
 module.Jobs = {}
@@ -32,13 +31,13 @@ module.GetSociety = function(name)
 	end
 end
 
-module.isPlayerBoss = function(playerId, job)
-	local xPlayer = xPlayer.fromId(playerId)
+module.isBoss = function(playerId, job)
+	local player = xPlayer.fromId(playerId)
 
-	if xPlayer.job.name == job and xPlayer.job.grade_name == 'boss' then
+	if player.job.name == job and player.job.grade_name == 'boss' then
 		return true
 	else
-		print(('esx_society: %s attempted open a society boss menu!'):format(xPlayer.identifier))
+		print(('society: %s attempted open a society boss menu!'):format(player.identifier))
 		return false
 	end
 end
@@ -47,16 +46,16 @@ module.WashMoneyCRON = function(d, h, m)
 	MySQL.Async.fetchAll('SELECT * FROM society_moneywash', {}, function(result)
 		for i=1, #result, 1 do
 			local society = module.GetSociety(result[i].society)
-			local xPlayer = xPlayer.fromIdentifier(result[i].identifier)
+			local player = xPlayer.fromIdentifier(result[i].identifier)
 
 			-- add society money
-			TriggerEvent('esx_addonaccount:getSharedAccount', society.account, function(account)
+			emit('esx_addonaccount:getSharedAccount', society.account, function(account)
 				account.addMoney(result[i].amount)
 			end)
 
 			-- send notification if player is online
-			if xPlayer then
-				xPlayer.showNotification(_U('society:you_have_laundered', ESX.Math.GroupDigits(result[i].amount)))
+			if player then
+				player.showNotification(_U('society:you_have_laundered', ESX.Math.GroupDigits(result[i].amount)))
 			end
 
 			MySQL.Async.execute('DELETE FROM society_moneywash WHERE id = @id', {

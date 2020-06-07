@@ -13,4 +13,4 @@
 
 module.Init()
 
-TriggerEvent('cron:runAt', 3, 0, module.WashMoneyCRON)
+emit('cron:runAt', 3, 0, module.WashMoneyCRON)

@@ -31,7 +31,7 @@ module.RefreshBossHUD = function()
 	if ESX.PlayerData.job.grade_name == 'boss' then
 		module.EnableSocietyMoneyHUDElement()
 
-		ESX.TriggerServerCallback('esx_society:getSocietyMoney', function(money)
+		request('society:getSocietyMoney', function(money)
 			module.UpdateSocietyMoneyHUDElement(money)
 		end, ESX.PlayerData.job.name)
   end
@@ -47,7 +47,7 @@ module.EnableSocietyMoneyHUDElement = function()
 		})
 	end
 
-	TriggerEvent('esx_society:toggleSocietyHud', true)
+	emit('society:toggleSocietyHud', true)
 end
 
 module.DisableSocietyMoneyHUDElement = function()
@@ -55,7 +55,7 @@ module.DisableSocietyMoneyHUDElement = function()
 		HUD.RemoveElement('society_money')
 	end
 
-	TriggerEvent('esx_society:toggleSocietyHud', false)
+	emit('society:toggleSocietyHud', false)
 end
 
 module.UpdateSocietyMoneyHUDElement = function(money)
@@ -65,15 +65,16 @@ module.UpdateSocietyMoneyHUDElement = function(money)
 		})
 	end
 
-	TriggerEvent('esx_society:setSocietyMoney', money)
+	emit('society:setSocietyMoney', money)
 end
 
-module.OpenBossMenu = function(society, close, options)
+module.openBossMenu = function(society, options)
 	options = options or {}
 	local elements = {}
 
-	ESX.TriggerServerCallback('esx_society:isPlayerBoss', function(isBoss)
+	request('society:isPlayerBoss', function(isBoss)
 		if isBoss then
+
 			local defaultOptions = {
 				withdraw = true,
 				deposit = true,
@@ -89,267 +90,337 @@ module.OpenBossMenu = function(society, close, options)
 			end
 
 			if options.withdraw then
-				table.insert(elements, {label = _U('society:withdraw_society_money'), value = 'withdraw_society_money'})
+				table.insert(elements, {name = "withdraw", title = _U('society:withdraw_society_money'), type = "button"})
 			end
 
 			if options.deposit then
-				table.insert(elements, {label = _U('society:deposit_society_money'), value = 'deposit_money'})
+				table.insert(elements, {name = "deposit", title = _U('society:deposit_society_money'), type = "button"})
 			end
 
 			if options.wash then
-				table.insert(elements, {label = _U('society:wash_money'), value = 'wash_money'})
+				table.insert(elements, {name = "wash", title = _U('society:wash_money'), type = "button"})
 			end
 
 			if options.employees then
-				table.insert(elements, {label = _U('society:employee_management'), value = 'manage_employees'})
+				table.insert(elements, {name = "employees", title = _U('society:employee_management'), type = "button"})
 			end
 
 			if options.grades then
-				table.insert(elements, {label = _U('society:salary_management'), value = 'manage_grades'})
+				table.insert(elements, {name = "salary", title = _U('society:salary_management'), type = "button"})
 			end
 
-			Menu.Open('default', GetCurrentResourceName(), 'boss_actions_' .. society, {
-				title    = _U('society:boss_menu'),
-				align    = 'top-left',
+			table.insert(elements, {name = "exit", title = "Exit", type = "button"})
+
+			module.boss_menu = Menu('boss_menu', {
+				title = "Boss Menu",
+				float = "top|left",
 				elements = elements
-			}, function(data, menu)
-				if data.current.value == 'withdraw_society_money' then
-					Menu.Open('dialog', GetCurrentResourceName(), 'withdraw_society_money_amount_' .. society, {
-						title = _U('society:withdraw_amount')
-					}, function(data2, menu2)
-						local amount = tonumber(data2.value)
+			})
 
-						if amount == nil then
-							ESX.ShowNotification(_U('society:invalid_amount'))
-						else
-							menu2.close()
-							TriggerServerEvent('esx_society:withdrawMoney', society, amount)
-						end
-					end, function(data2, menu2)
-						menu2.close()
-					end)
-				elseif data.current.value == 'deposit_money' then
-					Menu.Open('dialog', GetCurrentResourceName(), 'deposit_money_amount_' .. society, {
-						title = _U('society:deposit_amount')
-					}, function(data2, menu2)
-						local amount = tonumber(data2.value)
+			module.boss_menu:on("ready", print("Boss Menu Ready"))
 
-						if amount == nil then
-							ESX.ShowNotification(_U('society:invalid_amount'))
-						else
-							menu2.close()
-							TriggerServerEvent('esx_society:depositMoney', society, amount)
-						end
-					end, function(data2, menu2)
-						menu2.close()
-					end)
-				elseif data.current.value == 'wash_money' then
-					Menu.Open('dialog', GetCurrentResourceName(), 'wash_money_amount_' .. society, {
-						title = _U('society:wash_money_amount')
-					}, function(data2, menu2)
-						local amount = tonumber(data2.value)
-
-						if amount == nil then
-							ESX.ShowNotification(_U('society:invalid_amount'))
-						else
-							menu2.close()
-							TriggerServerEvent('esx_society:washMoney', society, amount)
-						end
-					end, function(data2, menu2)
-						menu2.close()
-					end)
-				elseif data.current.value == 'manage_employees' then
-					module.OpenManageEmployeesMenu(society)
-				elseif data.current.value == 'manage_grades' then
-					module.OpenManageGradesMenu(society)
-				end
-			end, function(data, menu)
-				if close then
-					close(data, menu)
-				end
-			end)
-		end
+			module.boss_menu:on("item.clicked", module.bossItemClicked(society))
 	end, society)
 end
 
-module.OpenManageEmployeesMenu = function(society)
-	Menu.Open('default', GetCurrentResourceName(), 'manage_employees_' .. society, {
-		title    = _U('society:employee_management'),
-		align    = 'top-left',
-		elements = {
-			{label = _U('society:employee_list'), value = 'employee_list'},
-			{label = _U('society:recruit'), value = 'recruit'}
-	}}, function(data, menu)
-		if data.current.value == 'employee_list' then
-			module.OpenEmployeeList(society)
-		elseif data.current.value == 'recruit' then
-			module.OpenRecruitMenu(society)
-		end
-	end, function(data, menu)
-		menu.close()
-	end)
+module.closeBossMenu = function()
+	boss_menu:destroy()
 end
 
-module.OpenEmployeeList = function(society)
-	ESX.TriggerServerCallback('esx_society:getEmployees', function(employees)
+module.bossItemClicked = function(item, index, society)
 
-		local elements = {
-			head = {_U('society:employee'), _U('society:grade'), _U('society:actions')},
-			rows = {}
+	if item.name == "withdraw" then
+		module.closeBossMenu()
+		module.openWithdrawMenu(society)
+	end
+
+	if item.name == "deposit" then
+		module.closeBossMenu()
+		module.openDepositMenu(society)
+	end
+
+	if item.name == "wash" then
+		module.closeBossMenu()
+		module.openWashMenu(society)
+	end
+
+	if item.name == "employees" then
+		module.closeBossMenu()
+		module.openEmployeeMenu(society)
+	end
+
+	if item.name == "salary" then
+		module.closeBossMenu()
+		module.openSalaryMenu(society)
+	end
+
+	if item.name == "exit" then
+		module.closeBossMenu()
+	end
+
+end
+
+module.openWithdrawMenu = function()
+
+	module.withdraw_menu = Menu('withdraw_menu', {
+		title = "Withdraw",
+		float = "top|left",
+		elements = {
+			{name = "amount", label = "Amount to withdraw", type = "text"},
+			{name = "submit", label = "Submit", type = "button"},
+			{name = "back", label = "Back", type = "button"}
 		}
 
-		for i=1, #employees, 1 do
-			local gradeLabel = (employees[i].job.grade_label == '' and employees[i].job.label or employees[i].job.grade_label)
+		module.withdraw_menu:on("ready", print("Withdraw Menu Ready"))
 
-			table.insert(elements.rows, {
-				data = employees[i],
-				cols = {
-					employees[i].name,
-					gradeLabel,
-					'{{' .. _U('society:promote') .. '|promote}} {{' .. _U('society:fire') .. '|fire}}'
-				}
-			})
-		end
-
-		Menu.Open('list', GetCurrentResourceName(), 'employee_list_' .. society, elements, function(data, menu)
-			local employee = data.data
-
-			if data.value == 'promote' then
-				menu.close()
-				module.OpenPromoteMenu(society, employee)
-			elseif data.value == 'fire' then
-				ESX.ShowNotification(_U('society:you_have_fired', employee.name))
-
-				ESX.TriggerServerCallback('esx_society:setJob', function()
-					module.OpenEmployeeList(society)
-				end, employee.identifier, 'unemployed', 0, 'fire')
-			end
-		end, function(data, menu)
-			menu.close()
-			module.OpenManageEmployeesMenu(society)
-		end)
-	end, society)
+		module.withdraw_menu:on("item.clicked", module.withdrawItemClicked(society))
+	})
 end
 
-module.OpenRecruitMenu = function(society)
-	ESX.TriggerServerCallback('esx_society:getOnlinePlayers', function(players)
-		local elements = {}
+module.withdrawItemClicked = function(item, index, society)
 
-		for i=1, #players, 1 do
-			if players[i].job.name ~= society then
-				table.insert(elements, {
-					label = players[i].name,
-					value = players[i].id,
-					name = players[i].name,
-					identifier = players[i].identifier
-				})
+	if item.name == "submit" then
+		local amount = item.name["amount"].value
+
+		if amount ~= "" then
+			if tonumber(amount) then
+				amount = tonumber(amount)
+
+				request('society:getSocietyMoney', function(society_amount)
+					if society_amount > amount then
+						emit('society:withdrawMoney', tonumber(amount), society)
+						ESX.ShowNotification("You've withdrawn $" .. amount .. "from your company's account.")
+					else
+						ESX.ShowNotification("Society Doesn't have enough money!", "SOCIETY NOTIFICATION", 10000)
+					end
+				end, society)
+			else
+				ESX.ShowNotification("Please input a numeric value!", "SOCIETY NOTIFICATION", 10000)
 			end
 		end
+	end
 
-		Menu.Open('default', GetCurrentResourceName(), 'recruit_' .. society, {
-			title    = _U('society:recruiting'),
-			align    = 'top-left',
-			elements = elements
-		}, function(data, menu)
-			Menu.Open('default', GetCurrentResourceName(), 'recruit_confirm_' .. society, {
-				title    = _U('society:do_you_want_to_recruit', data.current.name),
-				align    = 'top-left',
-				elements = {
-					{label = _U('society:no'), value = 'no'},
-					{label = _U('society:yes'), value = 'yes'}
-			}}, function(data2, menu2)
-				menu2.close()
+	if item.name == "back" then
+		module.closeWithDrawMenu()
+		module.openBossMenu(society)
+	end
 
-				if data2.current.value == 'yes' then
-					ESX.ShowNotification(_U('society:you_have_hired', data.current.name))
-
-					ESX.TriggerServerCallback('esx_society:setJob', function()
-						module.OpenRecruitMenu(society)
-					end, data.current.identifier, society, 0, 'hire')
-				end
-			end, function(data2, menu2)
-				menu2.close()
-			end)
-		end, function(data, menu)
-			menu.close()
-		end)
-	end)
 end
 
-module.OpenPromoteMenu = function(society, employee)
-	ESX.TriggerServerCallback('esx_society:getJob', function(job)
+module.openDespositMenu = function(society)
+
+	module.deposit_menu = Menu('deposit_menu', {
+		title = "Deposit",
+		float = "top|left",
+		elements = {
+			{name = "amount", label = "Amount to deposit", type = "text"},
+			{name = "submit", label = "Submit", type = "button"},
+			{name = "back", label = "Back", type = "button"}
+		}
+
+		module.deposit_menu:on("ready", print("Deposit Menu Ready"))
+
+		module.deposit_menu:on("item.clicked", module.depositItemClicked(society))
+	})
+end
+
+module.depositItemClicked = function(item, index, society)
+
+	if item.name == "submit" then
+		local amount = item.name["amount"].value
+
+		if amount ~= "" then
+			if tonumber(amount) then
+				emit('society:depositMoney', tonumber(amount), society)
+
+				ESX.ShowNotification("You've deposited $" .. amount .. "to your company's account.")
+
+			else
+				ESX.ShowNotification("Please input a numeric value!", "SOCIETY NOTIFICATION", 10000)
+			end
+		end
+	end
+
+	if item.name == "back" then
+		module.closeDepositMenu()
+		module.openBossMenu(society)
+	end
+
+end
+
+module.closeDepositMenu = function()
+	deposit_menu:destroy()
+end
+
+module.openEmployeeMenu = function(society)
+
+	module.employee_menu = Menu('employee_menu', {
+		title = "Employees Menu",
+		float = "top|left",
+		elements = {
+			{name = "list", title = _U('society:employee_list'), type = "button"},
+			{name = "recruit", title = _U('society:recruit'), type = "button"},
+			{name = "back", title = "Back", type = "button"}
+		}
+	})
+
+	module.employee_menu:on('ready', print("Employee Menu Ready!"))
+
+	module.employee_menu:on('item.clicked', module.employeeMenuItemClicked(society))
+end
+
+module.employeeMenuItemClicked = function(item, index, society)
+
+	if item.name == "list" then
+		module.closeEmployeeMenu()
+		module.openEmployeeList(society)
+	end
+
+	if item.name == "recruit" then
+		module.closeEmployeeMenu()
+		emit('society:recruitPlayer', society)
+	end
+
+	if item.name == "back" then
+		module.closeEmployeeMenu()
+		module.openBossMenu(society)
+	end
+end
+
+module.closeEmployeeMenu = function()
+	employee_menu:destroy()
+end
+
+module.openEmployeeList = function(society)
+
+	request('society:employeeList', function(employees)
+
 		local elements = {}
 
-		for i=1, #job.grades, 1 do
-			local gradeLabel = (job.grades[i].label == '' and job.label or job.grades[i].label)
-
-			table.insert(elements, {
-				label = gradeLabel,
-				value = job.grades[i].grade,
-				selected = (employee.job.grade == job.grades[i].grade)
+		for i = 1, #employees, 1 do
+			table.insert( elements, {
+				name = employees[i].identifier,
+				label = employees[i].first_name .. " : " employees[i].last_name,
+				type = "button"
 			})
 		end
 
-		Menu.Open('default', GetCurrentResourceName(), 'promote_employee_' .. society, {
-			title    = _U('society:promote_employee', employee.name),
-			align    = 'top-left',
-			elements = elements
-		}, function(data, menu)
-			menu.close()
-			ESX.ShowNotification(_U('society:you_have_promoted', employee.name, data.current.label))
+		table.insert( elements, {
+			name = "back",
+			label = "Back",
+			type = "button"
+		})
 
-			ESX.TriggerServerCallback('esx_society:setJob', function()
-				OpenEmployeeList(society)
-			end, employee.identifier, society, data.current.value, 'promote')
-		end, function(data, menu)
-			menu.close()
-			OpenEmployeeList(society)
-		end)
-	end, society)
+		module.employee_list = Menu('employee_list', {
+			title = "List of Employees",
+			float = "top|left",
+			elements = elements
+		})
+
+		module.employee_list:on('ready', print("Employee List Menu Ready"))
+
+		module.employee_list:on('item.clicked', module.employeeListItemClicked(society, employees))
+	)
 end
 
-module.OpenManageGradesMenu = function(society)
-	ESX.TriggerServerCallback('esx_society:getJob', function(job)
-		local elements = {}
+module.employeeListItemClicked = function(item, index, society, employees)
 
-		for i=1, #job.grades, 1 do
-			local gradeLabel = (job.grades[i].label == '' and job.label or job.grades[i].label)
+	for i = 1, #employees, 1 do
+		if item.name == employees[i].identifier then
+			module.openEmployeeGradesMenu(employees[i].identifier)
+		end
+	end
 
-			table.insert(elements, {
-				label = ('%s - <span style="color:green;">%s</span>'):format(gradeLabel, _U('society:money_generic', ESX.Math.GroupDigits(job.grades[i].salary))),
-				value = job.grades[i].grade
+	if item.name == "back" then
+		module.closeEmployeeListMenu()
+		module.openEmployeeMenu(society)
+	end
+end
+
+module.closeEmployeeListMenu = function()
+	employee_list:destroy()
+end
+
+module.openEmployeeGradesMenu = function(society, employee)
+
+	module.employee_choice = Menu('employee_choice', {
+		title = "Employee Actions",
+		float = "top|left",
+		elements = {
+			{name = "promote", label = "Promote", type = "button"},
+			{name = "fire", label = "Fire", type = "button"},
+			{name = "back", label = "Back", type = "button"}
+		}
+
+		module.employee_choice:on('ready', print("Employee Actions Menu Ready"))
+
+		module.employee_choice:on('item.clicked', module.employeeGradesItemClicked(society, employee))
+	})
+
+end
+
+module.employeeGradesItemClicked = function(item, index, society, employee)
+
+	if item.name == "promote" then
+		module.closeEmployeeGradesMenu()
+		module.openEmployeePromote(society, employee)
+	end
+
+	if item.name == "fire" then
+		module.closeEmployeeGradesMenu()
+		emit('society:fireEmployee', society, employee)
+	end
+
+	if item.name == "back" then
+		module.closeEmployeeGradesMenu()
+		module.openEmployeeList(society)
+	end
+end
+
+module.closeEmployeeGradesMenu = function()
+	employee_choice:destroy()
+end
+
+module.openEmployeePromote = function(item, index, society, employee)
+
+	local grades = {}
+
+	request("society:getSocietyGrades", function(society_grades)
+
+		for k,v in pairs(society_grades) do
+			table.insert( elements, {
+				name = k,
+				label = v,
+				type = "button"
 			})
 		end
 
-		Menu.Open('default', GetCurrentResourceName(), 'manage_grades_' .. society, {
-			title    = _U('society:salary_management'),
-			align    = 'top-left',
-			elements = elements
-		}, function(data, menu)
-			Menu.Open('dialog', GetCurrentResourceName(), 'manage_grades_amount_' .. society, {
-				title = _U('society:salary_amount')
-			}, function(data2, menu2)
+		module.promotion = Menu('promotion', {
+			title = "Promotion",
+			float = "top|left",
+			elements = grades
+		})
 
-				local amount = tonumber(data2.value)
+		module.promotion:on("ready", print("Promotion Menu Ready"))
 
-				if amount == nil then
-					ESX.ShowNotification(_U('society:invalid_amount'))
-				elseif amount > module.Config.MaxSalary then
-					ESX.ShowNotification(_U('society:invalid_amount_max'))
-				else
-					menu2.close()
-
-					ESX.TriggerServerCallback('esx_society:setJobSalary', function()
-						OpenManageGradesMenu(society)
-					end, society, data.current.value, amount)
-				end
-			end, function(data2, menu2)
-				menu2.close()
-			end)
-		end, function(data, menu)
-			menu.close()
-		end)
+		module.promotion:on("item.clicked", module.employeePromoteItemClicked(society, employee, grades))
 	end, society)
 end
 
+module.employeePromoteItemClicked = function(item, index, society, employee, grades)
 
+	for k,v in pairs(grades) do
+		if item.name == k then
+			emit("society:promoteEmployee", society, employee, k)
+		end
+	end
+
+	if item.name == "back" then
+		module.closeEmployeePromote()
+		module.openEmployeeGradesMenu(society, employee)
+	end
+end
+
+module.closeEmployeePromote = function()
+	promotion:destroy()
+end

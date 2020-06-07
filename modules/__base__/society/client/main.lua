@@ -14,7 +14,7 @@ local HUD = M('game.hud')
 
 module.Init()
 
-Citizen.CreateThread(function()
+ESX.SetTick(function()
 
 	while (ESX.PlayerData == nil) or (ESX.PlayerData.job == nil) do
 		Citizen.Wait(0)
