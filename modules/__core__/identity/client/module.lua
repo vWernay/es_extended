@@ -30,6 +30,9 @@ IdentityCacheConsumer = Extends(CacheConsumer, 'IdentityCacheConsumer')
 
 function IdentityCacheConsumer:provide(key, cb)
 
+  -- @TODO make a way to get the identities or identity based on id
+  -- for now it return an Array by default, but it should be better
+  -- to split this into 2 differents places to make it more clear.
   request('esx:cache:identity:get', function(exists, identities)
     local instancedIdentities = nil
     if exists then
@@ -117,6 +120,8 @@ module.SavePosition = ESX.SetInterval(60000, function()
   end
 end)
 
+-- open the registration menu and save the created identity
+-- then load it into the player
 module.OpenMenu = function(cb)
 
   utils.ui.showNotification(_U('identity_register'))
@@ -171,39 +176,34 @@ module.OpenMenu = function(cb)
 
 end
 
-module.Init = function(id)
-  if id == nil then
+-- takes an instanciated player identity and set it up
+-- client-side
+module.Init = function(identity)
+  if identity == nil then
     error('Identity is not defined')
   end
 
-  Cache.identity:resolve(id, function(exists, identity)
-    if not exists then
-      error('Identity not found')
-    end
+  ESX.Player:field('identity', identity)
 
-    ESX.Player:field('identity', identity)
+  local playerPed = PlayerPedId()
 
-    local playerPed = PlayerPedId()
+  if Config.EnablePvP then
+    SetCanAttackFriendly(playerPed, true, false)
+    NetworkSetFriendlyFireOption(true)
+  end
 
-    if Config.EnablePvP then
-      SetCanAttackFriendly(playerPed, true, false)
-      NetworkSetFriendlyFireOption(true)
-    end
+  if Config.EnableHUD then
+    module.LoadHUD()
+  end
 
-    if Config.EnableHUD then
-      module.LoadHUD()
-    end
+  ESX.Ready = true
+  emitServer('esx:client:ready')
+  emit('esx:ready')
 
-    ESX.Ready = true
+  Citizen.Wait(2000)
 
-    
-    emitServer('esx:client:ready')
-    emit('esx:ready')
+  ShutdownLoadingScreen()
+  ShutdownLoadingScreenNui()
 
-    Citizen.Wait(2000)
-
-    ShutdownLoadingScreen()
-    ShutdownLoadingScreenNui()
-  end)
 end
 
