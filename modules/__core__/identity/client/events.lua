@@ -15,5 +15,9 @@ on("esx:identity:selectIdentity", function(identity)
 end)
 
 on("esx:identity:openRegistration", function()
-    module.OpenMenu(module.Init)
+    -- identity arrives serialized here
+    module.OpenMenu(function(identity)
+        -- instanciate it before the module instanciation
+        module.Init(Identity(identity))
+    end)
 end)
