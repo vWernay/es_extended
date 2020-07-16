@@ -30,7 +30,7 @@ onRequest('esx:identity:register', function(source, cb, data)
     player:field('identity', identity)
     player:save()
 
-    cb(id)
+    cb(identity:serialize())
 
   end)
 
