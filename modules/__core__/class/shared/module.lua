@@ -170,6 +170,7 @@ Extends = function(baseType, debugName)
     end
 
     local __gc = function(t)
+      -- @FIXME: prevent a weird bug not reproductive for now
       t:dtor()
     end
 
@@ -209,6 +210,7 @@ Extends = function(baseType, debugName)
 
   function newType:constructor(...)
     if self.super ~= nil then
+      -- @FIXME: prevent a weird bug not reproductive for now
       self.super:ctor(...)
     end
   end

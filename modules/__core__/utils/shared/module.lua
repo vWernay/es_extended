@@ -325,7 +325,14 @@ module.game.isAnimalModel = function(nameOrHash)
 
 end
 
-
 module.printWarning = function(str)
   print(('[^3WARNING^7] %s'):format(str))
 end
+
+module.try = function(f, catch_f)
+  local status, exception = pcall(f)
+  if not status then
+    catch_f(exception)
+  end
+end
+  
