@@ -17,6 +17,9 @@ M("table")
 
 local spawn = {x = 402.869, y = -996.5966, z = -99.0003, heading = 180.01846313477}
 
+module.currentMenu = nil
+module.registrationMenu = nil
+module.characterMenu = nil
 module.isInMenu = false
 module.selectedIdentity = nil
 
@@ -24,7 +27,7 @@ module.OpenMenu = function(cb)
 
   utils.ui.showNotification(_U('identity_register'))
 
-  module.Menu = Menu("character_creation", {
+  module.registrationMenu = Menu("character_creation", {
     float = "center|middle",
     title = "Create Character",
     items = {
@@ -36,7 +39,7 @@ module.OpenMenu = function(cb)
     }
   })
 
-  module.Menu:on("item.change", function(item, prop, val, index)
+  module.registrationMenu:on("item.change", function(item, prop, val, index)
 
     if (item.name == "isMale") and (prop == "value") then
       if val then
@@ -48,16 +51,15 @@ module.OpenMenu = function(cb)
 
   end)
 
-  module.Menu:on("item.click", function(item, index)
+  module.registrationMenu:on("item.click", function(item, index)
 
     if item.name == "submit" then
 
-      local props = module.Menu:kvp()
+      local props = module.registrationMenu:kvp()
 
       if (props.firstName ~= '') and (props.lastName ~= '') and (props.dob ~= '') then
 
-        module.Menu:destroy()
-        module.Menu = nil
+        module.registrationMenu:destroy()
 
         request('esx:character:creation', cb, props)
 
@@ -154,7 +156,7 @@ module.RequestIdentitySelection = function(identities)
       emit("esx:identity:openRegistration")
       module.characterMenu:destroy()
       camera.stop()
-      module.currentMenu = nil
+      -- module.currentMenu = nil
       module.isInMenu = false
     elseif item.name == "none" then
 
@@ -218,7 +220,7 @@ module.SelectCharacter = function(name, label, identity)
       module.confirmMenu:destroy()
       module.characterMenu:destroy()
       camera.stop()
-      module.currentMenu = nil
+      -- module.currentMenu = nil
       module.isInMenu = false
     elseif item.name == "back" then
       module.confirmMenu:destroy()
