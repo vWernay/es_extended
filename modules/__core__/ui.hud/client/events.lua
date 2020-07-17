@@ -90,7 +90,9 @@ on('esx:frame:message', function(name, msg, handleCallback)
     if frame == nil then
       print('error, frame [' .. name .. '] not found')
     else
-      frame:emit('message', msg, handleCallback)
+      if not(frame.destroyed) then
+        frame:emit('message', msg, handleCallback)
+      end
     end
 
   end
