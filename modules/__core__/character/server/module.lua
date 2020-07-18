@@ -11,16 +11,17 @@
 --   This copyright should appear in every part of the project code
 
 module.findSkin = function(player, cb, id)
-    -- TODO: use ORM to prepare de query
-    MySQL.Async.fetchScalar('SELECT skin FROM identities WHERE id = @identityId',
+  -- TODO: use ORM to prepare de query
+  MySQL.Async.fetchScalar('SELECT skin FROM identities WHERE id = @identityId',
     {
       ['@identityId'] = id
     }, function(skin)
-  
+
       if (skin) then
         return cb(json.decode(skin))
       end
-      
+    
       return cb(nil)
-    end)
-  end
+    end
+  )
+end
