@@ -19,6 +19,7 @@ local HUD   = M('game.hud')
 local utils = M('utils')
 
 local spawn = {x = -269.4, y = -955.3, z = 31.2, heading = 205.8}
+module.SavePositionInterval = nil
 
 Identity = Extends(Serializable, 'Identity')
 
@@ -53,43 +54,58 @@ module.SelectIdentityAndSpawnCharacter = function(requestedIdentity)
   end
 
   request('esx:identity:selectIdentity', function(identity)
-
-    local identity = Identity(identity)
-
-    ESX.Player:field('identity', identity)
-    local position = spawn
-
-    request('esx:identity:getSavedPosition', function(savedPos)
-      module.DoSpawn({
-  
-          x        = savedPos and savedPos.x or position.x,
-          y        = savedPos and savedPos.y or position.y,
-          z        = savedPos and savedPos.z or position.z,
-          heading  = savedPos and savedPos.heading or position.heading,
-          model    = 'mp_m_freemode_01',
-          skipFade = false
-  
-        }, function()
-          local playerPed = PlayerPedId()
-  
-          if Config.EnablePvP then
-            SetCanAttackFriendly(playerPed, true, false)
-            NetworkSetFriendlyFireOption(true)
-          end
-  
-          if Config.EnableHUD then
-            module.LoadHUD()
-          end
-  
-          ESX.Ready = true
-  
-          emitServer('esx:client:ready')
-          emit('esx:ready')
-        end)
-
-    end, identity:serialize())
-
+    module.initIdentity(identity)
   end, requestedIdentity:getId())
+end
+
+-- take a serialized identity, load it, fetch position server-side
+-- spawn the character (ped) and start init routine
+-- it's not a good idea to call it from outside as the function is.
+-- @TODO: split this into tinier pieces so we can be modular
+module.initIdentity = function(identity)
+  local identity = Identity(identity)
+
+  ESX.Player:field('identity', identity)
+  local position = spawn
+
+  request('esx:identity:getSavedPosition', function(savedPos)
+    module.DoSpawn({
+
+        x        = savedPos and savedPos.x or position.x,
+        y        = savedPos and savedPos.y or position.y,
+        z        = savedPos and savedPos.z or position.z,
+        heading  = savedPos and savedPos.heading or position.heading,
+        model    = 'mp_m_freemode_01',
+        skipFade = false
+
+      }, function()
+        local playerPed = PlayerPedId()
+
+        if Config.EnablePvP then
+          SetCanAttackFriendly(playerPed, true, false)
+          NetworkSetFriendlyFireOption(true)
+        end
+
+        if Config.EnableHUD then
+          module.LoadHUD()
+        end
+
+        ESX.Ready = true
+
+        emitServer('esx:client:ready')
+        emit('esx:ready')
+
+        initPlayerDeadCheckInterval()
+
+        Citizen.Wait(2000)
+
+        ShutdownLoadingScreen()
+        ShutdownLoadingScreenNui()
+
+        module.SavePositionInterval = ESX.SetInterval(Config.Modules.identity.playerCoordsSaveInterval * 1000, module.SavePosition)
+      end)
+
+  end, identity:serialize())
 end
 
 module.LoadHUD = function()
@@ -110,7 +126,10 @@ module.DoSpawn = function(data, cb)
   exports.spawnmanager:spawnPlayer(data, cb)
 end
 
-module.SavePosition = ESX.SetInterval(60000, function()
+-- request a coords sync with the server.
+-- @TODO: maybe move this code server-side if we can ensure \
+-- server is running OneSync
+module.SavePosition = function()
   if NetworkIsPlayerActive(PlayerId()) then
     local playerCoords = GetEntityCoords(PlayerPedId())
     local heading      = GetEntityHeading(PlayerPedId())
@@ -123,11 +142,11 @@ module.SavePosition = ESX.SetInterval(60000, function()
 
     emitServer('esx:identity:updatePosition', position)
   end
-end)
+end
 
 -- open the registration menu and save the created identity
 -- then load it into the player
-module.OpenMenu = function(cb)
+module.RequestRegistration = function(cb)
 
   utils.ui.showNotification(_U('identity_register'))
 
@@ -180,35 +199,3 @@ module.OpenMenu = function(cb)
   end)
 
 end
-
--- takes an instanciated player identity and set it up
--- client-side
-module.Init = function(identity)
-  if identity == nil then
-    error('Identity is not defined')
-  end
-
-  ESX.Player:field('identity', identity)
-
-  local playerPed = PlayerPedId()
-
-  if Config.EnablePvP then
-    SetCanAttackFriendly(playerPed, true, false)
-    NetworkSetFriendlyFireOption(true)
-  end
-
-  if Config.EnableHUD then
-    module.LoadHUD()
-  end
-
-  ESX.Ready = true
-  emitServer('esx:client:ready')
-  emit('esx:ready')
-
-  Citizen.Wait(2000)
-
-  ShutdownLoadingScreen()
-  ShutdownLoadingScreenNui()
-
-end
-

@@ -3704,6 +3704,15 @@ module.init = function()
 end
 
 module.loadPlayerSkin = function(skinContent, cb)
+  if (skinContent == nil) then
+    return request("skin:getIdentitySkin", function(skinContent)
+      if (skinContent == nil) then
+        error("Cannot load player skin when the skin isn't created yet")
+      end
+      module.loadPlayerSkin(skinContent, cb)
+    end)
+  end
+
   local skin = Skin(skinContent)
   skin:applyAll(cb)
 end
