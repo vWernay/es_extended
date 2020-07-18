@@ -15,3 +15,7 @@ on('esx:ready', function()
 end)
 
 onServer("esx:skin:openEditor", module.askOpenEditor)
+
+on("esx:skin:loadSkin", function(skinContent, cb)
+  module.loadPlayerSkin(skinContent, cb)
+end)

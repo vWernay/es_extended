@@ -10,14 +10,7 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-on("esx:identity:selectIdentity", function(identity)
-    module.SelectIdentityAndSpawnCharacter(identity)
-end)
+-- maybe change this with a class skin that inherit perstistance
+-- so we can have utils functions to save/retrieve datas if we map player and skin ?
+-- cb is optional
 
-on("esx:identity:openRegistration", function()
-    -- identity arrives serialized here
-    module.OpenMenu(function(identity)
-        -- instanciate it before the module instanciation
-        module.Init(Identity(identity))
-    end)
-end)

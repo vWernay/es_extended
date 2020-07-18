@@ -10,14 +10,27 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-on("esx:identity:selectIdentity", function(identity)
-    module.SelectIdentityAndSpawnCharacter(identity)
+M("identity")
+local camera = M("camera")
+
+onServer('esx:character:request:register', function()
+  module.RequestRegister()
 end)
 
-on("esx:identity:openRegistration", function()
-    -- identity arrives serialized here
-    module.OpenMenu(function(identity)
-        -- instanciate it before the module instanciation
-        module.Init(Identity(identity))
+onServer('esx:character:request:select', function(identities)
+  if identities then
+    local instancedIdentities = table.map(identities, function(identity)
+      return Identity(identity)
     end)
+
+    module.RequestIdentitySelection(instancedIdentities)
+  else
+    module.RequestIdentitySelection()
+  end
+end)
+
+on('ui.menu.mouseChange', function(value)
+	if module.AreMenuInUse() then
+		camera.setMouseIn(value)
+	end
 end)

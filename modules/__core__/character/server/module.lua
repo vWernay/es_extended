@@ -10,14 +10,17 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-on("esx:identity:selectIdentity", function(identity)
-    module.SelectIdentityAndSpawnCharacter(identity)
-end)
-
-on("esx:identity:openRegistration", function()
-    -- identity arrives serialized here
-    module.OpenMenu(function(identity)
-        -- instanciate it before the module instanciation
-        module.Init(Identity(identity))
+module.findSkin = function(player, cb, id)
+    -- TODO: use ORM to prepare de query
+    MySQL.Async.fetchScalar('SELECT skin FROM identities WHERE id = @identityId',
+    {
+      ['@identityId'] = id
+    }, function(skin)
+  
+      if (skin) then
+        return cb(json.decode(skin))
+      end
+      
+      return cb(nil)
     end)
-end)
+  end

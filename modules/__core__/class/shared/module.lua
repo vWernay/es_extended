@@ -173,7 +173,8 @@ Extends = function(baseType, debugName)
       t:dtor()
     end
 
-    this = setmetatable(data, {__index = __index, __newindex = __newindex, __gc = __gc})
+    -- @TODO: make sure the pcall(__gc) does the trick
+    this = setmetatable(data, {__index = __index, __newindex = __newindex, __gc = pcall(__gc)})
 
     pushtype(this)
 
@@ -209,6 +210,7 @@ Extends = function(baseType, debugName)
 
   function newType:constructor(...)
     if self.super ~= nil then
+      -- @FIXME: prevent a weird bug not reproductive for now
       self.super:ctor(...)
     end
   end
