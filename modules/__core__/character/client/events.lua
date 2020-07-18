@@ -30,7 +30,7 @@ onServer('esx:character:request:select', function(identities)
 end)
 
 on('ui.menu.mouseChange', function(value)
-	if module.isInMenu then
+	if module.AreMenuInUse() then
 		camera.setMouseIn(value)
 	end
 end)

@@ -170,11 +170,11 @@ Extends = function(baseType, debugName)
     end
 
     local __gc = function(t)
-      -- @FIXME: prevent a weird bug not reproductive for now
       t:dtor()
     end
 
-    this = setmetatable(data, {__index = __index, __newindex = __newindex, __gc = __gc})
+    -- @TODO: make sure the pcall(__gc) does the trick
+    this = setmetatable(data, {__index = __index, __newindex = __newindex, __gc = pcall(__gc)})
 
     pushtype(this)
 

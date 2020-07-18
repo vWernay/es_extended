@@ -25,13 +25,14 @@ function Menu:constructor(name, data, focus)
 
   self.super:ctor();
 
-  self.name     = name
-  self.float    = data.float or 'top|left'
-  self.title    = data.title or 'Untitled ESX Menu'
-  self.items    = {}
-  self.mouseIn  = false
-  self.visible  = true
-  self.hasFocus = focus
+  self.name        = name
+  self.float       = data.float or 'top|left'
+  self.title       = data.title or 'Untitled ESX Menu'
+  self.items       = {}
+  self.mouseIn     = false
+  self.visible     = true
+  self.hasFocus    = focus
+  self.isDestroyed = false
 
   local _items = data.items or {}
 
@@ -220,4 +221,5 @@ end
 
 function Menu:destroy()
   self.frame:destroy()
+  self.isDestroyed = true
 end

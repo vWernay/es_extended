@@ -15,13 +15,16 @@ local identity = M('identity')
 local camera   = M("camera")
 M("table")
 
-local spawn = {x = 402.869, y = -996.5966, z = -99.0003, heading = 180.01846313477}
+-- /config/default/config.character.lua, is it the right place ?
+local characterConfig = Config.Modules.character
 
-module.currentMenu = nil
 module.registrationMenu = nil
-module.characterMenu = nil
+module.characterSelectionMenu = nil
 module.isInMenu = false
-module.selectedIdentity = nil
+
+module.AreMenuInUse = function()
+  return not(module.characterSelectionMenu.isDestroyed and module.characterSelectionMenu.isDestroyed)
+end
 
 module.OpenMenu = function(cb)
 
@@ -74,21 +77,19 @@ module.OpenMenu = function(cb)
 
 end
 
-module.RequestRegister = function()
-  emit("esx:identity:openRegistration")
-end
-
 module.DoSpawn = function(data, cb)
   exports.spawnmanager:spawnPlayer(data, cb)
 end
 
-module.EnterMenu = function()
+module.InitiateCharacterSelectionSpawn = function()
+  local spawnCoords = characterConfig.spawnCoords
+
   module.DoSpawn({
 
-    x        = spawn.x,
-    y        = spawn.y,
-    z        = spawn.z,
-    heading  = spawn.heading,
+    x        = spawnCoords.x,
+    y        = spawnCoords.y,
+    z        = spawnCoords.z,
+    heading  = spawnCoords.heading,
     model    = 'mp_m_freemode_01',
     skipFade = false
 
@@ -106,7 +107,7 @@ module.EnterMenu = function()
   ShutdownLoadingScreenNui()
 end
 
-module.SetCamera = function()
+module.InitiateCameraPreview = function()
   camera.start()
 
   camera.setRadius(1.25)
@@ -118,45 +119,47 @@ end
 
 module.RequestIdentitySelection = function(identities)
 
-  module.EnterMenu()
+  -- TP the player to a spawn point defined in the config file
+  module.InitiateCharacterSelectionSpawn()
 
-  module.SetCamera()
+  -- Start a camera on the player (skin preview)
+  module.InitiateCameraPreview()
 
+  -- Fetch the loaded player
   local player = ESX.Player
 
-  local items = {}
+  local menuElements = {}
 
   if identities then
-    items = table.map(identities, function(identity)
+    -- for each identities, insert a button to select it
+    menuElements = table.map(identities, function(identity)
       return {type = 'button', name = identity:getId(), label = identity:getFirstName() .. " " .. identity:getLastName(), identity = identity:serialize()}
     end)
 
-    table.insert(items, {name = "register", label = ">> Create a New Identity <<", type = "button", shouldDestroyMenu = true})
+    table.insert(menuElements, {name = "register", label = ">> Create a New Identity <<", type = "button", shouldDestroyMenu = true})
   else
-    items = {
+    menuElements = {
       {name = "register", label = ">> Create a New Identity <<", type = "button", shouldDestroyMenu = true}
     }
   end
 
-
-  Citizen.Wait(100)
-
-  module.characterMenu = Menu('character.select', {
+  module.characterSelectionMenu = Menu('character.select', {
       title = 'Choose An Identity',
       float = 'top|left',
-      items = items
+      items = menuElements
   })
 
-  module.currentMenu = module.characterMenu
+  module.characterSelectionMenu
 
-  -- bind item click with module specific method onItemClicked
-  module.characterMenu:on('item.click', function(item)
+  module.characterSelectionMenu:on('item.click', function(item)
 
     if item.name == 'register' then
+      -- delegate to the identity module, responsible of the registration
       emit("esx:identity:openRegistration")
-      module.characterMenu:destroy()
+
+      module.characterSelectionMenu:destroy()
+
       camera.stop()
-      -- module.currentMenu = nil
       module.isInMenu = false
     elseif item.name == "none" then
 
@@ -170,21 +173,6 @@ module.RequestIdentitySelection = function(identities)
         end
       end, item.name)
     end
-
-    -- if item.shouldDestroyMenu then
-    --   module.characterMenu:destroy()
-    --   module.currentMenu = nil
-    -- end
-
-    -- if (item.name == "submit") then
-    --   return module.SelectIdentity(module.selectedIdentity)
-    -- end
-
-    -- if (item.name == "register") then
-    --   return module.OpenMenu()
-    -- end
-
-    -- module.selectedIdentity = Identity(item.identity)
   end)
 
 end
@@ -198,8 +186,8 @@ module.SelectCharacter = function(name, label, identity)
     {name = "back", label = "Go Back", type = "button"}
   }
   
-  if module.characterMenu.visible then
-    module.characterMenu:hide()
+  if module.characterSelectionMenu.visible then
+    module.characterSelectionMenu:hide()
   end
 
   module.confirmMenu = Menu('character.confirm', {
@@ -208,26 +196,20 @@ module.SelectCharacter = function(name, label, identity)
     items = items
   })
 
-  module.currentMenu = module.confirmMenu
-
   module.confirmMenu:on('destroy', function()
-    module.characterMenu:show()
+    module.characterSelectionMenu:show()
   end)
 
   module.confirmMenu:on('item.click', function(item, index)
     if item.name == "submit" then
       module.SelectIdentity(identity)
       module.confirmMenu:destroy()
-      module.characterMenu:destroy()
+      module.characterSelectionMenu:destroy()
       camera.stop()
-      -- module.currentMenu = nil
       module.isInMenu = false
     elseif item.name == "back" then
       module.confirmMenu:destroy()
-      
-      module.currentMenu = module.characterMenu
-
-      module.characterMenu:focus()
+      module.characterSelectionMenu:focus()
     end
   end)
 end
