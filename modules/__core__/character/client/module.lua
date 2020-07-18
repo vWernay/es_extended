@@ -149,8 +149,6 @@ module.RequestIdentitySelection = function(identities)
       items = menuElements
   })
 
-  module.characterSelectionMenu
-
   module.characterSelectionMenu:on('item.click', function(item)
 
     if item.name == 'register' then
