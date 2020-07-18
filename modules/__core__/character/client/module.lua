@@ -164,8 +164,9 @@ module.RequestIdentitySelection = function(identities)
     else
       request("esx:character:loadSkin", function(skinContent)
         if skinContent then
-          emit("esx:skin:loadSkin", skinContent)
-          module.SelectCharacter(item.name, item.label, item.identity)
+          emit("esx:skin:loadSkin", skinContent, function()
+            module.SelectCharacter(item.name, item.label, item.identity)
+          end)
         else
           module.SelectCharacter(item.name, item.label, item.identity)
         end

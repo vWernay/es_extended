@@ -3703,9 +3703,9 @@ module.init = function()
   end)
 end
 
-module.loadPlayerSkin = function(skinContent)
+module.loadPlayerSkin = function(skinContent, cb)
   local skin = Skin(skinContent)
-  skin:applyAll()
+  skin:applyAll(cb)
 end
 
 module.askOpenEditor = function(skinContent)
