@@ -36,6 +36,24 @@ onRequest('esx:identity:register', function(source, cb, data)
 
 end)
 
+onRequest('esx:identity:selectIdentity', function(source, cb, identityId)
+
+  local player = Player.fromId(source)
+
+  Identity.findOne({id = identityId}, function(identity)
+    if identity == nil then
+      return cb(nil)
+    end
+
+    Identity.all[identityId] = identity
+    player:setIdentityId(identityId)
+    player:field('identity', identity)
+
+    cb(identity:serialize())
+  end)
+
+end)
+
 onRequest('esx:cache:identity:get', function(source, cb, id)
 
   local player = Player.fromId(source)
@@ -82,22 +100,4 @@ onClient('esx:identity:updatePosition', function(position)
     ['@id']       = player:getIdentityId(),
     ['@owner']    = player.identifier
   })
-end)
-
-on('esx:player:load', function(player)
-  local playerIdentityId = player:getIdentityId()
-
-  if (playerIdentityId ~= nil) then
-    Identity.findOne({id = playerIdentityId}, function(instance)
-      if instance == nil then
-        return
-      end
-
-      print(json.encode(instance:serialize()))
-
-      Identity.all[playerIdentityId] = instance
-      player:setIdentityId(playerIdentityId)
-      player:field('identity', instance)
-    end)
-  end
 end)

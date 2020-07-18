@@ -11,7 +11,7 @@
 --   This copyright should appear in every part of the project code
 
 on("esx:identity:selectIdentity", function(identity)
-    module.SelectIdentity(identity)
+    module.SelectIdentityAndSpawnCharacter(identity)
 end)
 
 on("esx:identity:openRegistration", function()

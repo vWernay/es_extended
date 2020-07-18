@@ -47,44 +47,49 @@ end
 
 Cache.identity = IdentityCacheConsumer()
 
--- @TODO: need to first select the identity server-side
--- then confirm to client (via request), and finally update it client side if confirmeds 
-module.SelectIdentity = function(identity)
-  if identity == nil then
+module.SelectIdentityAndSpawnCharacter = function(requestedIdentity)
+  if requestedIdentity == nil then
     error('Expect identity to be defined')
   end
 
-  ESX.Player:field('identity', identity)
-  local position = spawn
+  request('esx:identity:selectIdentity', function(identity)
 
-  request('esx:identity:getSavedPosition', function(savedPos)
-    module.DoSpawn({
+    local identity = Identity(identity)
 
-        x        = savedPos and savedPos.x or position.x,
-        y        = savedPos and savedPos.y or position.y,
-        z        = savedPos and savedPos.z or position.z,
-        heading  = savedPos and savedPos.heading or position.heading,
-        model    = 'mp_m_freemode_01',
-        skipFade = false
+    ESX.Player:field('identity', identity)
+    local position = spawn
 
-      }, function()
-        local playerPed = PlayerPedId()
+    request('esx:identity:getSavedPosition', function(savedPos)
+      module.DoSpawn({
+  
+          x        = savedPos and savedPos.x or position.x,
+          y        = savedPos and savedPos.y or position.y,
+          z        = savedPos and savedPos.z or position.z,
+          heading  = savedPos and savedPos.heading or position.heading,
+          model    = 'mp_m_freemode_01',
+          skipFade = false
+  
+        }, function()
+          local playerPed = PlayerPedId()
+  
+          if Config.EnablePvP then
+            SetCanAttackFriendly(playerPed, true, false)
+            NetworkSetFriendlyFireOption(true)
+          end
+  
+          if Config.EnableHUD then
+            module.LoadHUD()
+          end
+  
+          ESX.Ready = true
+  
+          emitServer('esx:client:ready')
+          emit('esx:ready')
+        end)
 
-        if Config.EnablePvP then
-          SetCanAttackFriendly(playerPed, true, false)
-          NetworkSetFriendlyFireOption(true)
-        end
+    end, id)
 
-        if Config.EnableHUD then
-          module.LoadHUD()
-        end
-
-        ESX.Ready = true
-
-        emitServer('esx:client:ready')
-        emit('esx:ready')
-      end)
-  end, id)
+  end, requestedIdentity:getId())
 end
 
 module.LoadHUD = function()
