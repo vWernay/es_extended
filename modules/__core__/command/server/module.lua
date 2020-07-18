@@ -139,6 +139,13 @@ function Command:register()
         if commandArgument.type == "number" then
 
           if not(string.onlyContainsDigit(givenArgument)) then
+
+            -- it's from RCON
+            if (source == 0) then
+              print(('[^1Error^7] Argument %s needs to be a %s, %s given.'):format(commandArgument.name, commandArgument.type, givenArgument))
+              return
+            end
+            
             emitClient('chat:addMessage', source, {
               color = { 255, 0, 0 },
               multiline = true,
@@ -154,6 +161,13 @@ function Command:register()
           local requestedPlayer = Player.fromId(givenArgument)
 
           if not(requestedPlayer) then
+
+            -- it's from RCON
+            if (source == 0) then
+              print(('[^1Error^7] Argument %s needs an existing player, player %s not found.'):format(commandArgument.name, givenArgument))
+              return
+            end
+
             emitClient('chat:addMessage', source, {
               color = { 255, 0, 0 },
               multiline = true,
