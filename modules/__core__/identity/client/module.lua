@@ -87,7 +87,7 @@ module.SelectIdentityAndSpawnCharacter = function(requestedIdentity)
           emit('esx:ready')
         end)
 
-    end, id)
+    end, identity:serialize())
 
   end, requestedIdentity:getId())
 end
