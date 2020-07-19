@@ -17,6 +17,6 @@ end)
 on("esx:identity:openRegistration", function()
     -- identity arrives serialized here
     module.RequestRegistration(function(identity)
-        module.initIndentity(identity)
+        module.initIdentity(identity)
     end)
 end)
