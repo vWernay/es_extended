@@ -46,8 +46,7 @@ onRequest('esx:character:creation', function(source, cb, data)
 
 end)
 
-onRequest("esx:character:loadSkin", function(source, cb, id)
-  print("Checking")
+onRequest("esx:character:fetchSkin", function(source, cb, id)
   local player = Player.fromId(source)
 
   MySQL.Async.fetchScalar('SELECT skin FROM identities WHERE id = @identityId',

@@ -1259,6 +1259,8 @@ function Skin:applyAll(cb)
     local bodyBlemishesOpacity     = self:getBodyBlemishesOpacity()
     local moreBodyBlemishes        = self:getMoreBodyBlemishes()
     local moreBodyBlemishesOpacity = self:getMoreBodyBlemishesOpacity()
+    local hair                     = self:getHair()
+    local hairColor                = self:getHairColor()
 
     SetPedHeadBlendData(ped, blend[1], blend[2], blend[3], blend[4], blend[5], blend[6], blendFaceMix, blendSkinMix, blendOverrideMix, true)
 
@@ -1297,7 +1299,8 @@ function Skin:applyAll(cb)
       SetPedComponentVariation(ped, componentId, component[1], component[2], 1)
     end
 
-    local hairColor = self:getHairColor()
+    SetPedComponentVariation(ped, 2, hair[1], hair[2], 1)
+
     SetPedHairColor(ped, hairColor[1], hairColor[2])
 
     SetModelAsNoLongerNeeded(modelHash)
@@ -1828,7 +1831,8 @@ end
 
 function Skin:serialize()
   return {
-    components               = self.components,
+    model                    = self.model,
+    components               = self.components,          
     blend                    = self.blend,
     blendFaceMix             = self.blendFaceMix,
     blendSkinMix             = self.blendSkinMix,
