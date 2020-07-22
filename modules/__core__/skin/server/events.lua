@@ -14,7 +14,7 @@ local Command = M("events")
 local migrate = M('migrate')
 
 on("esx:db:ready", function()
-  migrate.Ensure("skin", "base")
+  migrate.Ensure("skin", "core")
 end)
 
 onRequest("skin:save", function(source, cb, skin)
