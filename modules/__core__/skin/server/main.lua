@@ -17,10 +17,16 @@ skinCommand:addArgument("player", "player", "The player to open the skin editor"
 
 skinCommand:setHandler(function(player, args, baseArgs)
 
-  local targetPlayer = args.player or player
+  local targetPlayer = args.player
 
-  emitClient("esx:skin:openEditor", player.source, player.skin or nil)
+  if (targetPlayer == nil) then
+    targetPlayer = player
+  end
+
+  emitClient("esx:skin:openEditor", targetPlayer.source, targetPlayer.skin or nil)
 
 end)
+
+skinCommand:setRconAllowed(true)
 
 skinCommand:register()
