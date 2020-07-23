@@ -1976,6 +1976,10 @@ end
 
 function SkinEditor:openMenu()
 
+  self:ensurePed()
+
+  camera.resetCamera()
+
   local items = {
     {name = 'model',   label = self:getModelLabelByIndex(0),         type = 'slider', max   = #self.models - 1, visible = self.isPedPlayer},
     {name = 'enforce', label = 'Enforce compatible elements (WIP)',  type = 'check',  value = false,            visible = self.canEnforceComponents},
@@ -2022,10 +2026,6 @@ end
 function SkinEditor:openBaseMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2084,10 +2084,6 @@ end
 function SkinEditor:openStyleMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2148,6 +2144,8 @@ end
 
 function SkinEditor:openClothesMenu()
 
+  self:ensurePed()
+
   local items = {}
 
   for i=1, #Config.componentOrder, 1 do
@@ -2201,10 +2199,6 @@ end
 function SkinEditor:openParentsMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2288,10 +2282,6 @@ function SkinEditor:openEyesMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.eyes.state', max   = 200,  value = self.skin:getEyeState(), label = self:getEyeStateLabel()}
@@ -2370,10 +2360,6 @@ function SkinEditor:openNoseMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.nose.width', max   = 200,  value = self.skin:getNoseWidth(), label = self:getNoseWidthLabel()}
@@ -2443,10 +2429,6 @@ end
 function SkinEditor:openChinMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2518,10 +2500,6 @@ function SkinEditor:openCheeksMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.cheekbone.height', max = 200,  value = self.skin:getCheekboneHeight(), label = self:getCheekboneHeightLabel()}
@@ -2580,10 +2558,6 @@ function SkinEditor:openLipsMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.lips.width', max = 200,  value = self.skin:getLipsWidth(), label = self:getLipsWidthLabel()}
@@ -2634,10 +2608,6 @@ function SkinEditor:openNeckMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.neck.height', max = 200,  value = self.skin:getNeckThickness(), label = self:getNeckThicknessLabel()}
@@ -2687,10 +2657,6 @@ end
 function SkinEditor:openFaceMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2762,10 +2728,6 @@ function SkinEditor:openMarkingsMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.style.markings.blemishes', max = 23, value = self.skin:getBlemishes(), label = self:getBlemishesLabel()}
@@ -2828,10 +2790,6 @@ function SkinEditor:openHairMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type  = 'slider', name  = 'skin.style.hair.hair', max  = GetNumberOfPedDrawableVariations(self._ped, PV_COMP_HAIR) - 1, value = self.skin:getHair(), label = self:getHairLabel()}
@@ -2889,10 +2847,6 @@ end
 function SkinEditor:openBeardMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2955,10 +2909,6 @@ end
 function SkinEditor:openMakeupMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -3026,10 +2976,6 @@ function SkinEditor:openAgingMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type  = 'slider', name  = 'skin.style.aging.aging', max  = 14, value = self.skin:getAging(), label = self:getAgingLabel()}
@@ -3083,10 +3029,6 @@ end
 function SkinEditor:openChestMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -3145,10 +3087,6 @@ end
 function SkinEditor:openBodyMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -3244,8 +3182,6 @@ function SkinEditor:onItemChanged(item, prop, val, index)
           local modelLabel = self:getModelLabelByIndex(val)
 
           ped = self:getPed()
-
-          camera.pointToBone(SKEL_ROOT)
         end)
       end)
 
@@ -3645,11 +3581,10 @@ function SkinEditor:mainCameraScene()
   local pedCoords = GetEntityCoords(ped)
   local forward   = GetEntityForwardVector(ped)
 
-  camera.setRadius(1.25)
+  camera.setRadius(2.25)
   camera.setCoords(pedCoords + forward * 1.25)
   camera.setPolarAzimuthAngle(utils.math.world3DtoPolar3D(pedCoords, pedCoords + forward * 1.25))
-
-  camera.pointToBone(SKEL_ROOT)
+  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 end
 
 function SkinEditor:getModelLabelByIndex(value)

@@ -340,4 +340,5 @@ end
 
 module.SelectIdentity = function(identity)
   emit("esx:identity:selectIdentity", Identity(identity))
+  camera.setMouseIn(false)
 end
