@@ -162,6 +162,7 @@ module.RequestIdentitySelection = function(identities)
 
       camera.stop()
       module.isInMenu = false
+      camera.setMouseIn(false)
     elseif item.name == "none" then
 
     else
