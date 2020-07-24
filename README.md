@@ -16,9 +16,9 @@
 ### Requirements:
 
 - An installed MariaDB server (we will not support MySQL).
-- [Async script by ESX-Org](https://github.com/ESX-Org/async)
-- [Cron script by ESX-Org](https://github.com/ESX-Org/cron)
-- [SkinChanger script by ESX-Org](https://github.com/ESX-Org/skinchanger)
+- [Async script by ESX-Framework](https://github.com/esx-framework/async)
+- [Cron script by ESX-Framework](https://github.com/esx-framework/cron)
+- [SkinChanger script by ESX-Framework](https://github.com/esx-framework/skinchanger)
 - [MySQL-Async by brouznouf](https://github.com/brouznouf/fivem-mysql-async)
 - [Node.Js 10+](https://nodejs.org/en/)
 
@@ -119,10 +119,10 @@ Another thing is the performance, so far, it's more optimized to work this way.
 
 ## Module Examples <a name="examples"></a>
 
-### [How to create and use menus <a name="examples-menu"></a>](https://github.com/ESX-Org/es_extended/tree/develop/modules/__examples__/menu/)
+### [How to create and use menus <a name="examples-menu"></a>](https://github.com/ESX-Framework/es_extended/tree/develop/modules/__examples__/menu/)
 
 ![Menu](https://i.snipboard.io/tF8AcT.jpg)
 
-### [How to create basic command <a name="examples-command"></a>](https://github.com/ESX-Org/es_extended/tree/develop/modules/__examples__/commands/)
+### [How to create basic command <a name="examples-command"></a>](https://github.com/ESX-Framework/es_extended/tree/develop/modules/__examples__/commands/)
 
 ### More to come...
