@@ -157,6 +157,17 @@ module.setPolarAzimuthAngle = function(polarAngle, azimuthAngle)
   module.camAzimuthAngle = azimuthAngle
 end
 
+module.resetCamera = function()
+  local ped       = GetPlayerPed(-1)
+  local pedCoords = GetEntityCoords(ped)
+  local forward   = GetEntityForwardVector(ped)
+
+  module.setRadius(2.25)
+  module.setCoords(pedCoords + forward * 1.25)
+  module.setPolarAzimuthAngle(utils.math.world3DtoPolar3D(pedCoords, pedCoords + forward * 1.25))
+  module.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
+end
+
 module.setMouseIn = function(value)
   if value == true then
     module.shouldMoveCam = false

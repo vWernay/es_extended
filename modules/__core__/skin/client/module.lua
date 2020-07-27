@@ -1259,45 +1259,51 @@ function Skin:applyAll(cb)
     local bodyBlemishesOpacity     = self:getBodyBlemishesOpacity()
     local moreBodyBlemishes        = self:getMoreBodyBlemishes()
     local moreBodyBlemishesOpacity = self:getMoreBodyBlemishesOpacity()
+    local hair                     = self:getHair()
+    local hairColor                = self:getHairColor()
 
-    SetPedHeadBlendData(ped, blend[1], blend[2], blend[3], blend[4], blend[5], blend[6], blendFaceMix, blendSkinMix, blendOverrideMix, true)
+    if (utils.game.isFreemodeModel(self:getModel())) then
 
-    while HasPedHeadBlendFinished(ped) do
-      Citizen.Wait(0)
+      SetPedHeadBlendData(ped, blend[1], blend[2], blend[3], blend[4], blend[5], blend[6], blendFaceMix, blendSkinMix, blendOverrideMix, true)
+
+      while HasPedHeadBlendFinished(ped) do
+        Citizen.Wait(0)
+      end
+
+      SetPedHeadOverlay(ped, 0, blemishes, blemishesOpacity)
+
+      SetPedHeadOverlay(ped, 2, eyebrow, opacity)
+      SetPedHeadOverlayColor(ped, 2, 1, eyebrowColor1, eyebrowColor2)
+
+      SetPedHeadOverlay(ped, 1, beard, beardOpacity)
+      SetPedHeadOverlayColor(ped, 1, 1, beardColor1, beardColor2)
+
+      SetPedHeadOverlay(ped, 5, blush, blushOpacity)
+      SetPedHeadOverlayColor(ped, 5, 2, blushColor1, blushColor2)
+
+      SetPedHeadOverlay(ped, 6, complexion, complexionOpacity)
+
+      SetPedHeadOverlay(ped, 9, freckles, frecklesOpacity)
+
+      SetPedHeadOverlay(ped, 4, makeup, makeupOpacity)
+
+      SetPedHeadOverlay(ped, 8, lipstick, lipstickOpacity)
+      SetPedHeadOverlayColor(ped, 8, 2, lipstickColor, lipstickColor)
+
+      SetPedHeadOverlay(ped, 10, chestHair, chestHairOpacity)
+      SetPedHeadOverlayColor(ped, 10, 1, chestHairColor, chestHairColor)
+
+      SetPedHeadOverlay(ped, 7, sunDamage, sunDamageOpacity)
+      SetPedHeadOverlay(ped, 11, bodyBlemishes, bodyBlemishesOpacity)
+      SetPedHeadOverlay(ped, 12, moreBodyBlemishes, moreBodyBlemishesOpacity)
     end
-
-    SetPedHeadOverlay(ped, 0, blemishes, blemishesOpacity)
-
-    SetPedHeadOverlay(ped, 2, eyebrow, opacity)
-    SetPedHeadOverlayColor(ped, 2, 1, eyebrowColor1, eyebrowColor2)
-
-    SetPedHeadOverlay(ped, 1, beard, beardOpacity)
-    SetPedHeadOverlayColor(ped, 1, 1, beardColor1, beardColor2)
-
-    SetPedHeadOverlay(ped, 5, blush, blushOpacity)
-    SetPedHeadOverlayColor(ped, 5, 2, blushColor1, blushColor2)
-
-    SetPedHeadOverlay(ped, 6, complexion, complexionOpacity)
-
-    SetPedHeadOverlay(ped, 9, freckles, frecklesOpacity)
-
-    SetPedHeadOverlay(ped, 4, makeup, makeupOpacity)
-
-    SetPedHeadOverlay(ped, 8, lipstick, lipstickOpacity)
-    SetPedHeadOverlayColor(ped, 8, 2, lipstickColor, lipstickColor)
-
-    SetPedHeadOverlay(ped, 10, chestHair, chestHairOpacity)
-    SetPedHeadOverlayColor(ped, 10, 1, chestHairColor, chestHairColor)
-
-    SetPedHeadOverlay(ped, 7, sunDamage, sunDamageOpacity)
-    SetPedHeadOverlay(ped, 11, bodyBlemishes, bodyBlemishesOpacity)
-    SetPedHeadOverlay(ped, 12, moreBodyBlemishes, moreBodyBlemishesOpacity)
 
     for componentId,component in pairs(self.components) do
       SetPedComponentVariation(ped, componentId, component[1], component[2], 1)
     end
 
-    local hairColor = self:getHairColor()
+    SetPedComponentVariation(ped, 2, hair[1], hair[2], 1)
+
     SetPedHairColor(ped, hairColor[1], hairColor[2])
 
     SetModelAsNoLongerNeeded(modelHash)
@@ -1311,6 +1317,8 @@ end
 
 function Skin:commit()
 
+  local isFreemodeModel = utils.game.isFreemodeModel(self:getModel())
+
   local applyComponentsIfChanged = function()
     local ped = GetPlayerPed(-1)
 
@@ -1320,14 +1328,15 @@ function Skin:commit()
   end
 
   local applyBlendIfChanged = function()
-    if (self.transactionalChanges.blend
-          or
-        self.transactionalChanges.blendSkinMix
-          or
-        self.transactionalChanges.blendFaceMix
-          or
-        self.transactionalChanges.blendOverrideMix
-    ) then
+    if isFreemodeModel and 
+      (self.transactionalChanges.blend
+            or
+          self.transactionalChanges.blendSkinMix
+            or
+          self.transactionalChanges.blendFaceMix
+            or
+          self.transactionalChanges.blendOverrideMix
+      ) then
 
       local ped = GetPlayerPed(-1)
 
@@ -1341,7 +1350,7 @@ function Skin:commit()
   end
 
   local applyEyeStateIfChanged = function()
-    if (self.transactionalChanges.eyeState) then
+    if (isFreemodeModel and self.transactionalChanges.eyeState) then
       local ped = GetPlayerPed(-1)
       local eyeState = self:getEyeState()
       SetPedFaceFeature(ped, 11, eyeState)
@@ -1349,7 +1358,7 @@ function Skin:commit()
   end
 
   local applyEyeColorIfChanged = function()
-    if (self.transactionalChanges.eyeColor) then
+    if (isFreemodeModel and self.transactionalChanges.eyeColor) then
       local ped = GetPlayerPed(-1)
       local eyeColor = self:getEyeColor()
       SetPedEyeColor(ped, eyeColor)
@@ -1357,7 +1366,7 @@ function Skin:commit()
   end
 
   local applyEyebrowIfChanged = function()
-    if (self.transactionalChanges.eyebrow) or (self.transactionalChanges.eyebrowOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.eyebrow) or (self.transactionalChanges.eyebrowOpacity) then
       local ped              = GetPlayerPed(-1)
       local eyebrow          = self:getEyebrow()
       local opacity          = self:getEyebrowOpacity()
@@ -1366,7 +1375,7 @@ function Skin:commit()
   end
     
   local applyEyebrowColorIfChanged = function()
-    if (self.transactionalChanges.eyebrowColor1) or (self.transactionalChanges.eyebrowColor2) then
+    if (isFreemodeModel and self.transactionalChanges.eyebrowColor1) or (self.transactionalChanges.eyebrowColor2) then
       local ped          = GetPlayerPed(-1)
       local eyebrowColor1 = self:getEyebrowColor1()
       local eyebrowColor2 = self:getEyebrowColor2()
@@ -1376,7 +1385,7 @@ function Skin:commit()
   end
 
   local applyEyebrowDepthIfChanged = function()
-    if (self.transactionalChanges.eyebrowDepth) then
+    if (isFreemodeModel and self.transactionalChanges.eyebrowDepth) then
       local ped = GetPlayerPed(-1)
       local eyebrowDepth = self:getEyebrowDepth()
       SetPedFaceFeature(ped, 7, eyebrowDepth)
@@ -1384,7 +1393,7 @@ function Skin:commit()
   end
 
   local applyEyebrowHeightIfChanged = function()
-    if (self.transactionalChanges.eyebrowHeight) then
+    if (isFreemodeModel and self.transactionalChanges.eyebrowHeight) then
       local ped = GetPlayerPed(-1)
       local eyebrowHeight = self:getEyebrowHeight()
       SetPedFaceFeature(ped, 6, eyebrowHeight)
@@ -1392,7 +1401,7 @@ function Skin:commit()
   end
 
   local applyNoseWidthIfChanged = function()
-    if (self.transactionalChanges.noseWidth) then
+    if (isFreemodeModel and self.transactionalChanges.noseWidth) then
       local ped = GetPlayerPed(-1)
       local noseWidth = self:getNoseWidth()
       SetPedFaceFeature(ped, 0, noseWidth)
@@ -1400,7 +1409,7 @@ function Skin:commit()
   end
 
   local applyNoseHeightIfChanged = function()
-    if (self.transactionalChanges.noseHeight) then
+    if (isFreemodeModel and self.transactionalChanges.noseHeight) then
       local ped = GetPlayerPed(-1)
       local noseHeight = self:getNoseHeight()
       SetPedFaceFeature(ped, 1, noseHeight)
@@ -1408,7 +1417,7 @@ function Skin:commit()
   end
 
   local applyNoseLengthIfChanged = function()
-    if (self.transactionalChanges.noseLength) then
+    if (isFreemodeModel and self.transactionalChanges.noseLength) then
       local ped = GetPlayerPed(-1)
       local noseLength = self:getNoseLength()
       SetPedFaceFeature(ped, 2, noseLength)
@@ -1416,7 +1425,7 @@ function Skin:commit()
   end
 
   local applyNoseBridgeShiftIfChanged = function()
-    if (self.transactionalChanges.noseBridgeShift) then
+    if (isFreemodeModel and self.transactionalChanges.noseBridgeShift) then
       local ped = GetPlayerPed(-1)
       local noseBridgeShift = self:getNoseBridgeShift()
       SetPedFaceFeature(ped, 3, noseBridgeShift)
@@ -1424,7 +1433,7 @@ function Skin:commit()
   end
 
   local applyNoseTipIfChanged = function()
-    if (self.transactionalChanges.noseTip) then
+    if (isFreemodeModel and self.transactionalChanges.noseTip) then
       local ped = GetPlayerPed(-1)
       local noseTip = self:getNoseTip()
       SetPedFaceFeature(ped, 4, noseTip)
@@ -1432,7 +1441,7 @@ function Skin:commit()
   end
 
   local applyNoseShiftIfChanged = function()
-    if (self.transactionalChanges.noseShift) then
+    if (isFreemodeModel and self.transactionalChanges.noseShift) then
       local ped = GetPlayerPed(-1)
       local noseShift = self:getNoseShift()
       SetPedFaceFeature(ped, 5, noseShift)
@@ -1440,7 +1449,7 @@ function Skin:commit()
   end
 
   local applyChinLengthIfChanged = function()
-    if (self.transactionalChanges.chinLength) then
+    if (isFreemodeModel and self.transactionalChanges.chinLength) then
       local ped = GetPlayerPed(-1)
       local chinLength = self:getChinLength()
       SetPedFaceFeature(ped, 16, chinLength)
@@ -1448,7 +1457,7 @@ function Skin:commit()
   end
 
   local applyChinPositionIfChanged = function()
-    if (self.transactionalChanges.chinPosition) then
+    if (isFreemodeModel and self.transactionalChanges.chinPosition) then
       local ped = GetPlayerPed(-1)
       local chinPosition = self:getChinPosition()
       SetPedFaceFeature(ped, 18, chinPosition)
@@ -1456,7 +1465,7 @@ function Skin:commit()
   end
 
   local applyChinWidthIfChanged = function()
-    if (self.transactionalChanges.chinWidth) then
+    if (isFreemodeModel and self.transactionalChanges.chinWidth) then
       local ped = GetPlayerPed(-1)
       local chinWidth = self:getChinWidth()
       SetPedFaceFeature(ped, 17, chinWidth)
@@ -1464,7 +1473,7 @@ function Skin:commit()
   end
 
   local applyChinHeightIfChanged = function()
-    if (self.transactionalChanges.chinHeight) then
+    if (isFreemodeModel and self.transactionalChanges.chinHeight) then
       local ped = GetPlayerPed(-1)
       local chinHeight = self:getChinHeight()
       SetPedFaceFeature(ped, 15, chinHeight)
@@ -1472,7 +1481,7 @@ function Skin:commit()
   end
 
   local applyJawWidthIfChanged = function()
-    if (self.transactionalChanges.jawWidth) then
+    if (isFreemodeModel and self.transactionalChanges.jawWidth) then
       local ped = GetPlayerPed(-1)
       local jawWidth = self:getJawWidth()
       SetPedFaceFeature(ped, 13, jawWidth)
@@ -1480,7 +1489,7 @@ function Skin:commit()
   end
 
   local applyJawHeightIfChanged = function()
-    if (self.transactionalChanges.jawHeight) then
+    if (isFreemodeModel and self.transactionalChanges.jawHeight) then
       local ped = GetPlayerPed(-1)
       local jawHeight = self:getJawHeight()
       SetPedFaceFeature(ped, 14, jawHeight)
@@ -1488,7 +1497,7 @@ function Skin:commit()
   end
 
   local applyCheekboneHeightIfChanged = function()
-    if (self.transactionalChanges.cheekboneHeight) then
+    if (isFreemodeModel and self.transactionalChanges.cheekboneHeight) then
       local ped = GetPlayerPed(-1)
       local cheekboneHeight = self:getCheekboneHeight()
       SetPedFaceFeature(ped, 8, cheekboneHeight)
@@ -1496,7 +1505,7 @@ function Skin:commit()
   end
 
   local applyCheekboneWidthIfChanged = function()
-    if (self.transactionalChanges.cheekboneWidth) then
+    if (isFreemodeModel and self.transactionalChanges.cheekboneWidth) then
       local ped = GetPlayerPed(-1)
       local cheekboneWidth = self:getCheekboneWidth()
       SetPedFaceFeature(ped, 9, cheekboneWidth)
@@ -1504,7 +1513,7 @@ function Skin:commit()
   end
 
   local applyCheeksWidthIfChanged = function()
-    if (self.transactionalChanges.cheeksWidth) then
+    if (isFreemodeModel and self.transactionalChanges.cheeksWidth) then
       local ped = GetPlayerPed(-1)
       local cheeksWidth = self:getCheeksWidth()
       SetPedFaceFeature(ped, 10, cheeksWidth)
@@ -1512,7 +1521,7 @@ function Skin:commit()
   end
 
   local applyLipsWidthIfChanged = function()
-    if (self.transactionalChanges.lipsWidth) then
+    if (isFreemodeModel and self.transactionalChanges.lipsWidth) then
       local ped = GetPlayerPed(-1)
       local lipsWidth = self:getLipsWidth()
       SetPedFaceFeature(ped, 12, lipsWidth)
@@ -1520,7 +1529,7 @@ function Skin:commit()
   end
 
   local applyNeckThicknessIfChanged = function()
-    if (self.transactionalChanges.neckThickness) then
+    if (isFreemodeModel and self.transactionalChanges.neckThickness) then
       local ped = GetPlayerPed(-1)
       local neckThickness = self:getNeckThickness()
       SetPedFaceFeature(ped, 19, neckThickness)
@@ -1528,7 +1537,7 @@ function Skin:commit()
   end
 
   local applyBlemishesIfChanged = function()
-    if (self.transactionalChanges.blemishes) or (self.transactionalChanges.blemishesOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.blemishes) or (self.transactionalChanges.blemishesOpacity) then
       local ped = GetPlayerPed(-1)
       local blemishes = self:getBlemishes()
       local blemishesOpacity = self:getBlemishesOpacity()
@@ -1541,7 +1550,7 @@ function Skin:commit()
   end
 
   local applyFrecklesIfChanged = function()
-    if (self.transactionalChanges.freckles) or (self.transactionalChanges.frecklesOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.freckles) or (self.transactionalChanges.frecklesOpacity) then
       local ped = GetPlayerPed(-1)
       local freckles = self:getFreckles()
       local frecklesOpacity = self:getFrecklesOpacity()
@@ -1554,7 +1563,7 @@ function Skin:commit()
   end
 
   local applyComplexionIfChanged = function()
-    if (self.transactionalChanges.complexion) or (self.transactionalChanges.complexionOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.complexion) or (self.transactionalChanges.complexionOpacity) then
       local ped = GetPlayerPed(-1)
       local complexion = self:getComplexion()
       local complexionOpacity = self:getComplexionOpacity()
@@ -1567,7 +1576,7 @@ function Skin:commit()
   end
 
   local applyBlushIfChanged = function()
-    if (self.transactionalChanges.blush) or (self.transactionalChanges.blushOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.blush) or (self.transactionalChanges.blushOpacity) then
       local ped = GetPlayerPed(-1)
       local blush = self:getBlush()
       local blushOpacity = self:getBlushOpacity()
@@ -1580,7 +1589,7 @@ function Skin:commit()
   end
 
   local applyBlushColorIfChanged = function()
-    if (self.transactionalChanges.blushColor1) or (self.transactionalChanges.blushColor2) then
+    if (isFreemodeModel and self.transactionalChanges.blushColor1) or (self.transactionalChanges.blushColor2) then
       local ped = GetPlayerPed(-1)
       local blushColor1 = self:getBlushColor1()
       local blushColor2 = self:getBlushColor2()
@@ -1606,7 +1615,7 @@ function Skin:commit()
   end
 
   local applyBeardIfChanged = function()
-    if (self.transactionalChanges.beard) or (self.transactionalChanges.beardOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.beard) or (self.transactionalChanges.beardOpacity) then
       local ped = GetPlayerPed(-1)
 
       local beard = self:getBeard()
@@ -1621,7 +1630,7 @@ function Skin:commit()
   end
 
   local applyBeardColorIfChanged = function()
-    if (self.transactionalChanges.beardColor1) or (self.transactionalChanges.beardColor2) then
+    if (isFreemodeModel and self.transactionalChanges.beardColor1) or (self.transactionalChanges.beardColor2) then
       local ped = GetPlayerPed(-1)
       local beardColor1 = self:getBeardColor1()
       local beardColor2 = self:getBeardColor2()
@@ -1631,7 +1640,7 @@ function Skin:commit()
   end
 
   local applyMakeupIfChanged = function()
-    if (self.transactionalChanges.makeup) or (self.transactionalChanges.makeupOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.makeup) or (self.transactionalChanges.makeupOpacity) then
       local ped = GetPlayerPed(-1)
       local makeup = self:getMakeup()
       local makeupOpacity = self:getMakeupOpacity()
@@ -1645,7 +1654,7 @@ function Skin:commit()
   end
 
   local applyLipstickIfChanged = function()
-    if (self.transactionalChanges.lipstick) or (self.transactionalChanges.lipstickOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.lipstick) or (self.transactionalChanges.lipstickOpacity) then
       local ped = GetPlayerPed(-1)
       local lipstick = self:getLipstick()
       local lipstickOpacity = self:getLipstickOpacity()
@@ -1659,7 +1668,7 @@ function Skin:commit()
   end
 
   local applyLipstickColorIfChanged = function()
-    if (self.transactionalChanges.lipstickColor) then
+    if (isFreemodeModel and self.transactionalChanges.lipstickColor) then
       local ped = GetPlayerPed(-1)
       local lipstickColor = self:getLipstickColor()
 
@@ -1668,7 +1677,7 @@ function Skin:commit()
   end
 
   local applyAgingIfChanged = function()
-    if (self.transactionalChanges.aging) or (self.transactionalChanges.agingOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.aging) or (self.transactionalChanges.agingOpacity) then
       local ped = GetPlayerPed(-1)
       local aging = self:getAging()
       local agingOpacity = self:getAgingOpacity()
@@ -1682,7 +1691,7 @@ function Skin:commit()
   end
 
   local applyChestHairIfChanged = function()
-    if (self.transactionalChanges.chestHair) or (self.transactionalChanges.chestHairOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.chestHair) or (self.transactionalChanges.chestHairOpacity) then
       local ped = GetPlayerPed(-1)
       local chestHair = self:getChestHair()
       local chestHairOpacity = self:getChestHairOpacity()
@@ -1696,7 +1705,7 @@ function Skin:commit()
   end
 
   local applyChestHairColorIfChanged = function()
-    if (self.transactionalChanges.chestHairColor) then
+    if (isFreemodeModel and self.transactionalChanges.chestHairColor) then
       local ped = GetPlayerPed(-1)
       local chestHairColor = self:getChestHairColor()
 
@@ -1705,7 +1714,7 @@ function Skin:commit()
   end
 
   local applySunDamageIfChanged = function()
-    if (self.transactionalChanges.sunDamage) or (self.transactionalChanges.sunDamageOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.sunDamage) or (self.transactionalChanges.sunDamageOpacity) then
       local ped = GetPlayerPed(-1)
       local sunDamage = self:getSunDamage()
       local sunDamageOpacity = self:getSunDamageOpacity()
@@ -1719,7 +1728,7 @@ function Skin:commit()
   end
 
   local applyBodyBlemishesIfChanged = function()
-    if (self.transactionalChanges.bodyBlemishes) or (self.transactionalChanges.bodyBlemishesOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.bodyBlemishes) or (self.transactionalChanges.bodyBlemishesOpacity) then
       local ped = GetPlayerPed(-1)
       local bodyBlemishes = self:getBodyBlemishes()
       local bodyBlemishesOpacity = self:getBodyBlemishesOpacity()
@@ -1733,7 +1742,7 @@ function Skin:commit()
   end
 
   local applyMoreBodyBlemishesIfChanged = function()
-    if (self.transactionalChanges.moreBodyBlemishes) or (self.transactionalChanges.moreBodyBlemishesOpacity) then
+    if (isFreemodeModel and self.transactionalChanges.moreBodyBlemishes) or (self.transactionalChanges.moreBodyBlemishesOpacity) then
       local ped = GetPlayerPed(-1)
       local moreBodyBlemishes = self:getMoreBodyBlemishes()
       local moreBodyBlemishesOpacity = self:getMoreBodyBlemishesOpacity()
@@ -1828,7 +1837,8 @@ end
 
 function Skin:serialize()
   return {
-    components               = self.components,
+    model                    = self.model,
+    components               = self.components,          
     blend                    = self.blend,
     blendFaceMix             = self.blendFaceMix,
     blendSkinMix             = self.blendSkinMix,
@@ -1966,6 +1976,10 @@ end
 
 function SkinEditor:openMenu()
 
+  self:ensurePed()
+
+  camera.resetCamera()
+
   local items = {
     {name = 'model',   label = self:getModelLabelByIndex(0),         type = 'slider', max   = #self.models - 1, visible = self.isPedPlayer},
     {name = 'enforce', label = 'Enforce compatible elements (WIP)',  type = 'check',  value = false,            visible = self.canEnforceComponents},
@@ -2012,10 +2026,6 @@ end
 function SkinEditor:openBaseMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2074,10 +2084,6 @@ end
 function SkinEditor:openStyleMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2138,6 +2144,8 @@ end
 
 function SkinEditor:openClothesMenu()
 
+  self:ensurePed()
+
   local items = {}
 
   for i=1, #Config.componentOrder, 1 do
@@ -2191,10 +2199,6 @@ end
 function SkinEditor:openParentsMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2278,10 +2282,6 @@ function SkinEditor:openEyesMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.eyes.state', max   = 200,  value = self.skin:getEyeState(), label = self:getEyeStateLabel()}
@@ -2360,10 +2360,6 @@ function SkinEditor:openNoseMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.nose.width', max   = 200,  value = self.skin:getNoseWidth(), label = self:getNoseWidthLabel()}
@@ -2433,10 +2429,6 @@ end
 function SkinEditor:openChinMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2508,10 +2500,6 @@ function SkinEditor:openCheeksMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.cheekbone.height', max = 200,  value = self.skin:getCheekboneHeight(), label = self:getCheekboneHeightLabel()}
@@ -2570,10 +2558,6 @@ function SkinEditor:openLipsMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.lips.width', max = 200,  value = self.skin:getLipsWidth(), label = self:getLipsWidthLabel()}
@@ -2624,10 +2608,6 @@ function SkinEditor:openNeckMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.base.neck.height', max = 200,  value = self.skin:getNeckThickness(), label = self:getNeckThicknessLabel()}
@@ -2677,10 +2657,6 @@ end
 function SkinEditor:openFaceMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2752,10 +2728,6 @@ function SkinEditor:openMarkingsMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type= 'slider', name = 'skin.style.markings.blemishes', max = 23, value = self.skin:getBlemishes(), label = self:getBlemishesLabel()}
@@ -2818,10 +2790,6 @@ function SkinEditor:openHairMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type  = 'slider', name  = 'skin.style.hair.hair', max  = GetNumberOfPedDrawableVariations(self._ped, PV_COMP_HAIR) - 1, value = self.skin:getHair(), label = self:getHairLabel()}
@@ -2879,10 +2847,6 @@ end
 function SkinEditor:openBeardMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -2945,10 +2909,6 @@ end
 function SkinEditor:openMakeupMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -3016,10 +2976,6 @@ function SkinEditor:openAgingMenu(comp)
 
   self:ensurePed()
 
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
-
   local items = {}
 
   items[#items + 1] = {type  = 'slider', name  = 'skin.style.aging.aging', max  = 14, value = self.skin:getAging(), label = self:getAgingLabel()}
@@ -3073,10 +3029,6 @@ end
 function SkinEditor:openChestMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -3135,10 +3087,6 @@ end
 function SkinEditor:openBodyMenu(comp)
 
   self:ensurePed()
-
-  camera.setRadius(1.25)
-  
-  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 
   local items = {}
 
@@ -3234,8 +3182,6 @@ function SkinEditor:onItemChanged(item, prop, val, index)
           local modelLabel = self:getModelLabelByIndex(val)
 
           ped = self:getPed()
-
-          camera.pointToBone(SKEL_ROOT)
         end)
       end)
 
@@ -3635,11 +3581,10 @@ function SkinEditor:mainCameraScene()
   local pedCoords = GetEntityCoords(ped)
   local forward   = GetEntityForwardVector(ped)
 
-  camera.setRadius(1.25)
+  camera.setRadius(2.25)
   camera.setCoords(pedCoords + forward * 1.25)
   camera.setPolarAzimuthAngle(utils.math.world3DtoPolar3D(pedCoords, pedCoords + forward * 1.25))
-
-  camera.pointToBone(SKEL_ROOT)
+  camera.pointToBone(SKEL_Head, vector3(0.0,0.0,0.0))
 end
 
 function SkinEditor:getModelLabelByIndex(value)
@@ -3717,12 +3662,8 @@ module.loadPlayerSkin = function(skinContent, cb)
   skin:applyAll(cb)
 end
 
+-- skinContent might be nil
 module.askOpenEditor = function(skinContent)
-  if not skinContent then
-    local editor = SkinEditor()
-    editor:start()
-  else
-    local editor = SkinEditor(skinContent)
-    editor:start()
-  end
+  local editor = SkinEditor(skinContent)
+  editor:start()
 end
