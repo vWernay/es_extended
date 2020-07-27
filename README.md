@@ -10,6 +10,7 @@
 4. [Module Examples](#examples)
    1. [Menu](#examples-menu)
    2. [Command](#examples-command)
+5. [Want to Contribute?](#contributions)
 
 ## Installation <a name="install"></a>
 
@@ -17,8 +18,6 @@
 
 - An installed MariaDB server (we will not support MySQL).
 - [Async script by ESX-Framework](https://github.com/esx-framework/async)
-- [Cron script by ESX-Framework](https://github.com/esx-framework/cron)
-- [SkinChanger script by ESX-Framework](https://github.com/esx-framework/skinchanger)
 - [MySQL-Async by brouznouf](https://github.com/brouznouf/fivem-mysql-async)
 - [Node.Js 10+](https://nodejs.org/en/)
 
@@ -126,3 +125,7 @@ Another thing is the performance, so far, it's more optimized to work this way.
 ### [How to create basic command <a name="examples-command"></a>](https://github.com/ESX-Framework/es_extended/tree/develop/modules/__examples__/commands/)
 
 ### More to come...
+
+## Want to contribute? <a name="contributions"></a>
+
+Take a look at our [Esx Contributing Guide](CONTRIBUTING.md) to get familiar with the project and the guideliness.
