@@ -69,6 +69,35 @@ function Identity.allFromPlayer(player, cb, doSerialize)
   end)
 end
 
+function Identity.loadForPlayer(identity, player)
+
+  Identity.all[identityId] = identity
+
+  player:setIdentityId(identity:getId())
+  player:field('identity', identity)
+
+  player:emit('identity:loaded', identity)
+end
+
+function Identity.registerForPlayer(data, player, cb)
+
+  local identity = Identity({
+    owner     = player.identifier,
+    firstName = data.firstName,
+    lastName  = data.lastName,
+    DOB       = data.dob,
+    isMale    = data.isMale
+  })
+
+  identity:save(function(identityId)
+
+    Identity.loadForPlayer(identity, player)
+
+    cb(identity:serialize())
+
+  end)
+end
+
 Identity.parseRole = module.Identity_parseRole
 
 function Identity:constructor(data, source)

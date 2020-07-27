@@ -24,25 +24,7 @@ onRequest('esx:character:creation', function(source, cb, data)
 
   local player = Player.fromId(source)
 
-  local identity = Identity({
-    owner     = player.identifier,
-    firstName = data.firstName,
-    lastName  = data.lastName,
-    DOB       = data.dob,
-    isMale    = data.isMale
-  })
-
-  identity:save(function(id)
-
-    Identity.all[id] = identity
-
-    player:setIdentityId(id)
-    player:field('identity', identity)
-    player:save()
-
-    cb(id)
-
-  end)
+  Identity.registerForPlayer(data, player, cb)
 
 end)
 
