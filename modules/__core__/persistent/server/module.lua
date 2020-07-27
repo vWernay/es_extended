@@ -40,7 +40,9 @@ Persist = function(schema, pk, ...)
       if dataValue == nil then
 
         if not db.IsExpression(v.data.default) then
-          if v.decode ~= nil then
+          -- authorize nil to be inserted as NULL even when using encoder
+          -- (bypass the encoder when nil is provided)
+          if v.decode ~= nil and v.data.default ~= nil then
             dataValue = v.decode(v.data.default)
           end
         end
