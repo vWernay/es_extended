@@ -35,29 +35,6 @@ function initPlayerDeadCheckInterval()
 				else
 					player:killed(deathCause)
 				end
- 
-        request('esx:identity:getSavedPosition', function(savedPos)
-          module.DoSpawn({
-              x        = savedPos and savedPos.x,
-              y        = savedPos and savedPos.y,
-              z        = savedPos and savedPos.z,
-              heading  = savedPos and savedPos.heading,
-              model    = 'mp_m_freemode_01',
-              skipFade = true
-            }, function()
-              local playerPed = PlayerPedId()
-      
-              if Config.EnablePvP then
-                SetCanAttackFriendly(playerPed, true, false)
-                NetworkSetFriendlyFireOption(true)
-              end
-
-              skin.loadPlayerSkin()
-
-              isPlayerDead = false
-            end)
-    
-        end, ESX.Player.identity:serialize())
       end
     end
   end)
