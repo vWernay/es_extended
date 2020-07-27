@@ -138,13 +138,9 @@ module.RequestIdentitySelection = function(identities)
     menuElements = table.map(identities, function(identity)
       return {type = 'button', name = identity:getId(), label = identity:getFirstName() .. " " .. identity:getLastName(), identity = identity:serialize()}
     end)
-
-    table.insert(menuElements, {name = "register", label = ">> Create a New Identity <<", type = "button", shouldDestroyMenu = true})
-  else
-    menuElements = {
-      {name = "register", label = ">> Create a New Identity <<", type = "button", shouldDestroyMenu = true}
-    }
   end
+
+  table.insert(menuElements, {name = "register", label = ">> Create a New Identity <<", type = "button", shouldDestroyMenu = true})
 
   module.characterSelectionMenu = Menu('character.select', {
       title = 'Choose An Identity',

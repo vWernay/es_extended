@@ -14,25 +14,7 @@ onRequest('esx:identity:register', function(source, cb, data)
 
   local player = Player.fromId(source)
 
-  local identity = Identity({
-    owner     = player.identifier,
-    firstName = data.firstName,
-    lastName  = data.lastName,
-    DOB       = data.dob,
-    isMale    = data.isMale
-  })
-
-  identity:save(function(id)
-
-    Identity.all[id] = identity
-
-    player:setIdentityId(id)
-    player:field('identity', identity)
-    player:save()
-
-    cb(identity:serialize())
-
-  end)
+  Identity.registerForPlayer(data, player, cb)
 
 end)
 
@@ -45,9 +27,7 @@ onRequest('esx:identity:selectIdentity', function(source, cb, identityId)
       return cb(nil)
     end
 
-    Identity.all[identityId] = identity
-    player:setIdentityId(identityId)
-    player:field('identity', identity)
+    Identity.loadForPlayer(identity, player)
 
     cb(identity:serialize())
   end)
