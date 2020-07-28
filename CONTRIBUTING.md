@@ -12,7 +12,7 @@ The following is a set of guidelines for contributing to esx-framework and its p
 
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
 
-- [Esx v2 and module](#esxv2-and-modules)
+- [Esx v2 and module](#esx-v2-and-modules)
 
 [How Can I Contribute?](#how-can-i-contribute)
 
@@ -43,14 +43,30 @@ Esx v2 is a replacment for the deprecated Esx v1 FiveM resource. The version 2 i
 
 ## How Can I Contribute?
 
+You can contribute to the Esx projects by many ways, here is a non exhaustive list of what a contributor usually do.
+
 ### Reporting Bugs
+
+A bug is something that should be working, but it doesn't.
+Reporting bugs seems easy, but keep in mind you'll have to provide at least the reproduction steps or even a reproduction case, it make everyone's life easier when details are accurate. You can use the GitHub issue template to guide you.
 
 ### Suggesting Enhancements
 
+Enhancements is taking something existing and improve it in many different ways. Explain why you propose such an enhancement and what it involve. Does it causes a breaking change ? Again, please use the GitHub issue template.
+
 ### Your First Code Contribution
+
+If you want to start helping us with code, you can start by browse the issues and see if a label `Easy Pick` is in it. If so, it means that the problem solve shouldn't be a huge effort.
 
 ### Pull Requests
 
+When you start to contribute, we recommand you to create a new branch from `<fork>/develop` and then make a pull request either to track the feature or to request a code review. After the code review, we'll merge the changes into the develop branch of the official repository.
+
 ## Styleguides
 
+We are not really strict on this one, but good readability and naming matters a lot.
+We do not ask you to use these styleguides, but rather to encourage such styles.
+
 ### Git Commit Messages
+
+We are mostly using the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0-beta.4/).
