@@ -14,27 +14,27 @@ M('events')
 local utils = M('utils')
 
 onServer('esx:admin:tptmRequested', function()
-  local WaypointHandle = GetFirstBlipInfoId(8)
+    local WaypointHandle = GetFirstBlipInfoId(8)
 
-  if DoesBlipExist(WaypointHandle) then
-    local waypointCoords = GetBlipInfoIdCoord(WaypointHandle)
+    if DoesBlipExist(WaypointHandle) then
+        local waypointCoords = GetBlipInfoIdCoord(WaypointHandle)
 
-    for height = 1, 1000 do
-      SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
-
-      local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords["x"], waypointCoords["y"], height + 0.0)
-
-      if foundGround then
+        for height = 1, 1000 do
         SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
 
-        break
-      end
+        local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords["x"], waypointCoords["y"], height + 0.0)
 
-      Citizen.Wait(5)
+        if foundGround then
+            SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
+
+            break
+        end
+
+        Citizen.Wait(5)
+        end
+
+        utils.ui.showNotification("Teleported.")
+    else
+        utils.ui.showNotification("Please place your waypoint.")
     end
-
-    utils.ui.showNotification("Teleported.")
-  else
-    utils.ui.showNotification("Please place your waypoint.")
-  end
 end)
