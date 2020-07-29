@@ -66,27 +66,24 @@ ESX.SetInterval(250, function()
 end)
 
 -- Markers
-Citizen.CreateThread(function()
-  while true do
-    for i=1, #module.Cache.current, 1 do
+ESX.SetInterval(0, function()
+  for i=1, #module.Cache.current, 1 do
 
-      local curr = module.Cache.current[i]
+    local curr = module.Cache.current[i]
 
-      if curr.type == 'marker' then
+    if curr.type == 'marker' then
 
-        DrawMarker(
-          curr.mtype,
-          curr.pos.x + 0.0, curr.pos.y + 0.0, curr.pos.z + 0.0,
-          0.0, 0.0, 0.0,
-          0.0, 0.0, 0.0,
-          curr.size.x + 0.0, curr.size.y + 0.0, curr.size.z + 0.0,
-          curr.color.r, curr.color.g, curr.color.b, curr.color.a,
-          curr.bobUpAndDown, curr.faceCamera, 2, curr.rotate, nil, nil, false
-        )
+      DrawMarker(
+        curr.mtype,
+        curr.pos.x + 0.0, curr.pos.y + 0.0, curr.pos.z + 0.0,
+        0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0,
+        curr.size.x + 0.0, curr.size.y + 0.0, curr.size.z + 0.0,
+        curr.color.r, curr.color.g, curr.color.b, curr.color.a,
+        curr.bobUpAndDown, curr.faceCamera, 2, curr.rotate, nil, nil, false
+      )
 
-      end
     end
-  Citizen.Wait(0)
   end
 end)
 
