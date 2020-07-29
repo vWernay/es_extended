@@ -20,9 +20,9 @@ onServer('esx:admin:tptmRequested', function()
     local waypointCoords = GetBlipInfoIdCoord(WaypointHandle)
 
     for height = 1, 1000 do
-    SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
+      SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
 
-    local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords["x"], waypointCoords["y"], height + 0.0)
+      local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords["x"], waypointCoords["y"], height + 0.0)
 
       if foundGround then
         SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
@@ -30,7 +30,7 @@ onServer('esx:admin:tptmRequested', function()
         break
       end
 
-    Citizen.Wait(5)
+      Citizen.Wait(5)
     end
 
     utils.ui.showNotification("Teleported.")
