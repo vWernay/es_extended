@@ -124,11 +124,13 @@ Persist = function(schema, pk, ...)
       queryFields[fields[k].data.name] = v
     end
 
-    for k,v in pairs(fields) do
-      keys[#keys + 1] = v.data.name
+    local baseQuery = db.DBQuery().select(keys).from(schema)
+
+    if (#queryFields > 0) then
+      baseQuery = baseQuery.where(queryFields)
     end
 
-    local sql, data = db.DBQuery().select(keys).from(schema).where(queryFields).escape().build()
+    local sql, data = baseQuery.escape().build()
 
     MySQL.Async.fetchAll(sql, data, function(rows)
 
