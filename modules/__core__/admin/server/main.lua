@@ -10,12 +10,4 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-M('command')
-
-local tpToMarkerCommand = Command("tptm", "admin", "TP to your marker")
-
-tpToMarkerCommand:setHandler(function(player)
-  emitClient("esx:admin:tptmRequested", player.source)
-end)
-
-tpToMarkerCommand:register()
+module.init()
