@@ -13,35 +13,35 @@
 M('command')
 
 module.init = function()
-    registerTPTMCommand()
-    registerSpawnVehicleCommand()
-    registerDeleteVehicleCommand()
+  registerTPTMCommand()
+  registerSpawnVehicleCommand()
+  registerDeleteVehicleCommand()
 end
 
 module.registerTPTMCommand = function()
-    local tpToMarkerCommand = Command("tptm", "admin", "TP to your marker")
+  local tpToMarkerCommand = Command("tptm", "admin", "TP to your marker")
 
-    tpToMarkerCommand:setHandler(function(player)
-        emitClient("esx:admin:tptmRequested", player.source)
-    end)
-    tpToMarkerCommand:register()
+  tpToMarkerCommand:setHandler(function(player)
+    emitClient("esx:admin:tptmRequested", player.source)
+  end)
+  tpToMarkerCommand:register()
 end
 
 module.registerSpawnVehicleCommand = function()
-    local SpawnVehicleCommand = Command("car", "admin", "Spawn a vehicle")
-    SpawnVehicleCommand:addArgument("modelname", "string", "Vehicle modelname")
+  local SpawnVehicleCommand = Command("car", "admin", "Spawn a vehicle")
+  SpawnVehicleCommand:addArgument("modelname", "string", "Vehicle modelname")
 
-    SpawnVehicleCommand:setHandler(function(player, args)
-        emitClient("esx:spawnVehicle", player.source, args.modelname)
-    end)
-    SpawnVehicleCommand:register()
+  SpawnVehicleCommand:setHandler(function(player, args)
+    emitClient("esx:spawnVehicle", player.source, args.modelname)
+  end)
+  SpawnVehicleCommand:register()
 end
 
 module.registerDeleteVehicleCommand = function()
-    local DeleteVehicleCommand = Command("dv", "admin", "Delete a vehicle")
+  local DeleteVehicleCommand = Command("dv", "admin", "Delete a vehicle")
 
-    DeleteVehicleCommand:setHandler(function(player)
-        emitClient("esx:deleteVehicle", player.source, 5)
-    end)
-    DeleteVehicleCommand:register()
+  DeleteVehicleCommand:setHandler(function(player)
+    emitClient("esx:deleteVehicle", player.source, 5)
+  end)
+  DeleteVehicleCommand:register()
 end
