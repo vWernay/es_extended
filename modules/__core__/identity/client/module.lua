@@ -154,13 +154,13 @@ module.RequestRegistration = function(cb)
   
   module.Menu = Menu("identity", {
     float = "center|middle",
-    title = "Create Character",
+    title = _U('identity_create'),,
     items = {
-      {name = "firstName", label = "First name",    type = "text", placeholder = "John"},
-      {name = "lastName",  label = "Last name",     type = "text", placeholder = "Smith"},
-      {name = "dob",       label = "Date of birth", type = "text", placeholder = "01/02/1234"},
-      {name = "isMale",    label = "Male",          type = "check", value = true},
-      {name = "submit",    label = "Submit",        type = "button"}
+      {name = "firstName", label =  _U('identity_firstname'),    type = "text", placeholder = "John"},
+      {name = "lastName",  label =  _U('identity_lastname'),     type = "text", placeholder = "Smith"},
+      {name = "dob",       label =  _U('identity_birthdate'),    type = "text", placeholder = "01/02/1234"},
+      {name = "isMale",    label =  _U('identity_male'),         type = "check", value = true},
+      {name = "submit",    label =  _U('submit'),                type = "button"}
     }
   })
 
@@ -168,9 +168,9 @@ module.RequestRegistration = function(cb)
 
     if (item.name == "isMale") and (prop == "value") then
       if val then
-        item.label = "Male"
+        item.label = _U('identity_male')
       else
-        item.label = "Female"
+        item.label = _U('identity_female')
       end
     end
 
