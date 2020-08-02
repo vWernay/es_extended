@@ -154,7 +154,7 @@ module.RequestRegistration = function(cb)
   
   module.Menu = Menu("identity", {
     float = "center|middle",
-    title = _U('identity_create'),,
+    title = _U('identity_create'),
     items = {
       {name = "firstName", label =  _U('identity_firstname'),    type = "text", placeholder = "John"},
       {name = "lastName",  label =  _U('identity_lastname'),     type = "text", placeholder = "Smith"},
