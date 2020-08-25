@@ -49,14 +49,14 @@ local entityEnumerator = {
 
   __gc = function(enum)
 
-		if enum.destructor and enum.handle then
-			enum.destructor(enum.handle)
-		end
+    if enum.destructor and enum.handle then
+      enum.destructor(enum.handle)
+    end
 
-		enum.destructor = nil
+    enum.destructor = nil
     enum.handle     = nil
 
-	end
+  end
 }
 
 local EnumerateEntities = function(initFunc, moveFunc, disposeFunc)
@@ -66,70 +66,70 @@ local EnumerateEntities = function(initFunc, moveFunc, disposeFunc)
     local iter, id = initFunc()
 
     if not id or id == 0 then
-			disposeFunc(iter)
-			return
-		end
+      disposeFunc(iter)
+      return
+    end
 
     local enum = {handle = iter, destructor = disposeFunc}
 
     setmetatable(enum, entityEnumerator)
 
-		local next = true
+    local next = true
 
-		repeat
-			coroutine.yield(id)
-			next, id = moveFunc(iter)
-		until not next
+    repeat
+      coroutine.yield(id)
+      next, id = moveFunc(iter)
+    until not next
 
     enum.destructor, enum.handle = nil, nil
 
     disposeFunc(iter)
 
-	end)
+  end)
 end
 
 module.game.enumerateEntitiesWithinDistance = function(entities, isPlayerEntities, coords, maxDistance)
-	local nearbyEntities = {}
+  local nearbyEntities = {}
 
-	if coords then
-		coords = vector3(coords.x, coords.y, coords.z)
-	else
-		local playerPed = PlayerPedId()
-		coords = GetEntityCoords(playerPed)
-	end
+  if coords then
+    coords = vector3(coords.x, coords.y, coords.z)
+  else
+    local playerPed = PlayerPedId()
+    coords = GetEntityCoords(playerPed)
+  end
 
-	for k,entity in pairs(entities) do
-		local distance = #(coords - GetEntityCoords(entity))
+  for k,entity in pairs(entities) do
+    local distance = #(coords - GetEntityCoords(entity))
 
-		if distance <= maxDistance then
-			table.insert(nearbyEntities, isPlayerEntities and k or entity)
-		end
-	end
+    if distance <= maxDistance then
+      table.insert(nearbyEntities, isPlayerEntities and k or entity)
+    end
+  end
 
-	return nearbyEntities
+  return nearbyEntities
 end
 
 -- Game
 module.game.enumerateObjects = function()
-	return EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject)
+  return EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject)
 end
 
 EnumerateObjects = module.game.enumerateObjects -- Make it global for convenience
 
 module.game.enumeratePeds = function()
-	return EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed)
+  return EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed)
 end
 
 EnumeratePeds = module.game.enumeratePeds -- Make it global for convenience
 
 module.game.enumerateVehicles = function()
-	return EnumerateEntities(FindFirstVehicle, FindNextVehicle, EndFindVehicle)
+  return EnumerateEntities(FindFirstVehicle, FindNextVehicle, EndFindVehicle)
 end
 
 EnumerateVehicles = module.game.enumerateVehicles -- Make it global for convenience
 
 module.game.enumeratePickups = function()
-	return EnumerateEntities(FindFirstPickup, FindNextPickup, EndFindPickup)
+  return EnumerateEntities(FindFirstPickup, FindNextPickup, EndFindPickup)
 end
 
 EnumeratePickups = module.game.enumeratePickups -- Make it global for convenience
@@ -162,21 +162,21 @@ end
 
 module.game.teleport = function(entity, coords)
   if DoesEntityExist(entity) then
-		RequestCollisionAtCoord(coords.x, coords.y, coords.z)
-		local timeout = 0
+    RequestCollisionAtCoord(coords.x, coords.y, coords.z)
+    local timeout = 0
 
-		-- we can get stuck here if any of the axies are "invalid"
-		while not HasCollisionLoadedAroundEntity(entity) and timeout < 2000 do
-			Citizen.Wait(0)
-			timeout = timeout + 1
-		end
+    -- we can get stuck here if any of the axies are "invalid"
+    while not HasCollisionLoadedAroundEntity(entity) and timeout < 2000 do
+      Citizen.Wait(0)
+      timeout = timeout + 1
+    end
 
-		SetEntityCoords(entity, coords.x, coords.y, coords.z, false, false, false, false)
+    SetEntityCoords(entity, coords.x, coords.y, coords.z, false, false, false, false)
 
-		if type(coords) == 'table' and coords.heading then
-			SetEntityHeading(entity, coords.heading)
-		end
-	end
+    if type(coords) == 'table' and coords.heading then
+      SetEntityHeading(entity, coords.heading)
+    end
+  end
 end
 
 module.game.createObject = function(model, coords, cb)
@@ -225,20 +225,20 @@ module.game.createVehicle = function(model, coords, heading, cb)
 
   module.game.requestModel(model, function()
 
-		RequestCollisionAtCoord(coords.x, coords.y, coords.z)
+    RequestCollisionAtCoord(coords.x, coords.y, coords.z)
 
-		local vehicle   = CreateVehicle(model, coords.x, coords.y, coords.z, heading, true, false)
-		local networkId = NetworkGetNetworkIdFromEntity(vehicle)
-		local timeout   = 0
+    local vehicle   = CreateVehicle(model, coords.x, coords.y, coords.z, heading, true, false)
+    local networkId = NetworkGetNetworkIdFromEntity(vehicle)
+    local timeout   = 0
 
-		SetNetworkIdCanMigrate(networkId, true)
-		SetEntityAsMissionEntity(vehicle, true, false)
-		SetVehicleHasBeenOwnedByPlayer(vehicle, true)
-		SetVehicleNeedsToBeHotwired(vehicle, false)
-		SetVehRadioStation(vehicle, 'OFF')
-		SetModelAsNoLongerNeeded(model)
+    SetNetworkIdCanMigrate(networkId, true)
+    SetEntityAsMissionEntity(vehicle, true, false)
+    SetVehicleHasBeenOwnedByPlayer(vehicle, true)
+    SetVehicleNeedsToBeHotwired(vehicle, false)
+    SetVehRadioStation(vehicle, 'OFF')
+    SetModelAsNoLongerNeeded(model)
 
-		if cb ~= nil then
+    if cb ~= nil then
       cb(vehicle)
     end
 
@@ -254,20 +254,20 @@ module.game.createLocalVehicle = function(model, coords, heading, cb)
 
   module.game.requestModel(model, function()
 
-		RequestCollisionAtCoord(coords.x, coords.y, coords.z)
+    RequestCollisionAtCoord(coords.x, coords.y, coords.z)
 
-		local vehicle   = CreateVehicle(model, coords.x, coords.y, coords.z, heading, false, false)
-		local networkId = NetworkGetNetworkIdFromEntity(vehicle)
-		local timeout   = 0
+    local vehicle   = CreateVehicle(model, coords.x, coords.y, coords.z, heading, false, false)
+    local networkId = NetworkGetNetworkIdFromEntity(vehicle)
+    local timeout   = 0
 
-		SetNetworkIdCanMigrate(networkId, true)
-		SetEntityAsMissionEntity(vehicle, true, false)
-		SetVehicleHasBeenOwnedByPlayer(vehicle, true)
-		SetVehicleNeedsToBeHotwired(vehicle, false)
-		SetVehRadioStation(vehicle, 'OFF')
-		SetModelAsNoLongerNeeded(model)
+    SetNetworkIdCanMigrate(networkId, true)
+    SetEntityAsMissionEntity(vehicle, true, false)
+    SetVehicleHasBeenOwnedByPlayer(vehicle, true)
+    SetVehicleNeedsToBeHotwired(vehicle, false)
+    SetVehRadioStation(vehicle, 'OFF')
+    SetModelAsNoLongerNeeded(model)
 
-		if cb ~= nil then
+    if cb ~= nil then
       cb(vehicle)
     end
 
@@ -293,33 +293,33 @@ end
 
 module.game.isVehicleEmpty = function(vehicle)
 
-	local passengers     = GetVehicleNumberOfPassengers(vehicle)
-	local driverSeatFree = IsVehicleSeatFree(vehicle, -1)
+  local passengers     = GetVehicleNumberOfPassengers(vehicle)
+  local driverSeatFree = IsVehicleSeatFree(vehicle, -1)
 
   return (passengers == 0) and driverSeatFree
 
 end
 
 module.game.getVehicles = function()
-	local vehicles = {}
+  local vehicles = {}
 
-	for vehicle in EnumerateVehicles() do
-		table.insert(vehicles, vehicle)
-	end
+  for vehicle in EnumerateVehicles() do
+    table.insert(vehicles, vehicle)
+  end
 
-	return vehicles
+  return vehicles
 end
 
 module.game.getPeds = function(onlyOtherPeds)
-	local peds, myPed = {}, PlayerPedId()
+  local peds, myPed = {}, PlayerPedId()
 
-	for ped in EnumeratePeds() do
-		if ((onlyOtherPeds and ped ~= myPed) or not onlyOtherPeds) then
-			table.insert(peds, ped)
-		end
-	end
+  for ped in EnumeratePeds() do
+    if ((onlyOtherPeds and ped ~= myPed) or not onlyOtherPeds) then
+      table.insert(peds, ped)
+    end
+  end
 
-	return peds
+  return peds
 end
 
 module.game.getVehiclesInArea = function(coords, maxDistance) 
@@ -328,17 +328,17 @@ end
 
 module.game.getVehicleInDirection = function()
   
-	local playerPed    = PlayerPedId()
-	local playerCoords = GetEntityCoords(playerPed)
-	local inDirection  = GetOffsetFromEntityInWorldCoords(playerPed, 0.0, 5.0, 0.0)
-	local rayHandle    = StartShapeTestRay(playerCoords, inDirection, 10, playerPed, 0)
-	local numRayHandle, hit, endCoords, surfaceNormal, entityHit = GetShapeTestResult(rayHandle)
+  local playerPed    = PlayerPedId()
+  local playerCoords = GetEntityCoords(playerPed)
+  local inDirection  = GetOffsetFromEntityInWorldCoords(playerPed, 0.0, 5.0, 0.0)
+  local rayHandle    = StartShapeTestRay(playerCoords, inDirection, 10, playerPed, 0)
+  local numRayHandle, hit, endCoords, surfaceNormal, entityHit = GetShapeTestResult(rayHandle)
 
-	if hit == 1 and GetEntityType(entityHit) == 2 then
-		return entityHit
-	end
+  if hit == 1 and GetEntityType(entityHit) == 2 then
+    return entityHit
+  end
 
-	return nil
+  return nil
 end
 
 module.game.getVehicleProperties = function(vehicle)
@@ -346,98 +346,98 @@ module.game.getVehicleProperties = function(vehicle)
   if DoesEntityExist(vehicle) then
 
     local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
-		local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
-		local extras = {}
+    local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
+    local extras = {}
 
-		for extraId=0, 12 do
-			if DoesExtraExist(vehicle, extraId) then
-				local state = IsVehicleExtraTurnedOn(vehicle, extraId) == 1
-				extras[tostring(extraId)] = state
-			end
-		end
+    for extraId=0, 12 do
+      if DoesExtraExist(vehicle, extraId) then
+        local state = IsVehicleExtraTurnedOn(vehicle, extraId) == 1
+        extras[tostring(extraId)] = state
+      end
+    end
 
-		return {
+    return {
 
       model             = GetEntityModel(vehicle),
 
-			plate             = ESX.Math.Trim(GetVehicleNumberPlateText(vehicle)),
-			plateIndex        = GetVehicleNumberPlateTextIndex(vehicle),
+      plate             = module.math.Trim(GetVehicleNumberPlateText(vehicle)),
+      plateIndex        = GetVehicleNumberPlateTextIndex(vehicle),
 
-			bodyHealth        = ESX.Math.Round(GetVehicleBodyHealth(vehicle), 1),
-			engineHealth      = ESX.Math.Round(GetVehicleEngineHealth(vehicle), 1),
+      bodyHealth        = math.round(GetVehicleBodyHealth(vehicle), 1),
+      engineHealth      = math.round(GetVehicleEngineHealth(vehicle), 1),
 
-			fuelLevel         = ESX.Math.Round(GetVehicleFuelLevel(vehicle), 1),
-			dirtLevel         = ESX.Math.Round(GetVehicleDirtLevel(vehicle), 1),
-			color1            = colorPrimary,
-			color2            = colorSecondary,
+      fuelLevel         = math.round(GetVehicleFuelLevel(vehicle), 1),
+      dirtLevel         = math.round(GetVehicleDirtLevel(vehicle), 1),
+      color1            = colorPrimary,
+      color2            = colorSecondary,
 
-			pearlescentColor  = pearlescentColor,
-			wheelColor        = wheelColor,
+      pearlescentColor  = pearlescentColor,
+      wheelColor        = wheelColor,
 
-			wheels            = GetVehicleWheelType(vehicle),
-			windowTint        = GetVehicleWindowTint(vehicle),
-			xenonColor        = GetVehicleXenonLightsColour(vehicle),
+      wheels            = GetVehicleWheelType(vehicle),
+      windowTint        = GetVehicleWindowTint(vehicle),
+      xenonColor        = GetVehicleXenonLightsColour(vehicle),
 
-			neonEnabled       = {
-				IsVehicleNeonLightEnabled(vehicle, 0),
-				IsVehicleNeonLightEnabled(vehicle, 1),
-				IsVehicleNeonLightEnabled(vehicle, 2),
-				IsVehicleNeonLightEnabled(vehicle, 3)
-			},
+      neonEnabled       = {
+        IsVehicleNeonLightEnabled(vehicle, 0),
+        IsVehicleNeonLightEnabled(vehicle, 1),
+        IsVehicleNeonLightEnabled(vehicle, 2),
+        IsVehicleNeonLightEnabled(vehicle, 3)
+      },
 
-			neonColor         = table.pack(GetVehicleNeonLightsColour(vehicle)),
-			extras            = extras,
-			tyreSmokeColor    = table.pack(GetVehicleTyreSmokeColor(vehicle)),
+      neonColor         = table.pack(GetVehicleNeonLightsColour(vehicle)),
+      extras            = extras,
+      tyreSmokeColor    = table.pack(GetVehicleTyreSmokeColor(vehicle)),
 
-			modSpoilers       = GetVehicleMod(vehicle, 0),
-			modFrontBumper    = GetVehicleMod(vehicle, 1),
-			modRearBumper     = GetVehicleMod(vehicle, 2),
-			modSideSkirt      = GetVehicleMod(vehicle, 3),
-			modExhaust        = GetVehicleMod(vehicle, 4),
-			modFrame          = GetVehicleMod(vehicle, 5),
-			modGrille         = GetVehicleMod(vehicle, 6),
-			modHood           = GetVehicleMod(vehicle, 7),
-			modFender         = GetVehicleMod(vehicle, 8),
-			modRightFender    = GetVehicleMod(vehicle, 9),
-			modRoof           = GetVehicleMod(vehicle, 10),
+      modSpoilers       = GetVehicleMod(vehicle, 0),
+      modFrontBumper    = GetVehicleMod(vehicle, 1),
+      modRearBumper     = GetVehicleMod(vehicle, 2),
+      modSideSkirt      = GetVehicleMod(vehicle, 3),
+      modExhaust        = GetVehicleMod(vehicle, 4),
+      modFrame          = GetVehicleMod(vehicle, 5),
+      modGrille         = GetVehicleMod(vehicle, 6),
+      modHood           = GetVehicleMod(vehicle, 7),
+      modFender         = GetVehicleMod(vehicle, 8),
+      modRightFender    = GetVehicleMod(vehicle, 9),
+      modRoof           = GetVehicleMod(vehicle, 10),
 
-			modEngine         = GetVehicleMod(vehicle, 11),
-			modBrakes         = GetVehicleMod(vehicle, 12),
-			modTransmission   = GetVehicleMod(vehicle, 13),
-			modHorns          = GetVehicleMod(vehicle, 14),
-			modSuspension     = GetVehicleMod(vehicle, 15),
-			modArmor          = GetVehicleMod(vehicle, 16),
+      modEngine         = GetVehicleMod(vehicle, 11),
+      modBrakes         = GetVehicleMod(vehicle, 12),
+      modTransmission   = GetVehicleMod(vehicle, 13),
+      modHorns          = GetVehicleMod(vehicle, 14),
+      modSuspension     = GetVehicleMod(vehicle, 15),
+      modArmor          = GetVehicleMod(vehicle, 16),
 
-			modTurbo          = IsToggleModOn(vehicle, 18),
-			modSmokeEnabled   = IsToggleModOn(vehicle, 20),
-			modXenon          = IsToggleModOn(vehicle, 22),
+      modTurbo          = IsToggleModOn(vehicle, 18),
+      modSmokeEnabled   = IsToggleModOn(vehicle, 20),
+      modXenon          = IsToggleModOn(vehicle, 22),
 
-			modFrontWheels    = GetVehicleMod(vehicle, 23),
-			modBackWheels     = GetVehicleMod(vehicle, 24),
+      modFrontWheels    = GetVehicleMod(vehicle, 23),
+      modBackWheels     = GetVehicleMod(vehicle, 24),
 
-			modPlateHolder    = GetVehicleMod(vehicle, 25),
-			modVanityPlate    = GetVehicleMod(vehicle, 26),
-			modTrimA          = GetVehicleMod(vehicle, 27),
-			modOrnaments      = GetVehicleMod(vehicle, 28),
-			modDashboard      = GetVehicleMod(vehicle, 29),
-			modDial           = GetVehicleMod(vehicle, 30),
-			modDoorSpeaker    = GetVehicleMod(vehicle, 31),
-			modSeats          = GetVehicleMod(vehicle, 32),
-			modSteeringWheel  = GetVehicleMod(vehicle, 33),
-			modShifterLeavers = GetVehicleMod(vehicle, 34),
-			modAPlate         = GetVehicleMod(vehicle, 35),
-			modSpeakers       = GetVehicleMod(vehicle, 36),
-			modTrunk          = GetVehicleMod(vehicle, 37),
-			modHydrolic       = GetVehicleMod(vehicle, 38),
-			modEngineBlock    = GetVehicleMod(vehicle, 39),
-			modAirFilter      = GetVehicleMod(vehicle, 40),
-			modStruts         = GetVehicleMod(vehicle, 41),
-			modArchCover      = GetVehicleMod(vehicle, 42),
-			modAerials        = GetVehicleMod(vehicle, 43),
-			modTrimB          = GetVehicleMod(vehicle, 44),
-			modTank           = GetVehicleMod(vehicle, 45),
-			modWindows        = GetVehicleMod(vehicle, 46),
-			modLivery         = GetVehicleLivery(vehicle)
+      modPlateHolder    = GetVehicleMod(vehicle, 25),
+      modVanityPlate    = GetVehicleMod(vehicle, 26),
+      modTrimA          = GetVehicleMod(vehicle, 27),
+      modOrnaments      = GetVehicleMod(vehicle, 28),
+      modDashboard      = GetVehicleMod(vehicle, 29),
+      modDial           = GetVehicleMod(vehicle, 30),
+      modDoorSpeaker    = GetVehicleMod(vehicle, 31),
+      modSeats          = GetVehicleMod(vehicle, 32),
+      modSteeringWheel  = GetVehicleMod(vehicle, 33),
+      modShifterLeavers = GetVehicleMod(vehicle, 34),
+      modAPlate         = GetVehicleMod(vehicle, 35),
+      modSpeakers       = GetVehicleMod(vehicle, 36),
+      modTrunk          = GetVehicleMod(vehicle, 37),
+      modHydrolic       = GetVehicleMod(vehicle, 38),
+      modEngineBlock    = GetVehicleMod(vehicle, 39),
+      modAirFilter      = GetVehicleMod(vehicle, 40),
+      modStruts         = GetVehicleMod(vehicle, 41),
+      modArchCover      = GetVehicleMod(vehicle, 42),
+      modAerials        = GetVehicleMod(vehicle, 43),
+      modTrimB          = GetVehicleMod(vehicle, 44),
+      modTank           = GetVehicleMod(vehicle, 45),
+      modWindows        = GetVehicleMod(vehicle, 46),
+      modLivery         = GetVehicleLivery(vehicle)
     }
   end
 
@@ -447,8 +447,8 @@ module.game.setVehicleProperties = function(vehicle, props)
 
   if DoesEntityExist(vehicle) then
 
-		local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
-		local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
+    local colorPrimary, colorSecondary = GetVehicleColours(vehicle)
+    local pearlescentColor, wheelColor = GetVehicleExtraColours(vehicle)
 
     SetVehicleModKit(vehicle, 0)
 
@@ -465,22 +465,22 @@ module.game.setVehicleProperties = function(vehicle, props)
     if props.wheels            then SetVehicleWheelType(vehicle, props.wheels) end
     if props.windowTint        then SetVehicleWindowTint(vehicle, props.windowTint) end
 
-		if props.neonEnabled then
-			SetVehicleNeonLightEnabled(vehicle, 0, props.neonEnabled[1])
-			SetVehicleNeonLightEnabled(vehicle, 1, props.neonEnabled[2])
-			SetVehicleNeonLightEnabled(vehicle, 2, props.neonEnabled[3])
-			SetVehicleNeonLightEnabled(vehicle, 3, props.neonEnabled[4])
-		end
+    if props.neonEnabled then
+      SetVehicleNeonLightEnabled(vehicle, 0, props.neonEnabled[1])
+      SetVehicleNeonLightEnabled(vehicle, 1, props.neonEnabled[2])
+      SetVehicleNeonLightEnabled(vehicle, 2, props.neonEnabled[3])
+      SetVehicleNeonLightEnabled(vehicle, 3, props.neonEnabled[4])
+    end
 
-		if props.extras then
-			for extraId,enabled in pairs(props.extras) do
-				if enabled then
-					SetVehicleExtra(vehicle, tonumber(extraId), 0)
-				else
-					SetVehicleExtra(vehicle, tonumber(extraId), 1)
-				end
-			end
-		end
+    if props.extras then
+      for extraId,enabled in pairs(props.extras) do
+        if enabled then
+          SetVehicleExtra(vehicle, tonumber(extraId), 0)
+        else
+          SetVehicleExtra(vehicle, tonumber(extraId), 1)
+        end
+      end
+    end
 
   if props.neonColor          then SetVehicleNeonLightsColour(vehicle, props.neonColor[1], props.neonColor[2], props.neonColor[3]) end
   if props.xenonColor         then SetVehicleXenonLightsColour(vehicle, props.xenonColor) end
@@ -530,11 +530,11 @@ module.game.setVehicleProperties = function(vehicle, props)
   if props.modTank            then SetVehicleMod(vehicle, 45, props.modTank, false) end
   if props.modWindows         then SetVehicleMod(vehicle, 46, props.modWindows, false) end
 
-		if props.modLivery then
-			SetVehicleMod(vehicle, 48, props.modLivery, false)
-			SetVehicleLivery(vehicle, props.modLivery)
-		end
-	end
+    if props.modLivery then
+      SetVehicleMod(vehicle, 48, props.modLivery, false)
+      SetVehicleLivery(vehicle, props.modLivery)
+    end
+  end
 end
 
 module.game.getForcedComponents = function(ped, componentId, drawableId, textureId)
@@ -580,34 +580,34 @@ module.game.ensureForcedComponents = function(ped, componentId, drawableId, text
 end
 
 module.game.getClosestEntity = function(entities, isPlayerEntities, coords, modelFilter)
-	local closestEntity, closestEntityDistance, filteredEntities = -1, -1, nil
+  local closestEntity, closestEntityDistance, filteredEntities = -1, -1, nil
 
-	if coords then
-		coords = vector3(coords.x, coords.y, coords.z)
-	else
-		local playerPed = PlayerPedId()
-		coords = GetEntityCoords(playerPed)
-	end
+  if coords then
+    coords = vector3(coords.x, coords.y, coords.z)
+  else
+    local playerPed = PlayerPedId()
+    coords = GetEntityCoords(playerPed)
+  end
 
-	if modelFilter then
-		filteredEntities = {}
+  if modelFilter then
+    filteredEntities = {}
 
-		for k,entity in pairs(entities) do
-			if modelFilter[GetEntityModel(entity)] then
-				table.insert(filteredEntities, entity)
-			end
-		end
-	end
+    for k,entity in pairs(entities) do
+      if modelFilter[GetEntityModel(entity)] then
+        table.insert(filteredEntities, entity)
+      end
+    end
+  end
 
-	for k,entity in pairs(filteredEntities or entities) do
-		local distance = #(coords - GetEntityCoords(entity))
+  for k,entity in pairs(filteredEntities or entities) do
+    local distance = #(coords - GetEntityCoords(entity))
 
-		if closestEntityDistance == -1 or distance < closestEntityDistance then
-			closestEntity, closestEntityDistance = isPlayerEntities and k or entity, distance
-		end
-	end
+    if closestEntityDistance == -1 or distance < closestEntityDistance then
+      closestEntity, closestEntityDistance = isPlayerEntities and k or entity, distance
+    end
+  end
 
-	return closestEntity, closestEntityDistance
+  return closestEntity, closestEntityDistance
 end
 
 module.game.getClosestPed = function(coords, modelFilter) 
@@ -646,77 +646,133 @@ end
 
 -- Wind Around Point Poly
 module.game.windPnPoly = function(tablePoints, flag)
-	if tostring(type(flag)) == table then
-		py = flag.y
-		px = flag.x
-	else
-		px, py, pz = table.unpack(GetEntityCoords(PlayerPedId(), true))
-	end
-	wn = 0
-	table.insert(tablePoints, tablePoints[1])
-	for i=1, #tablePoints do
-		if i == #tablePoints then
-			break
-		end
-		if tonumber(tablePoints[i].y) <= py then
-			if tonumber(tablePoints[i+1].y) > py then
-				if module.game.isLeft(tablePoints[i], tablePoints[i+1], flag) > 0 then
-					wn = wn + 1
-				end
-			end
-		else
-			if tonumber(tablePoints[i+1].y) <= py then
-				if module.game.isLeft(tablePoints[i], tablePoints[i+1], flag) < 0 then
-					wn = wn - 1
-				end
-			end
-		end
-	end
-	return wn
+  if tostring(type(flag)) == table then
+    py = flag.y
+    px = flag.x
+  else
+    px, py, pz = table.unpack(GetEntityCoords(PlayerPedId(), true))
+  end
+  wn = 0
+  table.insert(tablePoints, tablePoints[1])
+  for i=1, #tablePoints do
+    if i == #tablePoints then
+      break
+    end
+    if tonumber(tablePoints[i].y) <= py then
+      if tonumber(tablePoints[i+1].y) > py then
+        if module.game.isLeft(tablePoints[i], tablePoints[i+1], flag) > 0 then
+          wn = wn + 1
+        end
+      end
+    else
+      if tonumber(tablePoints[i+1].y) <= py then
+        if module.game.isLeft(tablePoints[i], tablePoints[i+1], flag) < 0 then
+          wn = wn - 1
+        end
+      end
+    end
+  end
+  return wn
 end
 
 module.game.isLeft = function(p1s, p2s, flag)
-	p1 = p1s
-	p2 = p2s
-	if tostring(type(flag)) == "table" then
-		p = flag
-	else
-		p = GetEntityCoords(PlayerPedId(), true)
-	end
-	return ( ((p1.x - p.x) * (p2.y - p.y))
+  p1 = p1s
+  p2 = p2s
+  if tostring(type(flag)) == "table" then
+    p = flag
+  else
+    p = GetEntityCoords(PlayerPedId(), true)
+  end
+  return ( ((p1.x - p.x) * (p2.y - p.y))
             - ((p2.x -  p.x) * (p1.y - p.y)) )
+end
+
+module.game.waitForVehicleToLoad = function(modelHash)
+  modelHash = (type(modelHash) == 'number' and modelHash or GetHashKey(modelHash))
+
+  if not HasModelLoaded(modelHash) then
+    module.game.requestModel(modelHash)
+
+    BeginTextCommandBusyspinnerOn('STRING')
+    AddTextComponentSubstringPlayerName("Please wait for the model to load...")
+    EndTextCommandBusyspinnerOn(4)
+
+    while not HasModelLoaded(modelHash) do
+      Citizen.Wait(0)
+      DisableAllControlActions(0)
+    end
+
+    BusyspinnerOff()
+  end
 end
 
 -- UI
 module.ui.showNotification = function(msg)
-	SetNotificationTextEntry('STRING')
-	AddTextComponentSubstringPlayerName(msg)
-	DrawNotification(false, true)
+  SetNotificationTextEntry('STRING')
+  AddTextComponentSubstringPlayerName(msg)
+  DrawNotification(false, true)
 end
 
 -- Draw3DText
 module.ui.draw3DText = function(x, y, z, r, g, b, a, string)
-	local onScreen, _x, _y = World3dToScreen2d(x, y, z+1.0)
-	local px,py,pz=table.unpack(GetGameplayCamCoords())
-	local factor = (string.len(string)) / 370
+  local onScreen, _x, _y = World3dToScreen2d(x, y, z+1.0)
+  local px,py,pz=table.unpack(GetGameplayCamCoords())
+  local factor = (string.len(string)) / 370
 
-	if onScreen then
-		SetTextScale(0.35, 0.35)
-		SetTextFont(4)
-		SetTextProportional(1)
-		SetTextColour(255, 255, 255, 215)
-		SetTextDropShadow(0, 0, 0, 55)
-		SetTextEdge(0, 0, 0, 150)
-		SetTextDropShadow()
-		SetTextOutline()
-		SetTextEntry("STRING")
-		SetTextCentre(1)
-		AddTextComponentString(string)
-	DrawText(_x,_y)
-	DrawRect(_x,_y + 0.0125, 0.015 + factor, 0.03, r, g, b, a)
-	end
+  if onScreen then
+    SetTextScale(0.35, 0.35)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextColour(255, 255, 255, 215)
+    SetTextDropShadow(0, 0, 0, 55)
+    SetTextEdge(0, 0, 0, 150)
+    SetTextDropShadow()
+    SetTextOutline()
+    SetTextEntry("STRING")
+    SetTextCentre(1)
+    AddTextComponentString(string)
+    DrawText(_x,_y)
+    DrawRect(_x,_y + 0.0125, 0.015 + factor, 0.03, r, g, b, a)
+  end
 end
-	
+
+module.ui.renderBox = function(xMin,xMax,yMin,yMax,color1,color2,color3,color4)
+  DrawRect(xMin, yMin,xMax, yMax, color1, color2, color3, color4)
+end
+
+module.ui.drawText = function(string, x, y)
+  SetTextFont(2)
+  SetTextProportional(0)
+  SetTextScale(0.5, 0.5)
+  SetTextColour(255, 255, 255, 255)
+  SetTextDropShadow(0, 0, 0, 0,255)
+  SetTextEdge(1, 0, 0, 0, 255)
+  SetTextDropShadow()
+  SetTextOutline()
+  SetTextCentre(2)
+  SetTextEntry("STRING")
+  AddTextComponentString(string)
+  DrawText(x,y)
+end
+
+module.ui.drawVehicleStats = function(xoffset, yoffset, windowSizeX, windowSizeY, statOffsetX, statSizeX, statSizeY, topSpeedStat, accelerationStat, gearStat, capacityStat)
+  module.ui.renderBox(xoffset - 0.05, windowSizeX, (yoffset - 0.0325), windowSizeY, 0, 0, 0, 225)
+
+  module.ui.drawText("Top Speed", xoffset - 0.146, yoffset - 0.105)
+  module.ui.renderBox(statOffsetX, statSizeX, (yoffset - 0.07), statSizeY, 60, 60, 60, 225)
+  module.ui.renderBox(statOffsetX - ((statSizeX - topSpeedStat) / 2), topSpeedStat, (yoffset - 0.07), statSizeY, 0, 255, 255, 225)
+
+  module.ui.drawText("Acceleration", xoffset - 0.138, yoffset - 0.065)
+  module.ui.renderBox(statOffsetX, statSizeX, (yoffset - 0.03), statSizeY, 60, 60, 60, 225)
+  module.ui.renderBox(statOffsetX - ((statSizeX - (accelerationStat * 4)) / 2), accelerationStat * 4, (yoffset - 0.03), statSizeY, 0, 255, 255, 225)
+
+  module.ui.drawText("Gears", xoffset - 0.1565, yoffset - 0.025)
+  module.ui.drawText(gearStat, xoffset + 0.068, yoffset - 0.025)
+
+  module.ui.drawText("Seating Capacity", xoffset - 0.1275, yoffset + 0.002)
+  module.ui.drawText(capacityStat, xoffset + 0.068, yoffset + 0.002)
+end
+  
 module.ui.showAdvancedNotification = function(sender, subject, msg, textureDict, iconType, flash, saveToBrief, hudColorIndex)
 
   if saveToBrief == nil then
@@ -730,7 +786,7 @@ module.ui.showAdvancedNotification = function(sender, subject, msg, textureDict,
     ThefeedNextPostBackgroundColor(hudColorIndex)
   end
 
-	EndTextCommandThefeedPostMessagetext(textureDict, textureDict, false, iconType, sender, subject)
+  EndTextCommandThefeedPostMessagetext(textureDict, textureDict, false, iconType, sender, subject)
   EndTextCommandThefeedPostTicker(flash or false, saveToBrief)
 
 end
@@ -740,12 +796,12 @@ module.ui.showHelpNotification = function(msg, thisFrame, beep, duration)
   BeginTextCommandDisplayHelp('STRING')
   AddTextComponentSubstringPlayerName(msg)
 
-	if thisFrame then
-		DisplayHelpTextThisFrame(msg, false)
-	else
-		if beep == nil then beep = true end
-		BeginTextCommandDisplayHelp('esxHelpNotification')
-		EndTextCommandDisplayHelp(0, false, beep, duration or -1)
+  if thisFrame then
+    DisplayHelpTextThisFrame(msg, false)
+  else
+    if beep == nil then beep = true end
+    BeginTextCommandDisplayHelp('esxHelpNotification')
+    EndTextCommandDisplayHelp(0, false, beep, duration or -1)
   end
 
 end
@@ -771,6 +827,14 @@ module.ui.howFloatingHelpNotification = function(msg, coords, timeout)
 
   end)
 
+end
+
+module.math.Trim = function(value)
+  if value then
+    return (string.gsub(value, "^%s*(.-)%s*$", "%1"))
+  else
+    return nil
+  end
 end
 
 module.math.polar3DToWorld3D = function(center, polar, azimuth, radius)
