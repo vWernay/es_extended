@@ -60,7 +60,8 @@ module.categories                     = {}
 module.vehicles                       = {}
 
 module.active                         = false
-module.inMarker                       = nil
+module.inMarker                       = false
+module.inSellMarker                   = false
 
 module.selectedVehicle                = module.selectedVehicle or 1
 module.selectedCategory               = module.selectedCategory or nil
@@ -143,6 +144,10 @@ module.Init = function()
               module.CurrentAction = function()
                 module.SellVehicle()
               end
+
+              if not module.inMarker then
+                module.inSellMarker = true
+              end
             else
               Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
 
@@ -157,7 +162,7 @@ module.Init = function()
 
     on('esx:interact:exit:' .. key, function(data) 
       module.CurrentAction = nil
-      module.inMarker      = false
+      module.inSellMarker      = false
 
       Interact.StopHelpNotification()
     end)

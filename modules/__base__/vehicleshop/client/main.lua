@@ -41,7 +41,7 @@ end)
 
 ESX.SetInterval(0, function()
 
-  if module.inMarker then
+  if module.inMarker or module.inSellMarker then
     Input.DisableControl(Input.Groups.MOVE, Input.Controls.SPRINT)
     Input.DisableControl(Input.Groups.MOVE, Input.Controls.JUMP)
     DisableControlAction(0,21,true)
