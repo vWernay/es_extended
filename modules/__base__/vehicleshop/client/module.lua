@@ -384,7 +384,7 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
       local displaytext = GetDisplayNameFromVehicleModel(vehicleData.model)
       local name = GetLabelText(displaytext)
       local ped = PlayerPedId()
-      local resellPrice = module.Round(vehicleData.price / 100 * module.resellPercentage)
+      local resellPrice = math.round(vehicleData.price / 100 * module.resellPercentage)
 
       if not generatedPlate then
         print("Failure to generate plate. Please contact the server administrator.")
@@ -401,7 +401,7 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
 
             FreezeEntityPosition(ped, false)
 
-            module.SpawnVehicle(vehicleData.model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
+            utils.game.createVehicle(vehicleData.model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
               local ped = PlayerPedId()
               SetEntityVisible(ped, true)
               TaskWarpPedIntoVehicle(ped, vehicle, -1)
@@ -409,8 +409,6 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
               local vehicleProps = module.GetVehicleProperties(vehicle)
               emitServer('vehicleshop:updateVehicle', vehicleProps, generatedPlate)
             end)
-
-
 
             Citizen.Wait(400)
 
@@ -447,7 +445,7 @@ module.startTestDrive = function(car)
 
   PlaySoundFrontend(-1, "Player_Enter_Line", "GTAO_FM_Cross_The_Line_Soundset", 0)
 
-  RequestModel(GetHashKey(car))
+  utils.game.requestModel(GetHashKey(car))
 
   while not HasModelLoaded(GetHashKey(car)) do
     Citizen.Wait(0)
@@ -563,12 +561,12 @@ module.GetVehicleProperties = function(vehicle)
       plate             = module.Trim(GetVehicleNumberPlateText(vehicle)),
       plateIndex        = GetVehicleNumberPlateTextIndex(vehicle),
 
-      bodyHealth        = module.Round(GetVehicleBodyHealth(vehicle), 1),
-      engineHealth      = module.Round(GetVehicleEngineHealth(vehicle), 1),
-      tankHealth        = module.Round(GetVehiclePetrolTankHealth(vehicle), 1),
+      bodyHealth        = math.round(GetVehicleBodyHealth(vehicle), 1),
+      engineHealth      = math.round(GetVehicleEngineHealth(vehicle), 1),
+      tankHealth        = math.round(GetVehiclePetrolTankHealth(vehicle), 1),
 
-      fuelLevel         = module.Round(GetVehicleFuelLevel(vehicle), 1),
-      dirtLevel         = module.Round(GetVehicleDirtLevel(vehicle), 1),
+      fuelLevel         = math.round(GetVehicleFuelLevel(vehicle), 1),
+      dirtLevel         = math.round(GetVehicleDirtLevel(vehicle), 1),
       color1            = colorPrimary,
       color2            = colorSecondary,
 
@@ -645,37 +643,6 @@ module.GetVehicleProperties = function(vehicle)
   end
 end
 
-module.SpawnVehicle = function(modelName, coords, heading, cb)
-  local model = (type(modelName) == 'number' and modelName or GetHashKey(modelName))
-  
-    Citizen.CreateThread(function()
-      module.RequestModel(model)
-  
-      local vehicle = CreateVehicle(model, coords.x, coords.y, coords.z, heading, true, false)
-      local networkId = NetworkGetNetworkIdFromEntity(vehicle)
-      local timeout = 0
-  
-      SetNetworkIdCanMigrate(networkId, true)
-      SetEntityAsMissionEntity(vehicle, true, false)
-      SetVehicleHasBeenOwnedByPlayer(vehicle, true)
-      SetVehicleNeedsToBeHotwired(vehicle, false)
-      SetVehRadioStation(vehicle, 'OFF')
-      SetModelAsNoLongerNeeded(model)
-      RequestCollisionAtCoord(coords.x, coords.y, coords.z)
-  
-      -- we can get stuck here if any of the axies are "invalid"
-      while not HasCollisionLoadedAroundEntity(vehicle) and timeout < 2000 do
-        Citizen.Wait(0)
-        timeout = timeout + 1
-      end
-  
-      if cb then
-        cb(vehicle)
-      end
-  end)
-end
-
-
 -----------------------------------------------------------------------------------
 -- Vehicle Model Loading Functions
 -----------------------------------------------------------------------------------
@@ -689,7 +656,7 @@ module.commit = function(model)
 
   module.WaitForVehicleToLoad(model)
 
-  module.SpawnLocalVehicle(model, module.Config.ShopInside.Pos, module.Config.ShopInside.Heading, function(vehicle)
+  utils.game.createLocalVehicle(model, module.Config.ShopInside.Pos, module.Config.ShopInside.Heading, function(vehicle)
     module.currentDisplayVehicle = vehicle
     TaskWarpPedIntoVehicle(ped, vehicle, -1)
     FreezeEntityPosition(vehicle, true)
@@ -830,15 +797,6 @@ module.GroupDigits = function(value)
   local left,num,right = string.match(value,'^([^%d]*%d)(%d*)(.-)$')
 
   return left..(num:reverse():gsub('(%d%d%d)','%1' .. ","):reverse())..right
-end
-
-module.Round = function(value)
-  if numDecimalPlaces then
-    local power = 10^numDecimalPlaces
-    return math.floor((value * power) + 0.5) / (power)
-  else
-    return math.floor(value + 0.5)
-  end
 end
 
 module.Trim = function(value)
@@ -1084,7 +1042,7 @@ module.WaitForVehicleToLoad = function(modelHash)
   modelHash = (type(modelHash) == 'number' and modelHash or GetHashKey(modelHash))
 
   if not HasModelLoaded(modelHash) then
-    RequestModel(modelHash)
+    utils.game.requestModel(modelHash)
 
     BeginTextCommandBusyspinnerOn('STRING')
     AddTextComponentSubstringPlayerName("Please wait for the model to load...")
@@ -1119,50 +1077,6 @@ end
 module.DeleteVehicle = function(vehicle)
   SetEntityAsMissionEntity(vehicle, false, true)
   DeleteVehicle(vehicle)
-end
-
-module.SpawnLocalVehicle = function(modelName, coords, heading, cb)
-  local model = (type(modelName) == 'number' and modelName or GetHashKey(modelName))
-
-  Citizen.CreateThread(function()
-    module.RequestModel(model)
-
-    local vehicle = CreateVehicle(model, coords.x, coords.y, coords.z, heading, false, false)
-    local timeout = 0
-
-    SetEntityAsMissionEntity(vehicle, true, false)
-    SetVehicleHasBeenOwnedByPlayer(vehicle, true)
-    SetVehicleNeedsToBeHotwired(vehicle, false)
-    SetVehRadioStation(vehicle, 'OFF')
-    SetModelAsNoLongerNeeded(model)
-    RequestCollisionAtCoord(coords.x, coords.y, coords.z)
-
-    -- we can get stuck here if any of the axies are "invalid"
-    while not HasCollisionLoadedAroundEntity(vehicle) and timeout < 2000 do
-      Citizen.Wait(0)
-      timeout = timeout + 1
-    end
-
-    if cb then
-      cb(vehicle)
-    end
-  end)
-end
-
-module.RequestModel = function(modelHash, cb)
-  modelHash = (type(modelHash) == 'number' and modelHash or GetHashKey(modelHash))
-
-  if not HasModelLoaded(modelHash) and IsModelInCdimage(modelHash) then
-    RequestModel(modelHash)
-
-    while not HasModelLoaded(modelHash) do
-      Citizen.Wait(1)
-    end
-  end
-
-  if cb ~= nil then
-    cb()
-  end
 end
 
 module.mainCameraScene = function()
