@@ -463,14 +463,18 @@ module.OpenRetrievalMenu = function(vehicleData)
           end
 
           FreezeEntityPosition(ped, false)
+
+          SetEntityCoords(ped, module.CurrentActionData.zoneSpawn.Pos)
+
+          Citizen.Wait(100)
           
           utils.game.createVehicle(vehicleData.vehicleProps.model, module.CurrentActionData.zoneSpawn.Pos, module.CurrentActionData.zoneSpawn.Heading, function(vehicle)
             local ped = PlayerPedId()
             SetEntityVisible(ped, true)
             TaskWarpPedIntoVehicle(ped, vehicle, -1)
 
-            -- module.SetVehicleProperties(vehicle, vehicleData.vehicleProps)
-            -- SetVehicleNumberPlateText(vehicle, vehicleData.vehicleProps.plate)
+            module.SetVehicleProperties(vehicle, vehicleData.vehicleProps)
+            SetVehicleNumberPlateText(vehicle, vehicleData.vehicleProps.plate)
           end)
 
           Citizen.Wait(400)
