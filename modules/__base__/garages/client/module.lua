@@ -27,6 +27,7 @@ module.CurrentAction     = nil
 module.CurrentActionData = nil
 module.spawnedVehicle    = nil
 module.savedPosition     = nil
+module.vehicleLoaded     = false
 
 -----------------------------------------------------------------------------------
 -- INIT
@@ -802,8 +803,8 @@ module.showVehicleStats = function()
             local gears            = GetVehicleHighGear(vehicle)
             local capacity         = GetVehicleMaxNumberOfPassengers(vehicle) + 1
 
-            local topSpeedStat     = (((topSpeed / module.fastestVehicleSpeed) / 2) * module.statSizeX)
-            local accelerationStat = (((acceleration / 1.6) / 2) * module.statSizeX)
+            local topSpeedStat     = (((topSpeed / module.Config.fastestVehicleSpeed) / 2) * module.Config.statSizeX)
+            local accelerationStat = (((acceleration / 1.6) / 2) * module.Config.statSizeX)
             local gearStat         = tostring(gears)
             local capacityStat     = tostring(capacity)
 
@@ -815,7 +816,7 @@ module.showVehicleStats = function()
               accelerationStat = 0.24
             end
 
-            utils.ui.drawVehicleStats(module.xoffset, module.yoffset, module.windowSizeX, module.windowSizeY, module.statOffsetX, module.statSizeX, module.statSizeY, topSpeedStat, accelerationStat, gearStat, capacityStat)
+            utils.ui.drawVehicleStats(module.Config.xoffset, module.Config.yoffset, module.Config.windowSizeX, module.Config.windowSizeY, module.Config.statOffsetX, module.Config.statSizeX, module.Config.statSizeY, topSpeedStat, accelerationStat, gearStat, capacityStat)
           end
         end
       else
@@ -853,7 +854,7 @@ module.commit = function(vehicleData, data)
 
     module.vehicleLoaded = true
 
-    if module.enableVehicleStats then
+    if module.Config.EnableVehicleStats then
       module.showVehicleStats()
     end
   end)

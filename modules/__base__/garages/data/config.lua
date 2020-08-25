@@ -22,7 +22,7 @@ Config.statSizeX                 = 0.24
 Config.statSizeY                 = 0.01
 Config.statOffsetX               = 0.55
 Config.fastestVehicleSpeed       = 200
-Config.enableVehicleStats        = true
+Config.EnableVehicleStats        = true
 
 Config.DrawDistance              = 100.0
 Config.ZDiff                     = 0.5
