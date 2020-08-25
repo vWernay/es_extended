@@ -141,15 +141,15 @@ module.game.requestModel = function(model, cb)
   end
 
   local interval
-  
+
   RequestModel(model)
 
   interval = ESX.SetInterval(50, function()
-    
+
     if HasModelLoaded(model) then
 
       ESX.ClearInterval(interval)
-      
+
       if cb ~= nil then
         cb()
       end
@@ -280,7 +280,7 @@ module.game.deleteVehicle = function(vehicle)
   SetEntityAsMissionEntity(vehicle, false, true)
   Citizen.Wait(250)
   DeleteVehicle(vehicle)
-  
+
 end
 
 module.game.deleteObject = function(obj)
@@ -288,7 +288,7 @@ module.game.deleteObject = function(obj)
   SetEntityAsMissionEntity(object, false, true)
   Citizen.Wait(250)
   DeleteObject(object)
-  
+
 end
 
 module.game.isVehicleEmpty = function(vehicle)
@@ -624,6 +624,69 @@ module.game.doSpawn = function(data, cb)
   exports.spawnmanager:spawnPlayer(data, cb)
 end
 
+-- Check if player is within poly zone
+module.game.isPlayerInZone = function(zone)
+  local plyCoords = GetEntityCoords(GetPlayerPed(-1), true)
+
+  if zone then
+    for k, v in pairs(zone) do
+      if GetDistanceBetweenCoords(plyCoords, tonumber(v.Center.x), tonumber(v.Center.y), 1.01, false) < tonumber(v.MaxLength) then
+        local n = module.game.windPnPoly(v.Points, plyCoords)
+        if n ~= 0 then
+          return true
+        else
+          return false
+        end
+      end
+    end
+  else
+    return false
+  end
+end
+
+-- Wind Around Point Poly
+module.game.windPnPoly = function(tablePoints, flag)
+	if tostring(type(flag)) == table then
+		py = flag.y
+		px = flag.x
+	else
+		px, py, pz = table.unpack(GetEntityCoords(PlayerPedId(), true))
+	end
+	wn = 0
+	table.insert(tablePoints, tablePoints[1])
+	for i=1, #tablePoints do
+		if i == #tablePoints then
+			break
+		end
+		if tonumber(tablePoints[i].y) <= py then
+			if tonumber(tablePoints[i+1].y) > py then
+				if module.game.isLeft(tablePoints[i], tablePoints[i+1], flag) > 0 then
+					wn = wn + 1
+				end
+			end
+		else
+			if tonumber(tablePoints[i+1].y) <= py then
+				if module.game.isLeft(tablePoints[i], tablePoints[i+1], flag) < 0 then
+					wn = wn - 1
+				end
+			end
+		end
+	end
+	return wn
+end
+
+module.game.isLeft = function(p1s, p2s, flag)
+	p1 = p1s
+	p2 = p2s
+	if tostring(type(flag)) == "table" then
+		p = flag
+	else
+		p = GetEntityCoords(PlayerPedId(), true)
+	end
+	return ( ((p1.x - p.x) * (p2.y - p.y))
+            - ((p2.x -  p.x) * (p1.y - p.y)) )
+end
+
 -- UI
 module.ui.showNotification = function(msg)
 	SetNotificationTextEntry('STRING')
@@ -631,6 +694,29 @@ module.ui.showNotification = function(msg)
 	DrawNotification(false, true)
 end
 
+-- Draw3DText
+module.ui.draw3DText = function(x, y, z, r, g, b, a, string)
+	local onScreen, _x, _y = World3dToScreen2d(x, y, z+1.0)
+	local px,py,pz=table.unpack(GetGameplayCamCoords())
+	local factor = (string.len(string)) / 370
+
+	if onScreen then
+		SetTextScale(0.35, 0.35)
+		SetTextFont(4)
+		SetTextProportional(1)
+		SetTextColour(255, 255, 255, 215)
+		SetTextDropShadow(0, 0, 0, 55)
+		SetTextEdge(0, 0, 0, 150)
+		SetTextDropShadow()
+		SetTextOutline()
+		SetTextEntry("STRING")
+		SetTextCentre(1)
+		AddTextComponentString(string)
+	DrawText(_x,_y)
+	DrawRect(_x,_y + 0.0125, 0.015 + factor, 0.03, r, g, b, a)
+	end
+end
+	
 module.ui.showAdvancedNotification = function(sender, subject, msg, textureDict, iconType, flash, saveToBrief, hudColorIndex)
 
   if saveToBrief == nil then
