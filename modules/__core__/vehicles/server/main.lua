@@ -10,20 +10,14 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-on("esx:identity:selectIdentity", function(identity)
-    module.SelectIdentityAndSpawnCharacter(identity)
-end)
+M('command')
 
-on("esx:identity:openRegistration", function()
-    -- identity arrives serialized here
-    module.RequestRegistration(function(identity)
-        module.initIdentity(identity)
-    end)
-end)
+local reloadVehiclesCommand = Command("reloadVehicles", "admin", "Reload the vehicle server cache")
 
--- Temporary solution to blocking saving position
--- @TODO: Find a more permanent solution
-on("esx:identity:preventSaving", function(value)
-    module.preventSaving = value
+reloadVehiclesCommand:setHandler(function(player, args, baseArgs)
+  module.reloadVehicles()
 end)
-
+    
+reloadVehiclesCommand:setRconAllowed(true)
+    
+reloadVehiclesCommand:register()

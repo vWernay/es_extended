@@ -29,6 +29,14 @@ onServer('esx:character:request:select', function(identities)
   end
 end)
 
+on('esx:character:reOpenCharacterSelect', function()
+  module.ReOpenCharacterSelect()
+end)
+
+on('esx:character:destroyCharacterSelect', function()
+  module.DestroyCharacterSelect()
+end)
+
 on('ui.menu.mouseChange', function(value)
 	if module.AreMenuInUse() then
 		camera.setMouseIn(value)

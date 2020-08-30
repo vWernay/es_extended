@@ -10,34 +10,24 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-on('esx:db:init:done', function()
+M('events')
+M('serializable')
+M('cache')
+M('ui.menu')
 
-	print('ensuring migrations')
+local HUD   = M('game.hud')
+local utils = M("utils")
 
-  local boot    = ESX.Modules['boot']
-	local index   = 0
-	local results = {}
-	local manifest = LoadResourceFile(GetCurrentResourceName(), 'fxmanifest.lua')
-	local start
+module.Init()
 
-	module.Ensure('base')
+ESX.SetInterval(0, function()
+  if module.inMarker then
+    if IsControlJustReleased(0, 38) then
+      module.CurrentAction()
+    end
 
-  for i=1, #boot.GroupNames, 1 do
-
-    local group = boot.GroupNames[i]
-
-    for i=1, #boot.EntriesOrders, 1 do
-      local module = boot.EntriesOrders[i]
-      module.Ensure(module, group)
+    if module.isInGarageMenu then
+      DisableControlAction(0,51,true)
     end
   end
-
-  emit('esx:db:ready')
-
-  ESX.Ready = true
-
-  emit('esx:ready')
-
-  emit('esx:startCache')
-
 end)

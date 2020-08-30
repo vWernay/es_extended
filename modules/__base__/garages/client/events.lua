@@ -10,20 +10,8 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-on("esx:identity:selectIdentity", function(identity)
-    module.SelectIdentityAndSpawnCharacter(identity)
+on('ui.menu.mouseChange', function(value)
+  if module.IsInGarageMenu then
+    module.SetMouseIn(value)
+  end
 end)
-
-on("esx:identity:openRegistration", function()
-    -- identity arrives serialized here
-    module.RequestRegistration(function(identity)
-        module.initIdentity(identity)
-    end)
-end)
-
--- Temporary solution to blocking saving position
--- @TODO: Find a more permanent solution
-on("esx:identity:preventSaving", function(value)
-    module.preventSaving = value
-end)
-
