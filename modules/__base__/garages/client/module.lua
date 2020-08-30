@@ -75,142 +75,7 @@ module.Init = function()
     })
 
     on('esx:interact:enter:' .. key, function(data)
-      if data.name == "garages:entrance:MiltonDrive" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:SanAndreasAve" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:DidionWay" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:ImaginationCt265" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:SteeleWay1150" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end  
-      elseif data.name == "garages:entrance:Route68" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:PaletoBlvd" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:GrapeseedAve" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:AlgonquinBlvd" then
-        module.CurrentActionData = { 
-          Location = data.location,
-          Pos      = module.Config.GarageEntrances[data.location].Pos
-        }
-
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
-
-        module.CurrentAction = function()
-          module.OpenGarageMenu(module.CurrentActionData)
-        end
-
-        if not module.inMarker then
-          module.inMarker = true
-        end
-      elseif data.name == "garages:entrance:AltaSt" then
+      if data.name == key then
         module.CurrentActionData = { 
           Location = data.location,
           Pos      = module.Config.GarageEntrances[data.location].Pos
@@ -229,11 +94,7 @@ module.Init = function()
     end)
 
     on('esx:interact:exit:' .. key, function(data) 
-      module.CurrentAction     = nil
-      module.CurrentActionData = nil
-      module.inMarker          = false
-
-      Interact.StopHelpNotification()
+      module.Exit()
     end)
   end
 
@@ -258,7 +119,7 @@ module.Init = function()
     })
 
     on('esx:interact:enter:' .. key, function(data)
-      if data.name == "garages:return:MiltonDrive" then
+      if data.name == key then
         local ped = PlayerPedId()
 
         if IsPedSittingInAnyVehicle(ped) then
@@ -280,260 +141,6 @@ module.Init = function()
             if not module.inMarker then
               module.inMarker = true
             end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:SanAndreasAve" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:DidionWay" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:ImaginationCt265" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:SteeleWay1150" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:Route68" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:PaletoBlvd" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:GrapeseedAve" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:AlgonquinBlvd" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-          end
-        else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
-        end
-      elseif data.name == "garages:return:AltaSt" then
-        local ped = PlayerPedId()
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local vehicle = GetVehiclePedIsIn(ped, false)
-
-          if GetPedInVehicleSeat(vehicle, -1) == ped then
-
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
-
-            module.CurrentActionData = { 
-              Location = data.location,
-              Pos      = module.Config.GarageReturns[data.location].Pos
-            }
-
-            module.CurrentAction = function()
-              module.StoreVehicle(module.CurrentActionData)
-            end
-
-            if not module.inMarker then
-              module.inMarker = true
-            end
-          else
-            Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
           end
         else
           Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
@@ -542,11 +149,7 @@ module.Init = function()
     end)
 
     on('esx:interact:exit:' .. key, function(data) 
-      module.CurrentAction     = nil
-      module.CurrentActionData = nil
-      module.inMarker          = false
-
-      Interact.StopHelpNotification()
+      module.Exit()
     end)
   end
 end
@@ -766,6 +369,7 @@ module.ExitGarageWithSelectedVehicle = function()
 
     emit('esx:identity:preventSaving', false)
     module.isInGarageMenu = false
+    module.Exit()
 
     Citizen.Wait(400)
 
@@ -890,6 +494,14 @@ module.DestroyGarageMenu = function()
   module.garageMenu:destroy()
 end
 
+module.Exit = function()
+  module.CurrentAction     = nil
+  module.CurrentActionData = nil
+  module.inMarker          = false
+
+  Interact.StopHelpNotification()
+end
+
 module.StoreVehicle = function()
   local playerPed = PlayerPedId()
 
@@ -915,12 +527,14 @@ module.StoreVehicle = function()
           Citizen.Wait(500)
           utils.ui.showNotification("You have stored your vehicle in the garage.")
           DoScreenFadeIn(250)
+        elseif not result then 
+          utils.ui.showNotification("~r~You must own this vehicle in order to use this marker.")
         end
       end, plate)
     end
   end
 
-  module.CurrentAction = nil
+  module.Exit()
 end
 
 -----------------------------------------------------------------------------------
