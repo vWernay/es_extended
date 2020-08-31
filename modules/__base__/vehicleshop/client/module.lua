@@ -56,8 +56,8 @@ module.playerDied                     = false
 module.inTestDrive                    = false
 module.testDriveTime                  = 0
 
-module.categories                     = {}
-module.vehicles                       = {}
+module.categories                     = nil
+module.vehicles                       = nil
 
 module.active                         = false
 module.inMarker                       = false
@@ -130,6 +130,10 @@ module.Init = function()
 
     on('esx:interact:enter:' .. key, function(data)
 
+      if not module.categories or not module.vehicles or #module.categories == 0 or #module.vehicles == 0 then
+        module.LoadAssets()
+      end
+
       if data.name == "vehicleshop:ShopSell" then
         if not module.inTestDrive then
           local ped = PlayerPedId()
@@ -148,9 +152,6 @@ module.Init = function()
               if not module.inMarker then
                 module.inSellMarker = true
               end
-            else
-              Interact.ShowHelpNotification("~r~You must be the driver of the vehicle to use this.")
-
             end
           else
             Interact.ShowHelpNotification("You must be in a vehicle to use this.")
@@ -161,27 +162,31 @@ module.Init = function()
     end)
 
     on('esx:interact:exit:' .. key, function(data) 
-      module.CurrentAction = nil
-      module.inSellMarker      = false
-
-      Interact.StopHelpNotification()
+      module.Exit()
     end)
 
     on('vehicleshop:enteredZone', function()
+      
+      if not module.categories or not module.vehicles or #module.categories == 0 or #module.vehicles == 0 then
+        module.LoadAssets()
+      end
+
       if not module.inTestDrive then
         Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to access the vehicle shop.")
 
         module.CurrentAction = function()
+          if IsPedSittingInAnyVehicle(PlayerPedId()) then
+            utils.ui.showNotification("You are in a vehicle")
+            return
+          end
+
           module.OpenShopMenu()
         end
       end
     end)
 
     on('vehicleshop:exitedZone', function()
-      module.CurrentAction = nil
-      module.inMarker      = false
-
-      Interact.StopHelpNotification()
+      module.Exit()
     end)
 
   end
@@ -221,10 +226,7 @@ module.OpenShopMenu = function()
 
   module.SaveCurrentPosition()
 
-  request("vehicleshop:getCategories", function(categories)
-    module.categories = categories
-
-    module.EnterShop()
+  module.EnterShop()
 
     local items = {}
 
@@ -262,9 +264,7 @@ module.OpenShopMenu = function()
         module.OpenCategoryMenu(item.name, item.label)
       end
     end)
-  end)
 end
-
 
 on('ui.menu.mouseChange', function(value)
   if module.isInShopMenu then
@@ -274,10 +274,7 @@ end)
 
 module.OpenCategoryMenu = function(category, categoryLabel)
 
-  request("vehicleshop:getVehicles", function(vehicles)
-    module.vehicles = vehicles
-
-    local items = {}
+  local items = {}
 
     for k,v in pairs(module.vehicles) do
       if category == v.category then
@@ -327,7 +324,6 @@ module.OpenCategoryMenu = function(category, categoryLabel)
         module.OpenBuyMenu(category, categorylabel, item.name)
       end
     end)
-  end)
 end
 
 module.OpenBuyMenu = function(category, categorylabel, vehicleData)
@@ -378,6 +374,8 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
       module.startTestDrive(vehicleData.model)
     elseif item.name == 'yes' then
 
+      module.currentMenu:hide()
+
       local generatedPlate = module.GeneratePlate()
       local buyPrice = vehicleData.price
       local formattedPrice = module.GroupDigits(vehicleData.price)
@@ -413,6 +411,8 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
             Citizen.Wait(400)
 
             utils.ui.showNotification("You have bought a ~y~" .. name .. "~s~ with the plates ~b~" .. generatedPlate .. "~s~ for ~g~$" .. formattedPrice)
+
+            module.Exit()
           else
             
             if module.currentDisplayVehicle then
@@ -536,6 +536,25 @@ module.startTestDrive = function(car)
 
     emit('esx:identity:preventSaving', false)
   end
+end
+
+module.LoadAssets = function()
+  request("vehicleshop:getCategories", function(categories)
+    module.categories = categories
+
+    request("vehicleshop:getVehicles", function(vehicles)
+      module.vehicles = vehicles
+    end)
+  end)
+end
+
+module.Exit = function()
+  module.CurrentAction = nil
+  module.inMarker      = false
+  module.isInShopMenu  = false
+  module.inSellMarker  = false
+
+  Interact.StopHelpNotification()
 end
 
 -----------------------------------------------------------------------------------
@@ -787,6 +806,9 @@ module.SellVehicle = function()
               break
             end
           end
+        else
+          module.Exit()
+          utils.ui.showNotification("~r~You must own this vehicle in order to use this marker.")
         end
       end, plate)
     end
@@ -813,7 +835,7 @@ module.GeneratePlate = function()
   local attempts = 0
 
   while true do
-    Citizen.Wait(2)
+    Citizen.Wait(20)
 
     if attempts > 100 then
       generatedPlate = nil
@@ -859,7 +881,6 @@ module.IsPlateTaken = function(plate)
 end
 
 module.GetRandomNumber = function(length)
-  Citizen.Wait(0)
   math.randomseed(GetGameTimer())
   if length > 0 then
     return module.GetRandomNumber(length - 1) .. module.numberCharset[math.random(1, #module.numberCharset)]
@@ -869,7 +890,6 @@ module.GetRandomNumber = function(length)
 end
 
 module.GetRandomLetter = function(length)
-  Citizen.Wait(0)
   math.randomseed(GetGameTimer())
   if length > 0 then
     return module.GetRandomLetter(length - 1) .. module.charset[math.random(1, #module.charset)]
@@ -891,7 +911,7 @@ end
 module.StartShopRestriction = function()
   Citizen.CreateThread(function()
     while module.isInShopMenu do
-      Citizen.Wait(0)
+      Citizen.Wait(20)
 
       DisableControlAction(0, 75,  true)
       DisableControlAction(27, 75, true)

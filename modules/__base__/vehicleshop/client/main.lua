@@ -60,7 +60,7 @@ ESX.SetInterval(0, function()
     NetworkSetFriendlyFireOption(false)
     SetCanAttackFriendly(PlayerPedId(), false, false)
 
-    if IsControlJustReleased(0, 38) then
+    if IsControlJustReleased(0, 38) and module.CurrentAction ~= nil then
       module.CurrentAction()
     end
 
