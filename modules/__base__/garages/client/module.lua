@@ -278,6 +278,9 @@ module.OpenRetrievalMenu = function(vehicleData, data)
 
       module.garageMenu:focus()
     elseif item.name == 'yes' then
+
+      module.retrievalMenu:hide()
+
       request("garages:removeVehicleFromGarage", function(success)
         if success then
 

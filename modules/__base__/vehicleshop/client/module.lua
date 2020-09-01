@@ -767,6 +767,8 @@ end
 -----------------------------------------------------------------------------------
 
 module.SellVehicle = function()
+  module.Exit()
+
   local ped = PlayerPedId()
 
   if IsPedSittingInAnyVehicle(ped) then
@@ -807,7 +809,6 @@ module.SellVehicle = function()
             end
           end
         else
-          module.Exit()
           utils.ui.showNotification("~r~You must own this vehicle in order to use this marker.")
         end
       end, plate)
