@@ -35,7 +35,7 @@
 			case 'set' : {
 
 				float = msg.data.float || 'left|top';
-				title = msg.data.title || 'Untitled ESX';
+				title = msg.data.title || 'Untitled ESX Menu';
 				items = msg.data.items || [];
 
 				break;
