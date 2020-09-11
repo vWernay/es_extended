@@ -201,6 +201,20 @@ Persist = function(schema, pk, ...)
 
     local count = 0
 
+    local function removeKey(table, key)
+      local element = table[key]
+      table[key] = nil
+      return element
+    end
+
+    if tostring(schema) == "identities" then
+      for k,v in pairs(fields) do
+        if tostring(k) == "position" or tostring(k) == "roles" then
+          removeKey(fields, k)
+        end
+      end
+    end
+
     for k,v in pairs(fields) do
 
       if serialized[k] ~= nil then
