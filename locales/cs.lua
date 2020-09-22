@@ -33,7 +33,7 @@ Locales['cs'] = {
   ['gave_weapon_hasalready'] = '~y~%s~s~ jiz ma ~y~%s~s~',
   ['gave_weapon_noweapon'] = '~y~%s~s~ nema tuhle zbran',
   ['received_weapon'] = 'obdrzeli jste ~b~%s~s~ od ~b~%s~s~',
-  ['received_weapon_ammo'] = 'obdrzeli jste ~o~%sx %s~s~ za tvuj ~b~%s~s~ od ~b~%s~s~',
+  ['received_weapon_ammo'] = 'obdrzeli jste ~o~%sx %s~s~ za vase ~b~%s~s~ od ~b~%s~s~',
   ['received_weapon_withammo'] = 'obdzeli jste ~b~%s~s~ s ~o~%sx %s~s~ od ~b~%s~s~',
   ['received_weapon_hasalready'] = '~b~%s~s~ se pokusil ti dat ~y~%s~s~, ale jiz tento predmet jednou mas',
   ['received_weapon_noweapon'] = '~b~%s~s~ se pokusil ti dat naboje pro ~y~%s~s~, ale tuhle zbran nemas',
@@ -46,10 +46,10 @@ Locales['cs'] = {
   ['imp_invalid_amount'] = 'akce neni mozna, neplatne mnozstvi',
   ['threw_standard'] = 'vyhodili jste ~y~%sx~s~ ~b~%s~s~',
   ['threw_account'] = 'vyhodili jste ~g~$%s~s~ ~b~%s~s~',
-  ['threw_weapon'] = 'vzhodili jste ~b~%s~s~',
+  ['threw_weapon'] = 'vyhodili jste ~b~%s~s~',
   ['threw_weapon_ammo'] = 'vyhodili jste ~b~%s~s~ s ~o~%sx %s~s~',
   ['threw_weapon_already'] = 'jiz mate stejnou zbran',
-  ['threw_cannot_pickup'] = 'tohle nemuzes sebrat, protoze tvuj inventar je plny',
+  ['threw_cannot_pickup'] = 'tohle nemuzete sebrat, protoze vas inventar je plny',
   ['threw_pickup_prompt'] = 'stisknete ~y~E~s~ po sebrani',
 
   -- Key mapping
