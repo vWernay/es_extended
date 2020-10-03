@@ -251,6 +251,8 @@ module.OpenShopMenu = function()
     module.currentMenu = module.shopMenu
 
     module.shopMenu:on('item.click', function(item, index)
+      PlaySoundFrontend(-1, "NAV_LEFT_RIGHT", "HUD_FREEMODE_SOUNDSET", 1)
+
       if item.name == 'exit' then
         module.DestroyShopMenu()
         DoScreenFadeOut(250)
@@ -309,6 +311,8 @@ module.OpenCategoryMenu = function(category, categoryLabel)
     end)
 
     module.categoryMenu:on('item.click', function(item, index)
+      PlaySoundFrontend(-1, "NAV_LEFT_RIGHT", "HUD_FREEMODE_SOUNDSET", 1)
+
       if item.name == 'back' then
         if module.currentDisplayVehicle then
           module.DeleteDisplayVehicleInsideShop()
@@ -355,6 +359,8 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
   end)
 
   module.buyMenu:on('item.click', function(item, index)
+    PlaySoundFrontend(-1, "NAV_LEFT_RIGHT", "HUD_FREEMODE_SOUNDSET", 1)
+    
     if item.name == 'no' then
       module.DeleteDisplayVehicleInsideShop()
       module.currentDisplayVehicle = nil
@@ -387,32 +393,58 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
       if not generatedPlate then
         print("Failure to generate plate. Please contact the server administrator.")
       else
+        utils.game.requestModel(vehicleData.model, function()
+
+          RequestCollisionAtCoord(module.Config.ShopOutside.Pos)
+        
+        end)
+
+        utils.game.waitForVehicleToLoad(vehicleData.model)
+
         request('vehicleshop:buyVehicle', function(result)
           if result then
-            local ped = PlayerPedId()
-            
-            module.ExitShopFromMenu()
 
-            while not IsScreenFadedOut() do
-              Citizen.Wait(0)
-            end
+            if NetworkDoesEntityExistWithNetworkId(result) then
 
-            FreezeEntityPosition(ped, false)
+              local vehicle = NetToVeh(result)
+              while not DoesEntityExist(vehicle) do
+                Wait(100)
+                vehicle = NetToVeh(result)
+              end
 
-            utils.game.createVehicle(vehicleData.model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
               local ped = PlayerPedId()
+              
+              module.ExitShopFromMenu()
+
+              while not IsScreenFadedOut() do
+                Wait(0)
+              end
+
+              FreezeEntityPosition(ped, false)
               SetEntityVisible(ped, true)
-              TaskWarpPedIntoVehicle(ped, vehicle, -1)
-              SetVehicleNumberPlateText(vehicle, generatedPlate)
-              local vehicleProps = module.GetVehicleProperties(vehicle)
-              emitServer('vehicleshop:updateVehicle', vehicleProps, generatedPlate)
-            end)
 
-            Citizen.Wait(400)
+              if DoesEntityExist(vehicle) then
 
-            utils.ui.showNotification("You have bought a ~y~" .. name .. "~s~ with the plates ~b~" .. generatedPlate .. "~s~ for ~g~$" .. formattedPrice)
+                while not IsPedInVehicle(ped, vehicle, false) do
+                  Wait(10)
+                  TaskWarpPedIntoVehicle(ped, vehicle, -1)
+                  SetNetworkIdCanMigrate(result, true)
+                  SetEntityAsMissionEntity(vehicle, true, false)
+                  SetVehicleHasBeenOwnedByPlayer(vehicle, true)
+                  SetVehicleNeedsToBeHotwired(vehicle, false)
+                  SetVehRadioStation(vehicle, 'OFF')
+                end
 
-            module.Exit()
+                local vehicleProps = module.GetVehicleProperties(vehicle)
+                emitServer('vehicleshop:updateVehicle', vehicleProps, generatedPlate)
+
+                Wait(400)
+
+                utils.ui.showNotification("You have bought a ~y~" .. name .. "~s~ with the plates ~b~" .. generatedPlate .. "~s~ for ~g~$" .. formattedPrice)
+
+                module.Exit()
+              end
+            end
           else
             
             if module.currentDisplayVehicle then
@@ -433,8 +465,7 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
   end)
 end
 
-module.startTestDrive = function(car)
-
+module.startTestDrive = function(model)
   module.playerDied = false
 
   module.SaveCurrentPosition()
@@ -445,98 +476,246 @@ module.startTestDrive = function(car)
 
   PlaySoundFrontend(-1, "Player_Enter_Line", "GTAO_FM_Cross_The_Line_Soundset", 0)
 
-  utils.game.requestModel(GetHashKey(car))
+  utils.game.requestModel(model, function()
 
-  while not HasModelLoaded(GetHashKey(car)) do
-    Citizen.Wait(0)
-  end
+    RequestCollisionAtCoord(module.Config.ShopOutside.Pos)
+  
+  end)
 
-  utils.ui.showNotification("Test Drive Started.")
+  utils.game.waitForVehicleToLoad(model)
 
-  local testVeh = CreateVehicle(GetHashKey(car), module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading,  996.786, 25.1887, false, false)
+  request('vehicleshop:startTestDrive', function(result)
+    if result then
 
-  Citizen.Wait(150)
+      if NetworkDoesEntityExistWithNetworkId(result) then
 
-  SetEntityAsMissionEntity(testVeh)
-  SetVehicleLivery(testVeh, 0)
-  TaskWarpPedIntoVehicle(PlayerPedId(), testVeh, - 1)
-  SetVehicleNumberPlateText(testVeh, "RENTAL")
-  SetVehicleColours(testVeh, 111,111)
-  SetPedCanBeKnockedOffVehicle(PlayerPedId(),1)
-  SetPedCanRagdoll(PlayerPedId(),false)
-  SetEntityVisible(playerPed, true)
+        local vehicle = NetToVeh(result)
+        while not DoesEntityExist(vehicle) do
+          Wait(100)
+          vehicle = NetToVeh(result)
+        end
 
-  Citizen.Wait(500)
+        local ped = PlayerPedId()
 
-  DoScreenFadeIn(300)
+        FreezeEntityPosition(ped, false)
+        SetEntityVisible(ped, true)
 
-  module.inTestDrive = true
+        if DoesEntityExist(vehicle) then
 
-  if not DoesEntityExist(testVeh) then
-    module.testDriveTime = 0
-  end
+          while not IsPedInVehicle(ped, vehicle, false) do
+            Wait(10)
 
-  while module.inTestDrive do
+            SetNetworkIdCanMigrate(result, true)
+            SetEntityAsMissionEntity(vehicle, true, false)
+            SetVehicleHasBeenOwnedByPlayer(vehicle, true)
+            SetVehicleNeedsToBeHotwired(vehicle, false)
+            SetVehRadioStation(vehicle, 'OFF')
 
-    Citizen.Wait(0)
-    DisableControlAction(0, 75, true)
-    DisableControlAction(27, 75, true)
-    DisableControlAction(0, 70, true)
-    DisableControlAction(0, 69, true)
+            SetVehicleLivery(vehicle, 0)
+            TaskWarpPedIntoVehicle(ped, vehicle, - 1)
+            SetVehicleNumberPlateText(vehicle, "RENTAL")
+            SetVehicleColours(vehicle, 111,111)
+            SetPedCanBeKnockedOffVehicle(ped,1)
+            SetPedCanRagdoll(ped,false)
+            SetEntityVisible(ped, true)
+          end
 
-    if IsEntityDead(PlayerPedId()) then
-      module.playerDied    = true
-      module.inTestDrive   = false
-      module.testDriveTime = 0
+          utils.ui.showNotification("Test Drive Started.")
+
+          module.Exit()
+
+          Wait(500)
+
+          DoScreenFadeIn(300)
+
+          module.inTestDrive = true
+
+            while module.inTestDrive do
+              Wait(0)
+              DisableControlAction(0, 75, true)
+              DisableControlAction(27, 75, true)
+              DisableControlAction(0, 70, true)
+              DisableControlAction(0, 69, true)
+
+              if IsEntityDead(PlayerPedId()) then
+                module.playerDied    = true
+                module.inTestDrive   = false
+                module.testDriveTime = 0
+              else
+                local pedCoords = GetEntityCoords(PlayerPedId())
+
+                module.testDriveTime = module.testDriveTime - 0.009
+
+                if math.floor(module.testDriveTime) >= 60 then
+                  utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~g~" .. math.floor(module.testDriveTime), false, false, 1)
+                elseif math.floor(module.testDriveTime) >= 20 and math.floor(module.testDriveTime) < 60 then
+                  utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~y~" .. math.floor(module.testDriveTime), false, false, 1)
+                elseif math.floor(module.testDriveTime) < 20 then
+                  utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~r~" .. math.floor(module.testDriveTime), false, false, 1)
+                end
+
+                if module.testDriveTime <= 0 then
+                  module.inTestDrive = false
+                end
+              end
+            end
+
+            if module.playerDied then
+              utils.ui.showNotification("Test Drive Ended Due To Death5.")
+            else
+              Interact.StopHelpNotification()
+
+              SetPedCanRagdoll(PlayerPedId(),true)
+              SetPedCanBeKnockedOffVehicle(PlayerPedId(),0)
+              PlaySoundFrontend(-1, "Mission_Pass_Notify", "DLC_HEISTS_GENERAL_FRONTEND_SOUNDS", 1)
+
+              DoScreenFadeOut(300)
+
+              Citizen.Wait(500)
+
+              DeleteEntity(testVeh)
+              FreezeEntityPosition(PlayerPedId(), true)
+
+              Citizen.Wait(500)
+
+              FreezeEntityPosition(PlayerPedId(), false)
+              utils.ui.showNotification("Test Drive Ended.")
+
+              DoScreenFadeIn(300)
+
+              FreezeEntityPosition(playerPed, false)
+
+              SetEntityCoords(playerPed, module.savedPosition)
+
+              emit('esx:identity:preventSaving', false)
+            end
+        end
+      end
     else
-      local pedCoords = GetEntityCoords(PlayerPedId())
-
-      module.testDriveTime = module.testDriveTime - 0.009
-
-      if math.floor(module.testDriveTime) >= 60 then
-        utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~g~" .. math.floor(module.testDriveTime), false, false, 1)
-      elseif math.floor(module.testDriveTime) >= 20 and math.floor(module.testDriveTime) < 60 then
-        utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~y~" .. math.floor(module.testDriveTime), false, false, 1)
-      elseif math.floor(module.testDriveTime) < 20 then
-        utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~r~" .. math.floor(module.testDriveTime), false, false, 1)
+      
+      if module.currentDisplayVehicle then
+        module.DeleteDisplayVehicleInsideShop()
+        module.currentDisplayVehicle = nil
+        module.vehicleLoaded         = false
       end
-
-      if module.testDriveTime <= 0 then
-        module.inTestDrive = false
-      end
+    
+      module.BuyMenu:destroy()
+    
+      module.currentMenu = module.lastMenu
+    
+      module.lastMenu:focus()
     end
-  end
+  end, model)
 
-  if module.playerDied then
-    utils.ui.showNotification("Test Drive Ended Due To Death5.")
-  else
-    Interact.StopHelpNotification()
-
-    SetPedCanRagdoll(PlayerPedId(),true)
-    SetPedCanBeKnockedOffVehicle(PlayerPedId(),0)
-    PlaySoundFrontend(-1, "Mission_Pass_Notify", "DLC_HEISTS_GENERAL_FRONTEND_SOUNDS", 1)
-
-    DoScreenFadeOut(300)
-
-    Citizen.Wait(500)
-
-    DeleteEntity(testVeh)
-    FreezeEntityPosition(PlayerPedId(), true)
-
-    Citizen.Wait(500)
-
-    FreezeEntityPosition(PlayerPedId(), false)
-    utils.ui.showNotification("Test Drive Ended.")
-
-    DoScreenFadeIn(300)
-
-    FreezeEntityPosition(playerPed, false)
-
-    SetEntityCoords(playerPed, module.savedPosition)
-
-    emit('esx:identity:preventSaving', false)
-  end
 end
+
+-- module.startTestDrive = function(car)
+
+--   module.playerDied = false
+
+--   module.SaveCurrentPosition()
+
+--   local playerPed = PlayerPedId()
+
+--   module.testDriveTime = tonumber(module.Config.TestDriveTime)
+
+--   PlaySoundFrontend(-1, "Player_Enter_Line", "GTAO_FM_Cross_The_Line_Soundset", 0)
+
+  
+
+--   utils.game.requestModel(GetHashKey(car))
+
+--   while not HasModelLoaded(GetHashKey(car)) do
+--     Citizen.Wait(0)
+--   end
+
+--   utils.ui.showNotification("Test Drive Started.")
+
+
+--   local testVeh = CreateVehicle(GetHashKey(car), module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading,  996.786, 25.1887, false, false)
+
+--   Citizen.Wait(150)
+
+--   SetEntityAsMissionEntity(testVeh)
+--   SetVehicleLivery(testVeh, 0)
+--   TaskWarpPedIntoVehicle(PlayerPedId(), testVeh, - 1)
+--   SetVehicleNumberPlateText(testVeh, "RENTAL")
+--   SetVehicleColours(testVeh, 111,111)
+--   SetPedCanBeKnockedOffVehicle(PlayerPedId(),1)
+--   SetPedCanRagdoll(PlayerPedId(),false)
+--   SetEntityVisible(playerPed, true)
+
+--   Citizen.Wait(500)
+
+--   DoScreenFadeIn(300)
+
+--   module.inTestDrive = true
+
+--   if not DoesEntityExist(testVeh) then
+--     module.testDriveTime = 0
+--   end
+
+--   while module.inTestDrive do
+
+--     Citizen.Wait(0)
+--     DisableControlAction(0, 75, true)
+--     DisableControlAction(27, 75, true)
+--     DisableControlAction(0, 70, true)
+--     DisableControlAction(0, 69, true)
+
+--     if IsEntityDead(PlayerPedId()) then
+--       module.playerDied    = true
+--       module.inTestDrive   = false
+--       module.testDriveTime = 0
+--     else
+--       local pedCoords = GetEntityCoords(PlayerPedId())
+
+--       module.testDriveTime = module.testDriveTime - 0.009
+
+--       if math.floor(module.testDriveTime) >= 60 then
+--         utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~g~" .. math.floor(module.testDriveTime), false, false, 1)
+--       elseif math.floor(module.testDriveTime) >= 20 and math.floor(module.testDriveTime) < 60 then
+--         utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~y~" .. math.floor(module.testDriveTime), false, false, 1)
+--       elseif math.floor(module.testDriveTime) < 20 then
+--         utils.ui.showHelpNotification("~INPUT_CONTEXT~ To End Early - Time Remaining: ~r~" .. math.floor(module.testDriveTime), false, false, 1)
+--       end
+
+--       if module.testDriveTime <= 0 then
+--         module.inTestDrive = false
+--       end
+--     end
+--   end
+
+--   if module.playerDied then
+--     utils.ui.showNotification("Test Drive Ended Due To Death5.")
+--   else
+--     Interact.StopHelpNotification()
+
+--     SetPedCanRagdoll(PlayerPedId(),true)
+--     SetPedCanBeKnockedOffVehicle(PlayerPedId(),0)
+--     PlaySoundFrontend(-1, "Mission_Pass_Notify", "DLC_HEISTS_GENERAL_FRONTEND_SOUNDS", 1)
+
+--     DoScreenFadeOut(300)
+
+--     Citizen.Wait(500)
+
+--     DeleteEntity(testVeh)
+--     FreezeEntityPosition(PlayerPedId(), true)
+
+--     Citizen.Wait(500)
+
+--     FreezeEntityPosition(PlayerPedId(), false)
+--     utils.ui.showNotification("Test Drive Ended.")
+
+--     DoScreenFadeIn(300)
+
+--     FreezeEntityPosition(playerPed, false)
+
+--     SetEntityCoords(playerPed, module.savedPosition)
+
+--     emit('esx:identity:preventSaving', false)
+--   end
+-- end
 
 module.LoadAssets = function()
   request("vehicleshop:getCategories", function(categories)
@@ -673,18 +852,47 @@ module.commit = function(model)
   module.currentDisplayVehicle = nil
   module.vehicleLoaded         = false
 
-  module.WaitForVehicleToLoad(model)
+  utils.game.requestModel(model, function()
 
-  utils.game.createLocalVehicle(model, module.Config.ShopInside.Pos, module.Config.ShopInside.Heading, function(vehicle)
-    module.currentDisplayVehicle = vehicle
-    TaskWarpPedIntoVehicle(ped, vehicle, -1)
-    FreezeEntityPosition(vehicle, true)
-    SetModelAsNoLongerNeeded(model)
-    module.vehicleLoaded = true
-    if module.enableVehicleStats then
-      module.showVehicleStats()
-    end
+    RequestCollisionAtCoord(module.Config.ShopOutside.Pos)
+  
   end)
+
+  utils.game.waitForVehicleToLoad(model)
+
+  request('vehicleshop:spawnPreviewVehicle', function(result)
+
+    if result then
+      if NetworkDoesEntityExistWithNetworkId(result) then
+        local ped = PlayerPedId()
+        local vehicle = NetToVeh(result)
+        while not DoesEntityExist(vehicle) do
+          Wait(100)
+          vehicle = NetToVeh(result)
+        end
+
+        FreezeEntityPosition(ped, false)
+        SetEntityVisible(ped, true)
+
+        if DoesEntityExist(vehicle) then
+          while not IsPedInVehicle(ped, vehicle, false) do
+            Wait(10)
+
+            module.currentDisplayVehicle = vehicle
+            TaskWarpPedIntoVehicle(ped, vehicle, -1)
+            FreezeEntityPosition(vehicle, true)
+            SetModelAsNoLongerNeeded(model)
+            module.vehicleLoaded = true
+            if module.enableVehicleStats then
+              module.showVehicleStats()
+            end
+          end
+        end
+      end
+    else
+      print("Failure to spawn vehicle preview. Please contact the server administrator.")
+    end
+  end, model)
 end
 
 module.RenderBox = function(xMin,xMax,yMin,yMax,color1,color2,color3,color4)
