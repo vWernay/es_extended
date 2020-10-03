@@ -20,6 +20,7 @@
     "player",
     "role",
     "character",
+    "owned.vehicles",
     "skin",
     "serializable",
     "string",

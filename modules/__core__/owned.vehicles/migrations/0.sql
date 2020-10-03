@@ -7,6 +7,8 @@ CREATE TABLE `owned_vehicles` (
 	`vehicle` LONGTEXT,
 	`type` VARCHAR(20) NOT NULL DEFAULT 'car',
 	`stored` TINYINT NOT NULL DEFAULT '0',
+	`container_id` LONGTEXT,
+	`container_inventory` LONGTEXT,
 
 	PRIMARY KEY (`plate`)
 );

@@ -11,15 +11,10 @@
 --   This copyright should appear in every part of the project code
 
 local Command  = M("events")
-local migrate  = M('migrate')
 local vehicles = M("vehicles")
 local utils    = M("utils")
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
-
-on("esx:db:ready", function()
-  migrate.Ensure("vehicleshop", "base")
-end)
 
 onClient('vehicleshop:updateVehicle', function(vehicleProps, plate, model)
   MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate AND model = @model', {
