@@ -22,28 +22,26 @@ local utils = M("utils")
 module.Init()
 
 ESX.SetInterval(250, function()
-
   if not module.isInShopMenu then
     if utils.game.isPlayerInZone(module.Config.VehicleShopZones) then
-        if not module.inMarker then
-            module.inMarker = true
-            emit('vehicleshop:enteredZone')
-        end
+      if not module.inMarker then
+        module.inMarker = true
+        emit('vehicleshop:enteredZone')
+      end
     else
-        if module.inMarker then
-            module.inMarker = false
-            emit('vehicleshop:exitedZone')
-        end
+      if module.inMarker then
+        module.inMarker = false
+        emit('vehicleshop:exitedZone')
+      end
     end
   end
-
 end)
 
 ESX.SetInterval(0, function()
-
   if module.inMarker or module.inSellMarker then
     Input.DisableControl(Input.Groups.MOVE, Input.Controls.SPRINT)
     Input.DisableControl(Input.Groups.MOVE, Input.Controls.JUMP)
+    
     DisableControlAction(0,21,true)
     DisableControlAction(0,22,true)
     DisableControlAction(0,25,true)  -- disable aim
@@ -74,7 +72,13 @@ ESX.SetInterval(0, function()
       module.testDriveTime = 0
     end
   end
+end)
 
+ESX.SetInterval(20, function()
+  if module.isInShopMenu then
+    DisableControlAction(0, 75,  true)
+    DisableControlAction(27, 75, true)
+  end
 end)
 
 -- ESX.SetInterval(0, function()

@@ -212,60 +212,205 @@ end
 -- MENU
 -----------------------------------------------------------------------------------
 
-module.DestroyShopMenu = function()
-  module.shopMenu:destroy()
+module.EnterShop = function()
+
+  module.isInShopMenu = true
+
+  module.savedPosition = GetEntityCoords(PlayerPedId(), true)
+  
+  DoScreenFadeOut(250)
+
+  while not IsScreenFadedOut() do
+    Citizen.Wait(0)
+  end
+
+  camera.start()
+  module.mainCameraScene()
+
+  Citizen.CreateThread(function()
+    local ped = PlayerPedId()
+
+    FreezeEntityPosition(ped, true)
+    SetEntityVisible(ped, false)
+    SetEntityCoords(ped, module.Config.ShopInside.Pos)
+  end)
+
+  Citizen.Wait(500)
+
+  camera.setPolarAzimuthAngle(250.0, 120.0)
+  camera.setRadius(3.5)
+  emit('esx:identity:preventSaving', true)
+
+  DoScreenFadeIn(250)
 end
 
-module.SaveCurrentPosition = function()
-  module.savedPosition = GetEntityCoords(PlayerPedId(), true)
+--CLEANUP
+module.ExitShop = function()
+  Citizen.CreateThread(function()
+    if module.buyMenu then
+      module.buyMenu:destroy()
+    end
+
+    if module.lastMenu then
+      module.lastMenu:destroy()
+    end
+
+    if module.shopMenu then
+      module.shopMenu:destroy()
+    end
+
+    local ped = PlayerPedId()
+    FreezeEntityPosition(ped, false)
+    SetEntityVisible(ped, true)
+    module.ReturnPlayer()
+    camera.destroy()
+    emit('esx:identity:preventSaving', false)
+  end)
+
+  module.isInShopMenu = false
 end
+
+--CLEANUP
+module.ExitShopFromMenu = function()
+  Citizen.CreateThread(function()
+    DoScreenFadeOut(250)
+
+    while not IsScreenFadedOut() do
+      Citizen.Wait(0)
+    end
+  
+    if module.currentDisplayVehicle then
+      module.DeleteDisplayVehicleInsideShop()
+      module.currentDisplayVehicle = nil
+      module.vehicleLoaded         = false
+    end
+  
+  
+    Citizen.Wait(100)
+
+    if module.buyMenu then
+      module.buyMenu:destroy()
+    end
+
+    if module.lastMenu then
+      module.lastMenu:destroy()
+    end
+
+    if module.shopMenu then
+      module.shopMenu:destroy()
+    end
+
+    camera.destroy()
+    emit('esx:identity:preventSaving', false)
+
+    module.isInShopMenu = false
+
+    Citizen.Wait(400)
+
+    DoScreenFadeIn(500)
+  end)
+end
+
+--CLEANUP
+module.ExitShopFromMenuTestDrive = function()
+  Citizen.CreateThread(function()
+    DoScreenFadeOut(250)
+
+    while not IsScreenFadedOut() do
+      Citizen.Wait(0)
+    end
+  
+    if module.currentDisplayVehicle then
+      module.DeleteDisplayVehicleInsideShop()
+      module.currentDisplayVehicle = nil
+      module.vehicleLoaded         = false
+    end
+  
+  
+    Citizen.Wait(100)
+
+    if module.buyMenu then
+      module.buyMenu:destroy()
+    end
+
+    if module.lastMenu then
+      module.lastMenu:destroy()
+    end
+
+    if module.shopMenu then
+      module.shopMenu:destroy()
+    end
+
+    camera.destroy()
+
+    module.isInShopMenu = false
+
+    Citizen.Wait(400)
+
+    DoScreenFadeIn(500)
+  end)
+end
+
+--CLEANUP
+module.ReturnPlayer = function()
+  local ped = PlayerPedId()
+  if module.savedPosition then
+    SetEntityCoords(ped, module.savedPosition)
+  else
+    SetEntityCoords(ped, module.Config.VehicleShopZones.Main.Center)
+  end
+
+  Citizen.Wait(1000)
+  DoScreenFadeIn(250)
+end
+
+----------------
+--   END CLEANUP
+----------------
 
 module.OpenShopMenu = function()
 
   module.inMenu = true
 
-  module.SaveCurrentPosition()
-
   module.EnterShop()
 
-    local items = {}
+  local items = {}
 
-    if module.categories then
-      for k,v in pairs(module.categories) do
+  if module.categories then
+    for k,v in pairs(module.categories) do
 
-        local category = v.category
-        local label    = v.categoryLabel
+      local category = v.category
+      local label    = v.categoryLabel
 
-        items[#items + 1] = {type= 'button', name = category, label = label}
-      end
+      items[#items + 1] = {type= 'button', name = category, label = label}
     end
+  end
 
-    items[#items + 1] = {type= 'button', name = 'exit', label = ">> Exit <<"}
+  items[#items + 1] = {type= 'button', name = 'exit', label = ">> Exit <<"}
 
-    module.shopMenu = Menu('vehicleshop.main', {
-      title = 'Vehicle Shop',
-      float = 'top|left', -- not needed, default value
-      items = items
-    })
+  module.shopMenu = Menu('vehicleshop.main', {
+    title = 'Vehicle Shop',
+    float = 'top|left', -- not needed, default value
+    items = items
+  })
 
-    module.currentMenu = module.shopMenu
+  module.currentMenu = module.shopMenu
 
-    module.shopMenu:on('item.click', function(item, index)
-      PlaySoundFrontend(-1, "NAV_LEFT_RIGHT", "HUD_FREEMODE_SOUNDSET", 1)
+  module.shopMenu:on('item.click', function(item, index)
+    PlaySoundFrontend(-1, "NAV_LEFT_RIGHT", "HUD_FREEMODE_SOUNDSET", 1)
 
-      if item.name == 'exit' then
-        module.DestroyShopMenu()
-        DoScreenFadeOut(250)
+    if item.name == 'exit' then
+      DoScreenFadeOut(250)
 
-        while not IsScreenFadedOut() do
-          Citizen.Wait(0)
-        end
-
-        module.ExitShop()
-      else
-        module.OpenCategoryMenu(item.name, item.label)
+      while not IsScreenFadedOut() do
+        Citizen.Wait(0)
       end
-    end)
+
+      module.ExitShop()
+    else
+      module.OpenCategoryMenu(item.name, item.label)
+    end
+  end)
 end
 
 on('ui.menu.mouseChange', function(value)
@@ -468,8 +613,6 @@ end
 module.startTestDrive = function(model)
   module.playerDied = false
 
-  module.SaveCurrentPosition()
-
   local playerPed = PlayerPedId()
 
   module.testDriveTime = tonumber(module.Config.TestDriveTime)
@@ -612,8 +755,6 @@ end
 -- module.startTestDrive = function(car)
 
 --   module.playerDied = false
-
---   module.SaveCurrentPosition()
 
 --   local playerPed = PlayerPedId()
 
@@ -1115,156 +1256,6 @@ module.GetVehicleLabelFromModel = function(model)
   end
 
   return
-end
-
-module.StartShopRestriction = function()
-  Citizen.CreateThread(function()
-    while module.isInShopMenu do
-      Citizen.Wait(20)
-
-      DisableControlAction(0, 75,  true)
-      DisableControlAction(27, 75, true)
-    end
-  end)
-end
-
-module.EnterShop = function()
-
-  module.isInShopMenu = true
-
-  module.StartShopRestriction()
-  
-  DoScreenFadeOut(250)
-
-  while not IsScreenFadedOut() do
-    Citizen.Wait(0)
-  end
-
-  camera.start()
-  module.mainCameraScene()
-
-  Citizen.CreateThread(function()
-    local ped = PlayerPedId()
-
-    FreezeEntityPosition(ped, true)
-    SetEntityVisible(ped, false)
-    SetEntityCoords(ped, module.Config.ShopInside.Pos)
-  end)
-
-  Citizen.Wait(500)
-
-  camera.setPolarAzimuthAngle(250.0, 120.0)
-  camera.setRadius(3.5)
-  emit('esx:identity:preventSaving', true)
-
-  DoScreenFadeIn(250)
-end
-
-module.ExitShop = function()
-  Citizen.CreateThread(function()
-    if module.buyMenu then
-      module.buyMenu:destroy()
-    end
-
-    if module.lastMenu then
-      module.lastMenu:destroy()
-    end
-
-    module.DestroyShopMenu()
-    local ped = PlayerPedId()
-    FreezeEntityPosition(ped, false)
-    SetEntityVisible(ped, true)
-    module.ReturnPlayer()
-    camera.destroy()
-    emit('esx:identity:preventSaving', false)
-  end)
-
-  module.isInShopMenu = false
-end
-
-module.ExitShopFromMenu = function()
-  Citizen.CreateThread(function()
-    DoScreenFadeOut(250)
-
-    while not IsScreenFadedOut() do
-      Citizen.Wait(0)
-    end
-  
-    if module.currentDisplayVehicle then
-      module.DeleteDisplayVehicleInsideShop()
-      module.currentDisplayVehicle = nil
-      module.vehicleLoaded         = false
-    end
-  
-  
-    Citizen.Wait(100)
-
-    if module.buyMenu then
-      module.buyMenu:destroy()
-    end
-
-    if module.lastMenu then
-      module.lastMenu:destroy()
-    end
-
-    module.DestroyShopMenu()
-    camera.destroy()
-    emit('esx:identity:preventSaving', false)
-
-    module.isInShopMenu = false
-
-    Citizen.Wait(400)
-
-    DoScreenFadeIn(500)
-  end)
-end
-
-module.ExitShopFromMenuTestDrive = function()
-  Citizen.CreateThread(function()
-    DoScreenFadeOut(250)
-
-    while not IsScreenFadedOut() do
-      Citizen.Wait(0)
-    end
-  
-    if module.currentDisplayVehicle then
-      module.DeleteDisplayVehicleInsideShop()
-      module.currentDisplayVehicle = nil
-      module.vehicleLoaded         = false
-    end
-  
-  
-    Citizen.Wait(100)
-
-    if module.buyMenu then
-      module.buyMenu:destroy()
-    end
-
-    if module.lastMenu then
-      module.lastMenu:destroy()
-    end
-
-    module.DestroyShopMenu()
-    camera.destroy()
-
-    module.isInShopMenu = false
-
-    Citizen.Wait(400)
-
-    DoScreenFadeIn(500)
-  end)
-end
-
-module.ReturnPlayer = function()
-  local ped = PlayerPedId()
-  if module.savedPosition then
-    SetEntityCoords(ped, module.savedPosition)
-  else
-    SetEntityCoords(ped, module.Config.VehicleShopZones.Main.Center)
-  end
-
-  Citizen.Wait(1000)
-  DoScreenFadeIn(250)
 end
 
 module.WaitForVehicleToLoad = function(modelHash)
