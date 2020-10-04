@@ -63,11 +63,6 @@ on("esx:startCache", function()
         end
       end
 
-      -- -- THIS ENCODED ARRAY TO JSON TO TEST STORAGE
-			-- MySQL.Async.execute('INSERT INTO test (data) VALUES (@data)', {
-			-- 	['@data']         = json.encode(module.cache.vehicles)
-			-- })
-
       print("^2vehicles cached^7")
     else
       print("^1error caching vehicles^7")
