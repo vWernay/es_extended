@@ -373,7 +373,7 @@ module.Boot = function()
   end
 
   on('esx:ready', function()
-    print('^2ready')
+    print('^2ready^7')
   end)
 
   ESX.Loaded = true

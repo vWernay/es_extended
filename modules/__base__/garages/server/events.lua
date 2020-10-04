@@ -87,6 +87,7 @@ onRequest("garages:storeAllVehicles", function(source, cb, plate)
 	MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored', {
 		['@stored'] = 1,
 	}, function(rowsChanged)
+		print("^2returned all owned vehicles to their garages^7")
 		cb(true)
 	end)
 end)
