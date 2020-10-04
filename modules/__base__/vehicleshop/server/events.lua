@@ -28,7 +28,7 @@ onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
   local player = Player.fromId(source)
 
   if player then
-    MySQL.Async.fetchAll('SELECT model, sell_price FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND owner = @owner', {
+    MySQL.Async.fetchAll('SELECT model, sell_price FROM owned_vehicles WHERE plate = @plate AND identity_id = @identityId AND owner = @owner', {
       ['@plate']      = plate,
       ['@identityId'] = player:getIdentityId(),
       ['@owner']      = player.identifier
@@ -59,9 +59,9 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
   local foundVehicle = false
 
   if player then
-    MySQL.Async.execute('INSERT INTO owned_vehicles (id, owner, plate, model, sell_price, vehicle) VALUES (@id, @owner, @plate, @model, @sell_price, @vehicle)', {
-      ['@id']         = player:getIdentityId(),
+    MySQL.Async.execute('INSERT INTO owned_vehicles (owner, identity_id, plate, model, sell_price, vehicle) VALUES (@owner, @identityId, @plate, @model, @sell_price, @vehicle)', {
       ['@owner']      = player.identifier,
+      ['@identityId'] = player:getIdentityId(),
       ['@plate']      = plate,
       ['@model']      = model,
       ['@sell_price'] = resellPrice,

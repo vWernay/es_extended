@@ -1,6 +1,7 @@
 CREATE TABLE `owned_vehicles` (
 	`id`INT(11) NOT NULL,
 	`owner` VARCHAR(40) NOT NULL,
+	`identity_id` INT(11) NOT NULL,
 	`plate` VARCHAR(8) NOT NULL,
 	`model` VARCHAR(12) NOT NULL,
 	`sell_price` INT(11) NOT NULL,

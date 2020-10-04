@@ -26,9 +26,16 @@ on("esx:startCache", function()
 
       for i=1,#result,1 do
         if result[i].container_id then
+
+          -- if module.cache.ownedVehicles[result[i].owner] == nil then
+          --   module.cache.ownedVehicles[result[i].owner] = {}
+          -- end
+
+
           table.insert(module.cache.ownedVehicles, {
             id          = result[i].id,
             owner       = result[i].owner,
+            identityId  = result[i].identity_id,
             plate       = result[i].plate,
             model       = result[i].model,
             sellPrice   = result[i].sell_price,
@@ -41,6 +48,7 @@ on("esx:startCache", function()
           table.insert(module.cache.ownedVehicles, {
             id          = result[i].id,
             owner       = result[i].owner,
+            identityId  = result[i].identity_id,
             plate       = result[i].plate,
             model       = result[i].model,
             sellPrice   = result[i].sell_price,
