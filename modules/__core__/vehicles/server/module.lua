@@ -17,7 +17,6 @@ module.cache.vehicles   = {}
 module.cache.categories = {}
 
 module.reloadVehicles = function()
-
 	module.categoryFound    = false
 
 	module.cache            = {}
