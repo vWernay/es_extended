@@ -13,15 +13,15 @@
 module.cache                = {}
 module.cache.ownedVehicles  = {}
 
-ESX.SetInterval(1000, function()
-  if module.cache.ownedVehicles then
-    for k,v in pairs(module.cache.ownedVehicles) do
-      if k then
-        print("Owner: " .. v.owner .. " | " .. "ID: " .. v.id .. " | " .. v.plate)
-      end
-    end
-  end
-end)
+-- ESX.SetInterval(1000, function()
+--   if module.cache.ownedVehicles then
+--     for k,v in pairs(module.cache.ownedVehicles) do
+--       if k then
+--         print("Owner: " .. v.owner .. " | " .. "Identity ID: " .. v.identityId .. " | " .. v.plate)
+--       end
+--     end
+--   end
+-- end)
 
 module.reloadOwnedVehicles = function()
 	module.cache               = {}
