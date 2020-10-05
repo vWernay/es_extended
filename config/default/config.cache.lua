@@ -1,4 +1,4 @@
 Config.Modules.cache = {
-  -- in seconds, represent the time between each player identity coordinates saves
+  -- in minutes, the amount of time between cache updates to the database
   serverSaveInterval = 15
 }
