@@ -175,6 +175,10 @@ module.OpenGarageMenu = function(data)
 
   local items = {}
 
+  ------------------------------------
+  -- SERVER-SIDE CACHE CHECK HERE
+  ------------------------------------
+
   request('garages:getOwnedVehicles', function(vehicles)
     if vehicles then
       for i=1, #vehicles, 1 do
@@ -280,6 +284,10 @@ module.OpenRetrievalMenu = function(vehicleData, data)
     elseif item.name == 'yes' then
 
       module.retrievalMenu:hide()
+
+      ------------------------------------
+      -- SERVER-SIDE VEHICLE SPAWNING HERE
+      ------------------------------------
 
       request("garages:removeVehicleFromGarage", function(success)
         if success then

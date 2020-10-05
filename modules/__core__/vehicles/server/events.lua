@@ -68,7 +68,7 @@ on("esx:startCache", function()
 			-- 	['@data']         = json.encode(module.cache.vehicles)
 			-- })
 
-      print("^2vehicles cached^7")
+      print("^2available vehicles cached^7")
     else
       print("^1error caching vehicles^7")
     end

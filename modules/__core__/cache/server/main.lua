@@ -10,3 +10,8 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
+ESX.SetInterval(Config.Modules.cache.serverSaveInterval * 1000 * 60, function()
+  if ESX.Ready then
+    emit('esx:saveCache')
+  end
+end)

@@ -29,7 +29,7 @@ module.reloadOwnedVehicles = function()
 
   MySQL.Async.fetchAll('SELECT * FROM owned_vehicles', {}, function(result)
     if result then
-      if  module.cache.ownedVehicles == nil then
+      if module.cache.ownedVehicles == nil then
         module.cache.ownedVehicles = {}
       end
 
