@@ -70,12 +70,12 @@ end)
 onRequest('garages:getOwnedVehiclesFromCache', function(source, cb)
 	local player = Player.fromId(source)
 
-	local owned_vehicles = ownedVehicles.getOwnedVehicles()
+	local playerVehicles = ownedVehicles.getOwnedVehicles()
 
 	local vehicles = {}
 
-	if owned_vehicles[player.identifier] then
-		for k,v in pairs(owned_vehicles[player.identifier]) do
+	if playerVehiclesehicles[player.identifier] then
+		for k,v in pairs(playerVehiclesehicles[player.identifier]) do
 			if v.owner == player.identifier and v.id == player:getIdentityId() then
 				table.insert(vehicles, {
 					vehicleProps = json.decode(v.vehicle),
