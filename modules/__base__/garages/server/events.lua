@@ -15,88 +15,90 @@ local ownedVehicles = M("owned.vehicles")
 local utils    = M("utils")
 
 on("esx:saveCache", function()
-	print("^1owned.vehicles cache saving...^7")
-	-- Placeholder
-	print("^2owned.vehicles save complete.^7")
+  print("^1owned.vehicles cache saving...^7")
+  -- Placeholder
+  print("^2owned.vehicles save complete.^7")
 end)
 
 onClient('garages:updateVehicle', function(plate, vehicleProps)
   MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate', {
-		['@vehicle'] = json.encode(vehicleProps),
-		['@plate']   = plate,
-	})
+    ['@vehicle'] = json.encode(vehicleProps),
+    ['@plate']   = plate,
+  })
 end)
 
 onClient('garages:storeVehicle', function(plate)
   MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored WHERE plate = @plate', {
-		['@stored'] = 1,
-		['@plate']  = plate,
-	})
+    ['@stored'] = 1,
+    ['@plate']  = plate,
+  })
 end)
 
 onRequest('garages:checkOwnedVehicle', function(source, cb, plate)
-	local player = Player.fromId(source)
+  local player = Player.fromId(source)
 
-	if player then
-		MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND owner = @owner', {
-			['@plate']      = plate,
-			['@identityId'] = player:getIdentityId(),
-			['@owner']      = player.identifier
-		}, function(result)
-			if result then
-				if result[1] then
-					cb(true)
-				else
-					cb(false)
-				end
-			else
-				cb(false)
-			end
-		end)
-	else
-		cb(false)
-	end
+  if player then
+    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND owner = @owner', {
+      ['@plate']      = plate,
+      ['@identityId'] = player:getIdentityId(),
+      ['@owner']      = player.identifier
+    }, function(result)
+      if result then
+        if result[1] then
+          cb(true)
+        else
+          cb(false)
+        end
+      else
+        cb(false)
+      end
+    end)
+  else
+    cb(false)
+  end
 end)
 
 onRequest('garages:removeVehicleFromGarage', function(source, cb, plate)
   MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored WHERE plate = @plate', {
-		['@stored'] = 0,
-		['@plate']  = plate
-	}, function(rowsChanged)
-		cb(true)
-	end)
+    ['@stored'] = 0,
+    ['@plate']  = plate
+  }, function(rowsChanged)
+    cb(true)
+  end)
 end)
 
 onRequest('garages:getOwnedVehiclesFromCache', function(source, cb)
-	local player = Player.fromId(source)
+  local player = Player.fromId(source)
 
-	local playerVehicles = ownedVehicles.getOwnedVehicles()
+  local playerVehicles = ownedVehicles.getOwnedVehicles()
 
-	local vehicles = {}
+  local vehicles = {}
 
-	if playerVehiclesehicles[player.identifier] then
-		for k,v in pairs(playerVehiclesehicles[player.identifier]) do
-			if v.owner == player.identifier and v.id == player:getIdentityId() then
-				table.insert(vehicles, {
-					vehicleProps = json.decode(v.vehicle),
-					stored       = v.stored,
-					model        = v.model,
-					plate        = v.plate
-				})
-			end
-		end
-	else
-		vehicles = nil
-	end
+  if playerVehiclesehicles[player.identifier] then
+    for k,v in pairs(playerVehiclesehicles[player.identifier]) do
+      if v.owner == player.identifier and v.id == player:getIdentityId() then
 
-	cb(vehicles)
+        table.insert(vehicles, {
+          vehicleProps = json.decode(v.vehicle),
+          stored       = v.stored,
+          model        = v.model,
+          plate        = v.plate
+        })
+
+      end
+    end
+  else
+    vehicles = nil
+  end
+
+  cb(vehicles)
 end)
 
 onRequest("garages:storeAllVehicles", function(source, cb, plate)
-	MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored', {
-		['@stored'] = 1,
-	}, function(rowsChanged)
-		print("^2returned all owned vehicles to their garages^7")
-		cb(true)
-	end)
+  MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored', {
+    ['@stored'] = 1,
+  }, function(rowsChanged)
+    print("^2returned all owned vehicles to their garages^7")
+    cb(true)
+  end)
 end)
