@@ -175,11 +175,7 @@ module.OpenGarageMenu = function(data)
 
   local items = {}
 
-  ------------------------------------
-  -- SERVER-SIDE CACHE CHECK HERE
-  ------------------------------------
-
-  request('garages:getOwnedVehicles', function(vehicles)
+  request('garages:getOwnedVehiclesFromCache', function(vehicles)
     if vehicles then
       for i=1, #vehicles, 1 do
         if vehicles[i].stored == 1 then
@@ -240,6 +236,10 @@ module.OpenGarageMenu = function(data)
     end
   end)
 
+  module.menuStarted()
+end
+
+module.menuStarted = function()
   Citizen.Wait(500)
 
   camera.setPolarAzimuthAngle(220.0, 120.0)

@@ -10,6 +10,10 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
+local Command  = M("events")
+local ownedVehicles = M("owned.vehicles")
+local utils    = M("utils")
+
 on("esx:saveCache", function()
 	print("^1owned.vehicles cache saving...^7")
 	-- Placeholder
@@ -63,30 +67,29 @@ onRequest('garages:removeVehicleFromGarage', function(source, cb, plate)
 	end)
 end)
 
-onRequest('garages:getOwnedVehicles', function(source, cb)
-    local player = Player.fromId(source)
+onRequest('garages:getOwnedVehiclesFromCache', function(source, cb)
+	local player = Player.fromId(source)
 
-	if player then
-		MySQL.Async.fetchAll('SELECT * FROM owned_vehicles WHERE id = @id AND owner = @owner',
-		{
-			['@id']    = player:getIdentityId(),
-			['@owner'] = player.identifier,
-		}, function(result)
+	local owned_vehicles = ownedVehicles.getOwnedVehicles()
 
-			local vehicles = {}
-			for i=1, #result, 1 do
+	local vehicles = {}
+
+	if owned_vehicles[player.identifier] then
+		for k,v in pairs(owned_vehicles[player.identifier]) do
+			if v.owner == player.identifier and v.id == player:getIdentityId() then
 				table.insert(vehicles, {
-					vehicleProps = json.decode(result[i].vehicle),
-					stored       = result[i].stored
+					vehicleProps = json.decode(v.vehicle),
+					stored       = v.stored,
+					model        = v.model,
+					plate        = v.plate
 				})
 			end
-
-			cb(vehicles)
-
-		end)
+		end
 	else
-		cb(nil)
+		vehicles = nil
 	end
+
+	cb(vehicles)
 end)
 
 onRequest("garages:storeAllVehicles", function(source, cb, plate)
