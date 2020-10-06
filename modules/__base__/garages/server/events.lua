@@ -77,14 +77,12 @@ onRequest('garages:getOwnedVehiclesFromCache', function(source, cb)
   if playerVehiclesehicles[player.identifier] then
     for k,v in pairs(playerVehiclesehicles[player.identifier]) do
       if v.owner == player.identifier and v.id == player:getIdentityId() then
-
         table.insert(vehicles, {
           vehicleProps = json.decode(v.vehicle),
           stored       = v.stored,
           model        = v.model,
           plate        = v.plate
         })
-
       end
     end
   else
