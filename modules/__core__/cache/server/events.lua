@@ -9,3 +9,28 @@
 --   You shall not provide any facility to install this particular software in a commercial product / service
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
+
+-- In the future, it is planned to have all of the caches inside of one module, configurable
+-- to set which database tables should be a part of the cache.
+-- Example:
+-- Config.CachedTables = {
+--   "owned_vehicles",
+--   "inventory"
+-- }
+--
+-- START EXAMPLE CODE
+--
+-- module.cache = {}
+--
+-- on('esx:startCache', function()
+--   for i=1, #Config.CachedTables, 1 do
+--     if module.cache[i] == nil then
+--       module.cache[i] = {}
+--     end
+--
+--     MySQL query here to add the data to the created cache
+--
+--   end
+-- end)
+--
+-- END EXAMPLE CODE
