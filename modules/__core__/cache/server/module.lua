@@ -13,18 +13,22 @@
 module.Cache = {}
 
 
-ESX.SetInterval(5000, function()
-  if module.Cache["owned_vehicles"] then
-    for k,v in pairs(module.Cache["owned_vehicles"]) do
-      for l,w in pairs(module.Cache["owned_vehicles"][k]) do
-        for m,x in pairs(module.Cache["owned_vehicles"][k][l]) do
-          for n,y in pairs(module.Cache["owned_vehicles"][k][l][m]) do
-            if y then
-              print(n .. " | " .. tostring(y))
-            end
-          end
-        end
-      end
-    end
-  end
-end)
+-- ESX.SetInterval(5000, function()
+--   if module.Cache["owned_vehicles"] then
+--     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"] then
+--       print(true)
+--     end
+
+--     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1] then
+--       print(true)
+--     end
+
+--     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1] then
+--       print(true)
+--     end
+
+--     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1].identifier then
+--       print(module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1].identifier)
+--     end
+--   end
+-- end)

@@ -38,10 +38,10 @@ onRequest('garages:checkOwnedVehicle', function(source, cb, plate)
   local player = Player.fromId(source)
 
   if player then
-    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND owner = @owner', {
+    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND identifier = @identifier', {
       ['@plate']      = plate,
       ['@identityId'] = player:getIdentityId(),
-      ['@owner']      = player.identifier
+      ['@identifier'] = player.identifier
     }, function(result)
       if result then
         if result[1] then
@@ -76,7 +76,7 @@ onRequest('garages:getOwnedVehiclesFromCache', function(source, cb)
 
   if playerVehiclesehicles[player.identifier] then
     for k,v in pairs(playerVehiclesehicles[player.identifier]) do
-      if v.owner == player.identifier and v.id == player:getIdentityId() then
+      if v.identifier == player.identifier and v.id == player:getIdentityId() then
         table.insert(vehicles, {
           vehicleProps = json.decode(v.vehicle),
           stored       = v.stored,
@@ -85,8 +85,6 @@ onRequest('garages:getOwnedVehiclesFromCache', function(source, cb)
         })
       end
     end
-  else
-    vehicles = nil
   end
 
   cb(vehicles)
