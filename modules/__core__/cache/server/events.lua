@@ -11,7 +11,7 @@
 --   This copyright should appear in every part of the project code
 
 on('esx:startCache', function()
-  if Config.Modules.cache.cachedTables then
+  if Config.Modules.cache.basicCachedTables then
     for _,tab in pairs(Config.Modules.cache.basicCachedTables) do
       if module.Cache[tab] == nil then
         module.Cache[tab] = {}
@@ -38,9 +38,7 @@ on('esx:startCache', function()
 
   if Config.Modules.cache.identityCachedTables then
     for _,tab in pairs(Config.Modules.cache.identityCachedTables) do
-      if module.Cache[tab] == nil then
-        module.Cache[tab] = {}
-      end
+      module.Cache[tab] = {}
 
       MySQL.Async.fetchAll('SELECT * FROM ' .. tab, {}, function(result)
         for i=1, #result, 1 do
