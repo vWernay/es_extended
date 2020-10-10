@@ -51,25 +51,20 @@ on('esx:startCache', function()
               module.Cache[tab][result[i].identifier][result[i].id] = {}
             end
 
-            MySQL.Async.fetchAll('SELECT * FROM ' .. tab .. ' WHERE identifier = @identifier AND id = @id', {
-              ['@identifier'] = result[i].identifier,
-              ['@id']    = result[i].id
-            }, function(result2)
-              for _,data in ipairs(result) do
-                local index = #module.Cache[tab]+1
-                module.Cache[tab][result[i].identifier][result[i].id][index] = {}
+            for _,data in ipairs(result) do
+              local index = #module.Cache[tab]+1
+              module.Cache[tab][result[i].identifier][result[i].id][index] = {}
 
-                for k,v in pairs(data) do
-                  module.Cache[tab][result[i].identifier][result[i].id][index][k] = {}
+              for k,v in pairs(data) do
+                module.Cache[tab][result[i].identifier][result[i].id][index][k] = {}
 
-                  if type(v) == "string" and v:len() >= 2 and v:find("{") and v:find("}") then
-                    module.Cache[tab][result[i].identifier][result[i].id][index][k] = json.decode(v)
-                  else
-                    module.Cache[tab][result[i].identifier][result[i].id][index][k] = v
-                  end
+                if type(v) == "string" and v:len() >= 2 and v:find("{") and v:find("}") then
+                  module.Cache[tab][result[i].identifier][result[i].id][index][k] = json.decode(v)
+                else
+                  module.Cache[tab][result[i].identifier][result[i].id][index][k] = v
                 end
               end
-            end)
+            end
           end
         end
       end)
