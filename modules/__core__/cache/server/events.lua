@@ -73,5 +73,7 @@ on('esx:startCache', function()
 end)
 
 on('esx:startSave', function()
-  -- Handle Saving All Caches Here
+  if Config.Modules.cache.cachesToUpdate then
+    -- Handle Saving All Caches Here
+  end
 end
