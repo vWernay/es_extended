@@ -11,11 +11,12 @@
 --   This copyright should appear in every part of the project code
 
 on('esx:startCache', function()
+
+  print("ensuring cache")
+
   if Config.Modules.cache.basicCachedTables then
     for _,tab in pairs(Config.Modules.cache.basicCachedTables) do
-      if module.Cache[tab] == nil then
-        module.Cache[tab] = {}
-      end
+      module.Cache[tab] = {}
 
       MySQL.Async.fetchAll('SELECT * FROM ' .. tab, {}, function(result)
         for _,data in ipairs(result) do
@@ -33,6 +34,8 @@ on('esx:startCache', function()
           end
         end
       end)
+
+      print("finished caching ^5\"" .. tab .. "\"^7")
     end
   end
 
@@ -68,12 +71,20 @@ on('esx:startCache', function()
           end
         end
       end)
+
+      print("finished caching ^5\"" .. tab .. "\"^7")
     end
   end
+
+  emit('esx:cacheReady')
 end)
 
 on('esx:startSave', function()
   if Config.Modules.cache.cachesToUpdate then
-    -- Handle Saving All Caches Here
+    for _,tab in pairs(Config.Modules.cache.cachesToUpdate) do
+      if module.Cache[tab] then
+
+      end
+    end
   end
 end)

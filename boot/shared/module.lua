@@ -372,7 +372,11 @@ module.Boot = function()
 
   end
 
-  on('esx:ready', function()
+  -- on('esx:ready', function()
+  --   print('^2ready^7')
+  -- end)
+
+  on('esx:cacheReady', function()
     print('^2ready^7')
   end)
 
