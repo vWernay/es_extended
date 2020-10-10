@@ -71,3 +71,7 @@ on('esx:startCache', function()
     end
   end
 end)
+
+on('esx:startSave', function()
+  -- Handle Saving All Caches Here
+end

@@ -6,5 +6,8 @@ Config.Modules.cache = {
   },
   identityCachedTables = {
     "owned_vehicles"
+  },
+  cachesToUpdate = {
+    "owned_vehicles"
   }
 }
