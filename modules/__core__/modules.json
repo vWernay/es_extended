@@ -20,12 +20,10 @@
     "player",
     "role",
     "character",
-    "owned.vehicles",
     "skin",
     "serializable",
     "string",
     "table",
-    "vehicles",
     "ui.hud",
     "ui.menu",
     "utils"

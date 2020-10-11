@@ -11,7 +11,7 @@
 --   This copyright should appear in every part of the project code
 
 local Command  = M("events")
-local vehicles = M("vehicles")
+local cache    = M("cache")
 local utils    = M("utils")
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
@@ -148,13 +148,13 @@ onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace,
 end)
 
 onRequest("vehicleshop:getCategories", function(source, cb)
-  module.cache.categories = vehicles.getCategories()
+  module.cache.categories = cache.getCacheByName("categories")
 
   cb(module.cache.categories)
 end)
 
 onRequest("vehicleshop:getVehicles", function(source, cb)
-  module.cache.vehicles   = vehicles.getVehicles()
+  module.cache.vehicles = cache.getCacheByName("vehicles")
 
   cb(module.cache.vehicles)
 end)

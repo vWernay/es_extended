@@ -12,23 +12,10 @@
 
 module.Cache = {}
 
-
--- ESX.SetInterval(5000, function()
---   if module.Cache["owned_vehicles"] then
---     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"] then
---       print(true)
---     end
-
---     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1] then
---       print(true)
---     end
-
---     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1] then
---       print(true)
---     end
-
---     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1].identifier then
---       print(module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1].identifier)
---     end
---   end
--- end)
+module.getCacheByName = function(cacheName)
+    if module.Cache[cacheName] then
+        return module.Cache[cacheName]
+    else
+        return nil
+    end
+end

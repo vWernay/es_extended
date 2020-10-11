@@ -19,7 +19,6 @@ local Interact = M('interact')
 local HUD      = M('game.hud')
 local utils    = M("utils")
 local camera   = M("camera")
-local vehicles = M("vehicles")
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
