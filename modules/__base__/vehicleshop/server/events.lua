@@ -59,27 +59,42 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
   local foundVehicle = false
 
   if player then
-    MySQL.Async.execute('INSERT INTO owned_vehicles (identifier, id, plate, model, sell_price, vehicle) VALUES (@identifier, @identityId, @plate, @model, @sell_price, @vehicle)', {
-      ['@identifier'] = player.identifier,
-      ['@identityId'] = player:getIdentityId(),
-      ['@plate']      = plate,
-      ['@model']      = model,
-      ['@sell_price'] = resellPrice,
-      ['@vehicle']    = json.encode({model = GetHashKey(model), plate = plate}),
-    }, function(rowsChanged)
-      print("^7[^4" .. player:getIdentityId() .. "^7/^5" .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
+    -- MySQL.Async.execute('INSERT INTO owned_vehicles (identifier, id, plate, model, sell_price, vehicle) VALUES (@identifier, @identityId, @plate, @model, @sell_price, @vehicle)', {
+    --   ['@identifier'] = player.identifier,
+    --   ['@identityId'] = player:getIdentityId(),
+    --   ['@plate']      = plate,
+    --   ['@model']      = model,
+    --   ['@sell_price'] = resellPrice,
+    --   ['@vehicle']    = json.encode({model = GetHashKey(model), plate = plate}),
+    -- }, function(rowsChanged)
 
-      utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
-        while not DoesEntityExist(vehicle) do
-          Wait(10)
-        end
+      local data = {
+        identifier = player.identifier,
+        id = player:getIdentityId(),
+        plate = plate,
+        model = model,
+        sell_price = resellPrice,
+        vehicle = json.encode({model = GetHashKey(model), plate = plate})
+      }
 
-        local vehicleID = NetworkGetNetworkIdFromEntity(vehicle)
+      if cache.UpdateIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
 
-        SetVehicleNumberPlateText(vehicle, plate)
-        cb(vehicleID)
-      end)
-    end)
+        print("^7[^4" .. player:getIdentityId() .. "^7/^5" .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
+
+        utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
+          while not DoesEntityExist(vehicle) do
+            Wait(10)
+          end
+
+          local vehicleID = NetworkGetNetworkIdFromEntity(vehicle)
+
+          SetVehicleNumberPlateText(vehicle, plate)
+          cb(vehicleID)
+        end)
+      else
+        print("^1Error purchasing vehicle. Please contact the server administrator.^7")
+      end
+    -- end)
   else
     cb(false)
   end
@@ -150,11 +165,19 @@ end)
 onRequest("vehicleshop:getCategories", function(source, cb)
   module.cache.categories = cache.getCacheByName("categories")
 
-  cb(module.cache.categories)
+  if module.cache.categories then
+    cb(module.cache.categories)
+  else
+    cb(nil)
+  end
 end)
 
 onRequest("vehicleshop:getVehicles", function(source, cb)
   module.cache.vehicles = cache.getCacheByName("vehicles")
 
-  cb(module.cache.vehicles)
+  if module.cache.vehicles then
+    cb(module.cache.vehicles)
+  else
+    cb(nil)
+  end
 end)
