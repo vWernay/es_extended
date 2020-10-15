@@ -20,17 +20,17 @@ module.getCacheByName = function(cacheName)
     end
 end
 
-ESX.SetInterval(5000, function()
-  if module.Cache["owned_vehicles"] then
-    if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1].identifier then
-        for k,v in pairs(module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1]) do
-            for l,m in pairs(module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][k]) do
-                print(l .. " | " .. tostring(m))
-            end
-        end
-    end
-  end
-end)
+-- ESX.SetInterval(5000, function()
+--   if module.Cache["owned_vehicles"] then
+--     if module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][1].identifier then
+--         for k,v in pairs(module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1]) do
+--             for l,m in pairs(module.Cache["owned_vehicles"]["ea910a9e8f6a5d9386ddc923f5976453040f881d"][1][k]) do
+--                 print(l .. " | " .. tostring(m))
+--             end
+--         end
+--     end
+--   end
+-- end)
 
 module.UpdateIdentityCache = function(cacheName, identifier, id, updateData)
     if module.Cache[cacheName][identifier][id] then

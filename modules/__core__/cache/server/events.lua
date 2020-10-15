@@ -138,7 +138,7 @@ on('esx:startCache', function()
   emit('esx:cacheReady')
 end)
 
-on('esx:startSave', function()
+on('esx:saveCache', function()
   if Config.Modules.cache.cachesToUpdate then
     for _,tab in pairs(Config.Modules.cache.cachesToUpdate) do
       if module.Cache[tab] then

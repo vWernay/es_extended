@@ -16,6 +16,7 @@
     "inventory",
     "math",
     "migrate",
+    "owned.vehicles",
     "persistent",
     "player",
     "role",
@@ -26,5 +27,6 @@
     "table",
     "ui.hud",
     "ui.menu",
-    "utils"
+    "utils",
+    "vehicles"
 ]
