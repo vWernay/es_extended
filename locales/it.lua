@@ -13,7 +13,7 @@
 --   Translate by: lorenzo
 --   github profile: https://github.com/xlore97
 
-Locales['iy'] = {
+Locales['it'] = {
   -- Global
   ['submit'] = 'Invia',
   
