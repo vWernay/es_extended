@@ -10,9 +10,13 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-module.cache            = {}
-module.cache.categories = {}
-module.cache.vehicles   = {}
+local Cache    = M("cache")
+
+module.Cache            = {}
+module.Cache.categories = {}
+module.Cache.vehicles   = {}
+
+module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
 module.excessPlateLength = function(plate, plateUseSpace, plateLetters, plateNumbers)
     local checkedPlate = tostring(plate)
@@ -24,4 +28,22 @@ module.excessPlateLength = function(plate, plateUseSpace, plateLetters, plateNum
     else
         return false
     end
+end
+
+module.UpdateVehicle = function(vehicleProps, plate, model)
+  local player = Player.fromId(source)
+
+  if module.Config.UseCache then
+    local value = json.encode(vehicleProps)
+
+    if Cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "vehicle", value) then
+      print("updated vehicle data in cache")
+    end
+  else
+    MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate AND model = @model', {
+      ['@plate']   = plate,
+      ['@model']   = model,
+      ['@vehicle'] = json.encode(vehicleProps)
+    })
+  end
 end

@@ -547,7 +547,6 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
 
         request('vehicleshop:buyVehicle', function(result)
           if result then
-
             if NetworkDoesEntityExistWithNetworkId(result) then
 
               local vehicle = NetToVeh(result)

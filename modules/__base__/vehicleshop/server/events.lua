@@ -11,28 +11,13 @@
 --   This copyright should appear in every part of the project code
 
 local Command  = M("events")
-local cache    = M("cache")
+local Cache    = M("cache")
 local utils    = M("utils")
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
 onClient('vehicleshop:updateVehicle', function(vehicleProps, plate, model)
-  local player = Player.fromId(source)
-
-  if module.Config.UseCache then
-    local key = "vehicle"
-    local value = json.encode(vehicleProps)
-
-    if cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "vehicle", value) then
-      print("updated vehicle data in cache")
-    end
-  else
-    MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate AND model = @model', {
-      ['@plate']   = plate,
-      ['@model']   = model,
-      ['@vehicle'] = json.encode(vehicleProps)
-    })
-  end
+  module.UpdateVehicle(vehicleProps, plate, model)
 end)
 
 onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
@@ -40,7 +25,22 @@ onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
 
   if player then
     if module.Config.UseCache then
+      local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
+      if vehicleCheck then
+        if vehicleCheck.model and vehicleCheck.sell_price then
+          local vehicleData = {
+            model = vehicleCheck.model,
+            resellPrice = vehicleCheck.sell_price
+          }
+
+          cb(vehicleData)
+        else
+          cb(false)
+        end
+      else
+        cb(false)
+      end
     else
       MySQL.Async.fetchAll('SELECT model, sell_price FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND identifier = @identifier', {
         ['@plate']      = plate,
@@ -74,15 +74,18 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
   if player then
     if module.Config.UseCache then
       local data = {
-        identifier = player.identifier,
-        id         = player:getIdentityId(),
-        plate      = plate,
-        model      = model,
-        sell_price = resellPrice,
-        vehicle    = json.encode({model = GetHashKey(model), plate = plate})
+        identifier   = player.identifier,
+        id           = player:getIdentityId(),
+        plate        = plate,
+        model        = model,
+        sell_price   = resellPrice,
+        sold         = 0,
+        stored       = 0,
+        vehicle      = json.encode({model = GetHashKey(model), plate = plate}),
+        container_id = nil
       }
 
-      if cache.InsertIntoIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
+      if Cache.InsertIntoIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
 
         print("^7[^4" .. player:getIdentityId() .. "^7 |^5 " .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
 
@@ -163,50 +166,77 @@ end)
 onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPrice, formattedPrice)
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
-
   if module.Config.UseCache then
+    local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
-  else
-
-  end
-end)
-
-onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace, plateLetters, plateNumbers)
-  if Config.UseCache then
-
-  else
-    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
-      ['@plate'] = plate
-    }, function(result)
-
-      if result[1] then
+    if vehicleCheck then
+      if Cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "sold", 1) then
         cb(true)
       else
-        if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
+        cb(false)
+      end
+    else
+      cb(false)
+    end
+  else
+    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND identifier = @identifier', {
+      ['@plate']      = plate,
+      ['@identityId'] = player:getIdentityId(),
+      ['@identifier'] = player.identifier
+    }, function(result)
+      if result then
+        if result[1] then
+          MySQL.Async.execute('UPDATE owned_vehicles SET sold = @sold WHERE plate = @plate AND model = @model', {
+            ['@plate'] = plate,
+            ['@model'] = model,
+            ['@sold']  = 1
+          })
+
           cb(true)
         else
           cb(false)
         end
+      else
+        cb(false)
       end
     end)
   end
 end)
 
-onRequest("vehicleshop:getCategories", function(source, cb)
-  module.cache.categories = cache.getCacheByName("categories")
+onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace, plateLetters, plateNumbers)
+  -- Add cache code later, after new implementations
 
-  if module.cache.categories then
-    cb(module.cache.categories)
+  MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
+    ['@plate'] = plate
+  }, function(result)
+
+    if result[1] then
+      cb(true)
+    else
+      if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
+        cb(true)
+      else
+        cb(false)
+      end
+    end
+  end)
+end)
+
+onRequest("vehicleshop:getCategories", function(source, cb)
+  module.Cache.categories = Cache.getCacheByName("categories")
+
+  if module.Cache.categories then
+    cb(module.Cache.categories)
   else
     cb(nil)
   end
 end)
 
 onRequest("vehicleshop:getVehicles", function(source, cb)
-  module.cache.vehicles = cache.getCacheByName("vehicles")
+  module.Cache.vehicles = Cache.getCacheByName("vehicles")
 
-  if module.cache.vehicles then
-    cb(module.cache.vehicles)
+  if module.Cache.vehicles then
+    cb(module.Cache.vehicles)
   else
     cb(nil)
   end

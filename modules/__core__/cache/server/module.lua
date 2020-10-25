@@ -20,9 +20,120 @@ module.getCacheByName = function(cacheName)
   end
 end
 
+module.InsertIntoIdentityCache = function(cacheName, identifier, id, updateData)
+  if module.Cache[cacheName] then
+    if not module.Cache[cacheName][identifier] then
+      module.Cache[cacheName][identifier] = {}
+    end
+
+    if not module.Cache[cacheName][identifier][id] then
+      module.Cache[cacheName][identifier][id] = {}
+    end
+
+    if module.Cache[cacheName][identifier][id] then
+      local index = #module.Cache[cacheName][identifier][id]+1
+
+      if not module.Cache[cacheName][identifier][id][index] then
+        module.Cache[cacheName][identifier][id][index] = {}
+      end
+
+      module.Cache[cacheName][identifier][id][index] = updateData
+
+      return true
+    else
+      return false
+    end
+  end
+end
+
+module.UpdateValueInIdentityCache = function(cacheName, identifier, id, lKey, lValue, key, value)
+  if module.Cache[cacheName] then
+    if module.Cache[cacheName][identifier] then
+      if module.Cache[cacheName][identifier][id] then
+        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
+          if v[lKey] and v[key] then
+            if v[lKey] == lValue then
+              print("module.Cache["..cacheName.."]["..identifier.."]["..id.."]["..k.."]["..key.."] = " .. value)
+              module.Cache[cacheName][identifier][id][k][key] = value
+
+              return true
+            end
+          end
+        end
+
+        return false
+      else
+        return false
+      end
+    else
+      return false
+    end
+  else
+    return false
+  end
+end
+
+module.RetrieveEntryFromIdentityCache = function(cacheName, identifier, id, key, value)
+  if module.Cache[cacheName] then
+    if module.Cache[cacheName][identifier] then
+      if module.Cache[cacheName][identifier][id] then
+        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
+          if v[key] then
+            if v[key] == value then
+              return module.Cache[cacheName][identifier][id][k]
+            end
+          end
+        end
+
+        return nil
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  else
+    return nil
+  end
+end
+
+module.RetrieveEntryWithLinkerFromIdentityCache = function(cacheName, identifier, id, lKey, lValue, key, value)
+  if module.Cache[cacheName] then
+    if module.Cache[cacheName][identifier] then
+      if module.Cache[cacheName][identifier][id] then
+        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
+          if v[lKey] and v[key] then
+            if v[lKey] == lValue then
+              return module.Cache[cacheName][identifier][id][k]
+            end
+          end
+        end
+
+        return nil
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  else
+    return nil
+  end
+end
+
+module.UpdateBasicCache = function(cacheName, updateData)
+  if module.Cache[cacheName] then
+    table.insert(module.Cache[cacheName], updateData)
+
+    return true
+  else
+    return false
+  end
+end
+
 module.StartCache = function()
-  if Config.Modules.cache.basicCachedTables then
-    for _,tab in pairs(Config.Modules.cache.basicCachedTables) do
+  if Config.Modules.Cache.BasicCachedTables then
+    for _,tab in pairs(Config.Modules.Cache.BasicCachedTables) do
       if tab == "vehicles" then
         MySQL.Async.fetchAll('SELECT * FROM vehicles', {}, function(result)
           if result then
@@ -93,8 +204,8 @@ module.StartCache = function()
     end
   end
 
-  if Config.Modules.cache.identityCachedTables then
-    for _,tab in pairs(Config.Modules.cache.identityCachedTables) do
+  if Config.Modules.Cache.IdentityCachedTables then
+    for _,tab in pairs(Config.Modules.Cache.IdentityCachedTables) do
       module.Cache[tab] = {}
 
       MySQL.Async.fetchAll('SELECT * FROM ' .. tab, {}, function(result)
@@ -121,10 +232,6 @@ module.StartCache = function()
                 if not module.Cache[tab][result[i].identifier][result[i].id][index][k] then
                   module.Cache[tab][result[i].identifier][result[i].id][index][k] = {}
 
-                  -- if k == "identifier" then
-                  --   print("module.Cache[^2\""..tab.."\"^7][^6"..result[i].identifier.."^7][^4"..result[i].id.."^7][^5"..index.."^7]")
-                  -- end
-
                   if type(v) == "string" and v:len() >= 2 and v:find("{") and v:find("}") then
                     module.Cache[tab][result[i].identifier][result[i].id][index][k] = json.decode(v)
                   else
@@ -141,8 +248,10 @@ module.StartCache = function()
 end
 
 module.SaveCache = function()
-  if Config.Modules.cache.identityCachedTablesToUpdate then
-    for _,tab in pairs(Config.Modules.cache.identityCachedTablesToUpdate) do
+  print("^2saving cache...^7")
+
+  if Config.Modules.Cache.IdentityCachedTablesToUpdate then
+    for _,tab in pairs(Config.Modules.Cache.IdentityCachedTablesToUpdate) do
       if tab == "owned_vehicles" then
 
         if module.Cache[tab] then
@@ -154,24 +263,31 @@ module.SaveCache = function()
                   ['@plate'] = data["plate"]
                 }, function(result)
                   if result[1] then
-                    print("updating owned vehicles with the plates: ^2" .. data["plate"] .. "^7")
+                    if Config.Modules.Cache.EnableDebugging then
+                      print("updating owned vehicles with the plates: ^2" .. data["plate"] .. "^7")
+                    end
+
                     MySQL.Async.execute('UPDATE owned_vehicles SET id = @id, identifier = @identifier, vehicle = @vehicle, stored = @stored, sold = @sold WHERE plate = @plate', {
                       ['@id']         = data["id"],
                       ['@identifier'] = data["identifier"],
                       ['@vehicle']    = data["vehicle"],
                       ['@stored']     = data["stored"],
-                      ['@plate']      = data["plate"],
-                      ['@sold']       = data["sold"]
+                      ['@sold']       = data["sold"],
+                      ['@plate']      = data["plate"]
                     })
                   else
-                    print("inserting owned vehicles with the plates: ^2" .. data["plate"] .. "^7")
-                    MySQL.Async.execute('INSERT INTO owned_vehicles (id, identifier, plate, model, sell_price, vehicle) VALUES (@id, @identifier, @plate, @model, @sell_price, @vehicle)', {
+                    if Config.Modules.Cache.EnableDebugging then
+                      print("inserting owned vehicles with the plates: ^2" .. data["plate"] .. "^7")
+                    end
+                    MySQL.Async.execute('INSERT INTO owned_vehicles (id, identifier, plate, model, sell_price, vehicle, stored, sold) VALUES (@id, @identifier, @plate, @model, @sell_price, @vehicle, @stored, @sold)', {
                       ['@id']         = data["id"],
                       ['@identifier'] = data["identifier"],
                       ['@plate']      = data["plate"],
                       ['@model']      = data["model"],
                       ['@sell_price'] = data["sell_price"],
-                      ['@vehicle']    = data["vehicle"]
+                      ['@vehicle']    = data["vehicle"],
+                      ['@stored']     = data["stored"],
+                      ['@sold']       = data["sold"]
                     })
                   end
                 end)
@@ -181,84 +297,5 @@ module.SaveCache = function()
         end
       end
     end
-  end
-end
-
-module.InsertIntoIdentityCache = function(cacheName, identifier, id, updateData)
-  if module.Cache[cacheName] then
-    if not module.Cache[cacheName][identifier] then
-      module.Cache[cacheName][identifier] = {}
-    end
-
-    if not module.Cache[cacheName][identifier][id] then
-      module.Cache[cacheName][identifier][id] = {}
-    end
-
-    if module.Cache[cacheName][identifier][id] then
-      table.insert(module.Cache[cacheName][identifier][id], updateData)
-
-      return true
-    else
-      return false
-    end
-  end
-end
-
-module.UpdateValueInIdentityCache = function(cacheName, identifier, id, lKey, lValue, key, value)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
-          if v[lKey] and v[key] then
-            if v[lKey] == lValue then
-              module.Cache[cacheName][identifier][id][k][key] = value
-              return true
-            end
-          end
-        end
-
-        return false
-      else
-        return false
-      end
-    else
-      return false
-    end
-  else
-    return false
-  end
-end
-
-module.RetrieveEntryFromIdentityCache = function(cacheName, identifier, id, lKey, lValue, key, value)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
-          if v[lKey] and v[key] then
-            if v[lKey] == lValue then
-              return module.Cache[cacheName][identifier][id][k]
-            end
-          end
-        end
-
-        return nil
-      else
-        return nil
-      end
-    else
-      return nil
-    end
-  else
-    return nil
-  end
-end
-
-module.UpdateBasicCache = function(cacheName, updateData)
-  if module.Cache[cacheName] then
-    table.insert(module.Cache[cacheName], updateData)
-
-    return true
-  else
-    return false
   end
 end

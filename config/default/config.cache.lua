@@ -1,15 +1,16 @@
-Config.Modules.cache = {
+Config.Modules.Cache = {
   -- in minutes, the amount of time between cache updates to the database
-  serverSaveInterval = 10,
-  basicCachedTables = {
+  EnableDebugging              = true,
+  ServerSaveInterval           = 10,
+  BasicCachedTables            = {
     "vehicles"
   },
-  identityCachedTables = {
+  IdentityCachedTables         = {
     "owned_vehicles"
   },
-  basicCachedTablesToUpdate = {
+  BasicCachedTablesToUpdate    = {
   },
-  identityCachedTablesToUpdate = {
+  IdentityCachedTablesToUpdate = {
     "owned_vehicles"
   }
 }

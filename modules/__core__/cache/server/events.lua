@@ -21,7 +21,5 @@ on('esx:startCache', function()
 end)
 
 on('esx:saveCache', function()
-  print("saving cache...")
-
   module.SaveCache()
 end)
