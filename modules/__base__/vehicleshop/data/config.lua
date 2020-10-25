@@ -14,6 +14,7 @@ Config = {}
 
 Config.Locale = 'en'
 
+Config.UseCache       = true
 Config.EnableControls = true
 
 Config.DrawDistance = 20

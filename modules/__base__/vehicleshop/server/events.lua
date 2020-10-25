@@ -17,37 +17,52 @@ local utils    = M("utils")
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
 onClient('vehicleshop:updateVehicle', function(vehicleProps, plate, model)
-  MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate AND model = @model', {
-    ['@plate']   = plate,
-    ['@model']   = model,
-    ['@vehicle'] = json.encode(vehicleProps)
-  })
+  local player = Player.fromId(source)
+
+  if module.Config.UseCache then
+    local key = "vehicle"
+    local value = json.encode(vehicleProps)
+
+    if cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "vehicle", value) then
+      print("updated vehicle data in cache")
+    end
+  else
+    MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate AND model = @model', {
+      ['@plate']   = plate,
+      ['@model']   = model,
+      ['@vehicle'] = json.encode(vehicleProps)
+    })
+  end
 end)
 
 onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
   local player = Player.fromId(source)
 
   if player then
-    MySQL.Async.fetchAll('SELECT model, sell_price FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND identifier = @identifier', {
-      ['@plate']      = plate,
-      ['@identityId'] = player:getIdentityId(),
-      ['@identifier'] = player.identifier
-    }, function(result)
-      if result then
-        if result[1] then
-          local vehicleData = {
-            model       = result[1].model,
-            resellPrice = result[1].sell_price
-          }
+    if module.Config.UseCache then
 
-          cb(vehicleData)
+    else
+      MySQL.Async.fetchAll('SELECT model, sell_price FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND identifier = @identifier', {
+        ['@plate']      = plate,
+        ['@identityId'] = player:getIdentityId(),
+        ['@identifier'] = player.identifier
+      }, function(result)
+        if result then
+          if result[1] then
+            local vehicleData = {
+              model       = result[1].model,
+              resellPrice = result[1].sell_price
+            }
+
+            cb(vehicleData)
+          else
+            cb(false)
+          end
         else
           cb(false)
         end
-      else
-        cb(false)
-      end
-    end)
+      end)
+    end
   else
     cb(false)
   end
@@ -56,30 +71,20 @@ end)
 onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, formattedPrice, vehicleName, name, resellPrice)
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
-  local foundVehicle = false
-
   if player then
-    -- MySQL.Async.execute('INSERT INTO owned_vehicles (identifier, id, plate, model, sell_price, vehicle) VALUES (@identifier, @identityId, @plate, @model, @sell_price, @vehicle)', {
-    --   ['@identifier'] = player.identifier,
-    --   ['@identityId'] = player:getIdentityId(),
-    --   ['@plate']      = plate,
-    --   ['@model']      = model,
-    --   ['@sell_price'] = resellPrice,
-    --   ['@vehicle']    = json.encode({model = GetHashKey(model), plate = plate}),
-    -- }, function(rowsChanged)
-
+    if module.Config.UseCache then
       local data = {
         identifier = player.identifier,
-        id = player:getIdentityId(),
-        plate = plate,
-        model = model,
+        id         = player:getIdentityId(),
+        plate      = plate,
+        model      = model,
         sell_price = resellPrice,
-        vehicle = json.encode({model = GetHashKey(model), plate = plate})
+        vehicle    = json.encode({model = GetHashKey(model), plate = plate})
       }
 
-      if cache.UpdateIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
+      if cache.InsertIntoIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
 
-        print("^7[^4" .. player:getIdentityId() .. "^7/^5" .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
+        print("^7[^4" .. player:getIdentityId() .. "^7 |^5 " .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
 
         utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
           while not DoesEntityExist(vehicle) do
@@ -94,7 +99,30 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
       else
         print("^1Error purchasing vehicle. Please contact the server administrator.^7")
       end
-    -- end)
+    else
+      MySQL.Async.execute('INSERT INTO owned_vehicles (identifier, id, plate, model, sell_price, vehicle) VALUES (@identifier, @identityId, @plate, @model, @sell_price, @vehicle)', {
+        ['@identifier'] = player.identifier,
+        ['@identityId'] = player:getIdentityId(),
+        ['@plate']      = plate,
+        ['@model']      = model,
+        ['@sell_price'] = resellPrice,
+        ['@vehicle']    = json.encode({model = GetHashKey(model), plate = plate}),
+      }, function(rowsChanged)
+
+        print("^7[^4" .. player:getIdentityId() .. "^7/^5" .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
+
+        utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
+          while not DoesEntityExist(vehicle) do
+            Wait(10)
+          end
+
+          local vehicleID = NetworkGetNetworkIdFromEntity(vehicle)
+
+          SetVehicleNumberPlateText(vehicle, plate)
+          cb(vehicleID)
+        end)
+      end)
+    end
   else
     cb(false)
   end
@@ -136,30 +164,32 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
 
-  MySQL.Async.execute('DELETE FROM owned_vehicles WHERE plate = @plate', {
-    ['@plate'] = plate
-  }, function(rowsChanged)
-    print("^7[^4" .. player:getIdentityId() .. "^7/^5" .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3sold^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
+  if module.Config.UseCache then
 
-    cb(true)
-  end)
+  else
+
+  end
 end)
 
 onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace, plateLetters, plateNumbers)
-  MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
-    ['@plate'] = plate
-  }, function(result)
+  if Config.UseCache then
 
-    if result[1] then
-      cb(true)
-    else
-      if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
+  else
+    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
+      ['@plate'] = plate
+    }, function(result)
+
+      if result[1] then
         cb(true)
       else
-        cb(false)
+        if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
+          cb(true)
+        else
+          cb(false)
+        end
       end
-    end
-  end)
+    end)
+  end
 end)
 
 onRequest("vehicleshop:getCategories", function(source, cb)
