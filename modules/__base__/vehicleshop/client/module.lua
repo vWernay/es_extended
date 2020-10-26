@@ -857,13 +857,22 @@ end
 -- end
 
 module.LoadAssets = function()
-  request("vehicleshop:getCategories", function(categories)
-    module.categories = categories
+  if module.Config.UseCache then
+    request("vehicleshop:getCategories", function(categories)
+      module.categories = categories
 
-    request("vehicleshop:getVehicles", function(vehicles)
-      module.vehicles = vehicles
+      request("vehicleshop:getVehicles", function(vehicles)
+        module.vehicles = vehicles
+      end)
     end)
-  end)
+  else
+    request("vehicleshop:getVehiclesAndCategories", function(data)
+      if data then
+        module.categories = data.categories
+        module.vehicles   = data.vehicles
+      end
+    end)
+  end
 end
 
 module.Exit = function()

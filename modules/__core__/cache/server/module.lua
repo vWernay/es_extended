@@ -20,6 +20,16 @@ module.getCacheByName = function(cacheName)
   end
 end
 
+module.InsertIntoBasicCache = function(cacheName, updateData)
+  if module.Cache[cacheName] then
+    if Config.Modules.Cache.EnableDebugging then
+      print("Inserting ^2" .. tostring(updateData) .. "^7 into module.Cache[" .. cacheName .. "]")
+    end
+
+    table.insert(module.Cache[cacheName], updateData)
+  end
+end
+
 module.InsertIntoIdentityCache = function(cacheName, identifier, id, updateData)
   if module.Cache[cacheName] then
     if not module.Cache[cacheName][identifier] then
@@ -53,7 +63,10 @@ module.UpdateValueInIdentityCache = function(cacheName, identifier, id, lKey, lV
         for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
           if v[lKey] and v[key] then
             if v[lKey] == lValue then
-              print("module.Cache["..cacheName.."]["..identifier.."]["..id.."]["..k.."]["..key.."] = " .. value)
+              if Config.Modules.Cache.EnableDebugging then
+                print("module.Cache["..cacheName.."]["..identifier.."]["..id.."]["..k.."]["..key.."] = " .. value)
+              end
+
               module.Cache[cacheName][identifier][id][k][key] = value
 
               return true
@@ -139,11 +152,11 @@ module.StartCache = function()
           if result then
             for i=1,#result,1 do
 
-              if  module.Cache["vehicles"] == nil then
+              if module.Cache["vehicles"] == nil then
                 module.Cache["vehicles"] = {}
               end
 
-              if  module.Cache["categories"] == nil then
+              if module.Cache["categories"] == nil then
                 module.Cache["categories"] = {}
               end
 
@@ -178,6 +191,19 @@ module.StartCache = function()
                   categoryLabel = v.categoryLabel
                 })
               end
+            end
+          end
+        end)
+      elseif tab == "usedPlates" then
+        MySQL.Async.fetchAll('SELECT * FROM owned_vehicles', {}, function(result)
+          if result then
+
+            if module.Cache["usedPlates"] == nil then
+              module.Cache["usedPlates"] = {}
+            end
+
+            for i=1,#result,1 do
+              table.insert(module.Cache["usedPlates"], result[i].plate)
             end
           end
         end)

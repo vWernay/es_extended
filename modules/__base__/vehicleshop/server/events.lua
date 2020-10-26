@@ -87,6 +87,8 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
 
       if Cache.InsertIntoIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
 
+        Cache.InsertIntoBasicCache("usedPlates", plate)
+
         print("^7[^4" .. player:getIdentityId() .. "^7 |^5 " .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
 
         utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
@@ -186,9 +188,8 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
     }, function(result)
       if result then
         if result[1] then
-          MySQL.Async.execute('UPDATE owned_vehicles SET sold = @sold WHERE plate = @plate AND model = @model', {
+          MySQL.Async.execute('UPDATE owned_vehicles SET sold = @sold WHERE plate = @plate', {
             ['@plate'] = plate,
-            ['@model'] = model,
             ['@sold']  = 1
           })
 
@@ -204,13 +205,8 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
 end)
 
 onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace, plateLetters, plateNumbers)
-  -- Add cache code later, after new implementations
-
-  MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
-    ['@plate'] = plate
-  }, function(result)
-
-    if result[1] then
+  if module.Config.UseCache then
+    if module.isPlateTaken(plate) then
       cb(true)
     else
       if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
@@ -219,7 +215,22 @@ onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace,
         cb(false)
       end
     end
-  end)
+  else
+    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
+      ['@plate'] = plate
+    }, function(result)
+
+      if result[1] then
+        cb(true)
+      else
+        if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
+          cb(true)
+        else
+          cb(false)
+        end
+      end
+    end)
+  end
 end)
 
 onRequest("vehicleshop:getCategories", function(source, cb)
@@ -240,4 +251,60 @@ onRequest("vehicleshop:getVehicles", function(source, cb)
   else
     cb(nil)
   end
+end)
+
+
+onRequest("vehicleshop:getVehiclesAndCategories", function(source, cb)
+  MySQL.Async.fetchAll('SELECT * FROM vehicles', {}, function(result)
+    if result then
+      for i=1,#result,1 do
+
+        if  module.Cache.vehicles == nil then
+          module.Cache.vehicles = {}
+        end
+
+        if  module.Cache.categories == nil then
+          module.Cache.categories = {}
+        end
+
+        table.insert(module.Cache.vehicles, {
+          name          = result[i].name,
+          model         = result[i].model,
+          price         = result[i].price,
+          category      = result[i].category,
+          categoryLabel = result[i].category_label
+        })
+      end
+
+      for k,v in pairs(module.Cache.vehicles) do
+        if #module.Cache.categories > 0 then
+          for i,j in pairs(module.Cache.categories) do
+            if v.category == j.category then
+              module.categoryAlreadyExists = true
+            end
+          end
+
+          if module.categoryAlreadyExists then
+            module.categoryAlreadyExists = false
+          else
+            table.insert(module.Cache.categories, {
+              category      = v.category,
+              categoryLabel = v.categoryLabel
+            })
+          end
+        else
+          table.insert(module.Cache.categories, {
+            category      = v.category,
+            categoryLabel = v.categoryLabel
+          })
+        end
+      end
+    end
+
+    if module.Cache.vehicles and module.Cache.categories then
+      cb(module.Cache)
+    else
+      cb(nil)
+    end
+  end)
 end)

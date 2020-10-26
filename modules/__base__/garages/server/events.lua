@@ -10,15 +10,9 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-local Command  = M("events")
-local ownedVehicles = M("owned.vehicles")
-local utils    = M("utils")
-
-on("esx:saveCache", function()
-  print("^1owned.vehicles cache saving...^7")
-  -- Placeholder
-  print("^2owned.vehicles save complete.^7")
-end)
+local Command = M("events")
+local Cache   = M("cache")
+local utils   = M("utils")
 
 onClient('garages:updateVehicle', function(plate, vehicleProps)
   MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate', {

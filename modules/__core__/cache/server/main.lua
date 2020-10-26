@@ -11,7 +11,7 @@
 --   This copyright should appear in every part of the project code
 
 ESX.SetInterval(Config.Modules.Cache.ServerSaveInterval * 1000 * 60, function()
-  if ESX.Ready then
+  if ESX.Ready and Config.Modules.Cache.UseCache then
     emit('esx:saveCache')
   end
 end)
