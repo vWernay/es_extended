@@ -14,6 +14,7 @@ Config = {}
 
 Config.Locale = 'en'
 
+Config.UseCache                  = true
 Config.xoffset                   = 0.6
 Config.yoffset                   = 0.122
 Config.windowSizeX               = 0.25

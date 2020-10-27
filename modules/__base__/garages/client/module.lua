@@ -175,25 +175,24 @@ module.OpenGarageMenu = function(data)
 
   local items = {}
 
-  request('garages:getOwnedVehiclesFromCache', function(vehicles)
+  request('garages:getOwnedVehicles', function(vehicles)
     if vehicles then
-      for i=1, #vehicles, 1 do
-        if vehicles[i].stored == 1 then
-          local name  = GetDisplayNameFromVehicleModel(vehicles[i].vehicleProps.model)
-          local plate = utils.math.Trim(vehicles[i].vehicleProps.plate)
-          local model = vehicles[i].vehicleProps.model
+      for _,value in ipairs(vehicles) do
+        if value.stored then
+          local name = GetDisplayNameFromVehicleModel(value.vehicle.model)
+          local plate = utils.math.Trim(value.plate)
 
           local vehicleData = {
+            vehicleProps = value.vehicle,
             name         = name,
-            vehicleProps = vehicles[i].vehicleProps,
-            plate        = plate,
-            model        = model
+            model        = value.vehicle.model,
+            plate        = plate
           }
 
           items[#items + 1] = {type = 'button', name = model, label = name .. " [" .. plate .. "]", value = vehicleData}
-        elseif vehicles[i].stored == 0 then
-          local name  = GetDisplayNameFromVehicleModel(vehicles[i].vehicleProps.model)
-          local plate = utils.math.Trim(vehicles[i].vehicleProps.plate)
+        elseif value.stored == 0 then
+          local name = GetDisplayNameFromVehicleModel(value.vehicle.model)
+          local plate = utils.math.Trim(value.plate)
 
           local vehicleData = {
             name  = name,
@@ -523,10 +522,9 @@ module.StoreVehicle = function()
       local plate        = utils.math.Trim(GetVehicleNumberPlateText(vehicle))
       local vehicleProps = utils.game.getVehicleProperties(vehicle)
 
-      request('garages:checkOwnedVehicle', function(result)
+      emitServer('garages:updateVehicle', vehicleProps, plate)
+      request('garages:storeVehicle', function(result)
         if result then
-          emitServer('garages:updateVehicle', plate, vehicleProps)
-          emitServer('garages:storeVehicle', plate)
           DoScreenFadeOut(250)
 
           while not IsScreenFadedOut() do
@@ -538,8 +536,8 @@ module.StoreVehicle = function()
           Citizen.Wait(500)
           utils.ui.showNotification("You have stored your vehicle in the garage.")
           DoScreenFadeIn(250)
-        elseif not result then 
-          utils.ui.showNotification("~r~You must own this vehicle in order to use this marker.")
+        else
+          utils.ui.showNotification("~r~You do not own this vehicle.")
         end
       end, plate)
     end

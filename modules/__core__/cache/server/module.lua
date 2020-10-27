@@ -285,35 +285,39 @@ module.SaveCache = function()
           for k,_ in pairs(module.Cache[tab]) do
             for k2,_ in pairs(module.Cache[tab][k]) do
               for _,data in ipairs(module.Cache[tab][k][k2]) do
-                MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
-                  ['@plate'] = data["plate"]
+
+                local plate = tostring(data["plate"])
+
+                MySQL.Async.fetchAll('SELECT plate FROM owned_vehicles WHERE plate = @plate', {
+                  ['@plate'] = plate
                 }, function(result)
                   if result[1] then
                     if Config.Modules.Cache.EnableDebugging then
-                      print("updating owned vehicles with the plates: ^2" .. data["plate"] .. "^7")
+                      print("updating owned vehicles with the plates: ^2" .. tostring(data["plate"]) .. "^7")
                     end
 
                     MySQL.Async.execute('UPDATE owned_vehicles SET id = @id, identifier = @identifier, vehicle = @vehicle, stored = @stored, sold = @sold WHERE plate = @plate', {
-                      ['@id']         = data["id"],
-                      ['@identifier'] = data["identifier"],
-                      ['@vehicle']    = data["vehicle"],
-                      ['@stored']     = data["stored"],
-                      ['@sold']       = data["sold"],
-                      ['@plate']      = data["plate"]
+                      ['@id']         = tonumber(data["id"]),
+                      ['@identifier'] = tostring(data["identifier"]),
+                      ['@vehicle']    = json.encode(data["vehicle"]),
+                      ['@stored']     = tonumber(data["stored"]),
+                      ['@sold']       = tonumber(data["sold"]),
+                      ['@plate']      = tostring(data["plate"])
                     })
                   else
                     if Config.Modules.Cache.EnableDebugging then
-                      print("inserting owned vehicles with the plates: ^2" .. data["plate"] .. "^7")
+                      print("inserting owned vehicles with the plates: ^2" .. tostring(data["plate"]) .. "^7")
                     end
+
                     MySQL.Async.execute('INSERT INTO owned_vehicles (id, identifier, plate, model, sell_price, vehicle, stored, sold) VALUES (@id, @identifier, @plate, @model, @sell_price, @vehicle, @stored, @sold)', {
-                      ['@id']         = data["id"],
-                      ['@identifier'] = data["identifier"],
-                      ['@plate']      = data["plate"],
-                      ['@model']      = data["model"],
-                      ['@sell_price'] = data["sell_price"],
+                      ['@id']         = tonumber(data["id"]),
+                      ['@identifier'] = tostring(data["identifier"]),
+                      ['@plate']      = tostring(data["plate"]),
+                      ['@model']      = tostring(data["model"]),
+                      ['@sell_price'] = tonumber(data["sell_price"]),
                       ['@vehicle']    = data["vehicle"],
-                      ['@stored']     = data["stored"],
-                      ['@sold']       = data["sold"]
+                      ['@stored']     = tonumber(data["stored"]),
+                      ['@sold']       = tonumber(data["sold"])
                     })
                   end
                 end)

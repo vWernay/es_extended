@@ -16,8 +16,8 @@ local utils    = M("utils")
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
-onClient('vehicleshop:updateVehicle', function(vehicleProps, plate, model)
-  module.UpdateVehicle(vehicleProps, plate, model)
+onClient('vehicleshop:updateVehicle', function(vehicleProps, plate)
+  module.UpdateVehicle(vehicleProps, plate)
 end)
 
 onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
@@ -168,6 +168,7 @@ end)
 onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPrice, formattedPrice)
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
+
   if module.Config.UseCache then
     local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 

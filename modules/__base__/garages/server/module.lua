@@ -12,3 +12,21 @@
 
 local Cache   = M("cache")
 local utils   = M("utils")
+
+module.Cache = {}
+module.Cache.ownedVehicles = {}
+
+module.UpdateVehicle = function(vehicleProps, plate)
+  local player = Player.fromId(source)
+
+  if module.Config.UseCache then
+    local value = json.encode(vehicleProps)
+
+    Cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "vehicle", value)
+  else
+    MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = @vehicle WHERE plate = @plate', {
+      ['@plate']   = plate,
+      ['@vehicle'] = json.encode(vehicleProps)
+    })
+  end
+end
