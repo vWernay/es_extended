@@ -178,13 +178,9 @@ module.OpenGarageMenu = function(data)
   request('garages:getOwnedVehicles', function(vehicles)
     if vehicles then
       for _,value in ipairs(vehicles) do
-        if value.stored then
-
-          print(value.plate .. " | " .. value.model)
+        if value.stored and value.sold == 0 then
 
           local name = GetDisplayNameFromVehicleModel(value.model)
-
-          print(name)
 
           local plate = utils.math.Trim(value.plate)
 
