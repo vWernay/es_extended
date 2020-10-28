@@ -14,22 +14,28 @@
 
 local utils = M("utils")
 
+module.Config = run('data/config.lua', {vector3 = vector3})['Config']
+
+module.timeoutState = false
+module.actualState = nil
+
 module.Draw3DTextOverheadWithTimeout = function(ped,text,scale,font,radius)
 
-  module.timeoutState = true
-
   Citizen.CreateThread(function()
-
-    Citizen.Wait(5000)
-    module.timeoutState = false
-
+    Wait(5000)
+    if module.actualState == text then
+      module.timeoutState = false
+    end
   end)
-  
+
   Citizen.CreateThread(function()
 
-    while module.timeoutState == true do 
+    module.timeoutState = true
+    module.actualState = text
 
-      Citizen.Wait(1)
+    while module.timeoutState == true and module.actualState == text do 
+
+      Wait(10)
 
       local senderCoords = GetEntityCoords(ped)
 
@@ -55,7 +61,7 @@ module.Draw3DTextOverheadWithTimeout = function(ped,text,scale,font,radius)
           SetTextCentre(true)
           AddTextComponentString(text)
           DrawText(_x,_y)
-          
+
         end
       end
     end

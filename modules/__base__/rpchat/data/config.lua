@@ -10,14 +10,10 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-module.toString = function(arg)
-    local msg
-    for k,v in pairs(arg) do
-        if msg then
-            msg = msg .. ' ' .. v
-        else
-            msg = v
-        end
-    end
-    return msg
-end
+Config = {}
+
+Config.Locale        = 'en'
+Config.Proximity     = 25.001
+Config.ProximityMode = true
+Config.OverHeadMode  = true
+Config.DisableOOC    = false
