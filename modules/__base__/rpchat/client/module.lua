@@ -12,7 +12,7 @@
 
 -- TODO: Draw3D functions should be in their own module with a queue.
 
-local utils    = M("utils")
+local utils = M("utils")
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
