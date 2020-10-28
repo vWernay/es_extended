@@ -11,30 +11,19 @@
 --   This copyright should appear in every part of the project code
 
 M('events')
-local utils = M('utils')
+local Input = M('input')
 
-onServer('esx:admin:tptmRequested', function()
-  local WaypointHandle = GetFirstBlipInfoId(8)
+Input.On('released', Input.Groups.LOOK, Input.Controls.SCRIPTED_FLY_ZUP, function()
+  module.OpenMenu()
+end)
 
-  if DoesBlipExist(WaypointHandle) then
-    local waypointCoords = GetBlipInfoIdCoord(WaypointHandle)
-
-    for height = 1, 1000 do
-      SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
-
-      local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords["x"], waypointCoords["y"], height + 0.0)
-
-      if foundGround then
-        SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
-
-        break
-      end
-
-      Citizen.Wait(5)
-    end
-
-    utils.ui.showNotification("Teleported.")
-  else
-    utils.ui.showNotification("Please place your waypoint.")
+Input.On('released', Input.Groups.CELLPHONE_NAVIGATE, Input.Controls.FRONTEND_CANCEL, function()
+  if module.CancelCurrentAction then
+    module.CancelCurrentAction()
+    module.CancelCurrentAction = nil
   end
+end)
+
+onServer('esx:admin:inPlayerCommand', function(...)
+  module.OnSelfCommand(...)
 end)
