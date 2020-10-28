@@ -10,20 +10,9 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-ESX.SetInterval(Config.Modules.Cache.ServerSaveInterval * 1000 * 60, function()
-  if ESX.Ready and Config.Modules.Cache.UseCache then
-    emit('esx:saveCache')
-  end
+local Command = M("events")
+local migrate = M('migrate')
+
+on("esx:db:ready", function()
+  migrate.Ensure("vehicles", "core")
 end)
-
-M('command')
-
-local forcesaveCommand = Command("forcesave", "admin", "force a cache save")
-
-forcesaveCommand:setHandler(function(player, args, baseArgs)
-  module.SaveCache()
-end)
-    
-forcesaveCommand:setRconAllowed(true)
-    
-forcesaveCommand:register()

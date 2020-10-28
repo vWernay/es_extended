@@ -20,7 +20,6 @@ end
 
 -- Pause menu disables HUD display
 if Config.EnableHud then
-
   ESX.SetInterval(300, function()
 
     if IsPauseMenuActive() and not ESX.IsPaused then
@@ -32,5 +31,11 @@ if Config.EnableHud then
     end
 
   end)
+end
 
+-- Disable wanted level
+if Config.DisableWantedLevel then
+  if Config.DisableWantedLevel then
+    SetMaxWantedLevel(0)
+  end
 end

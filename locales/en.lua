@@ -13,7 +13,8 @@
 Locales['en'] = {
   -- Global
   ['submit'] = 'Submit',
-  
+  ['back'] = 'Go Back',
+
   -- Inventory
   ['inventory'] = 'inventory %s / %s',
   ['use'] = 'use',
