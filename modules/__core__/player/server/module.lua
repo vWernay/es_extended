@@ -20,7 +20,7 @@ Player.define({
   {name = 'identifier', field = {name = 'identifier',  type = 'VARCHAR',    length = 64,  default = nil,    extra = 'NOT NULL'}},
   {name = 'name',       field = {name = 'name',        type = 'VARCHAR',    length = 255, default = 'NULL', extra = nil}},
   {name = 'identityId', field = {name = 'identity_id', type = 'VARCHAR',    length = 64,  default = 'NULL', extra = nil}},
-  {name = 'roles',      field = {name = 'roles',       type = 'MEDIUMTEXT', length = nil, default = '[]',   extra = nil}, encode = json.encode, decode = json.decode},
+  {name = 'roles',      field = {name = 'roles',       type = 'MEDIUMTEXT', length = nil, default = '["user"]',   extra = nil}, encode = json.encode, decode = json.decode},
 })
 
 Player.all = setmetatable({}, {
