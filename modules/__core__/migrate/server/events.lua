@@ -38,4 +38,6 @@ on('esx:db:init:done', function()
 
   emit('esx:ready')
 
+  emit('esx:startCache')
+
 end)

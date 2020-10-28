@@ -81,7 +81,11 @@ module.DoSpawn = function(data, cb)
   exports.spawnmanager:spawnPlayer(data, cb)
 end
 
+-- Temporary solution to preventing movement on resource restart
+-- @TODO: Find a more permanent solution
 module.InitiateCharacterSelectionSpawn = function()
+  FreezeEntityPosition(PlayerPedId(), true)
+
   local spawnCoords = characterConfig.spawnCoords
 
   module.DoSpawn({
@@ -96,6 +100,7 @@ module.InitiateCharacterSelectionSpawn = function()
   }, function()
 
     local playerPed = PlayerPedId()
+    FreezeEntityPosition(PlayerPedId(), true)
 
   end)
 
@@ -154,13 +159,10 @@ module.RequestIdentitySelection = function(identities)
       -- delegate to the identity module, responsible of the registration
       emit("esx:identity:openRegistration")
 
-      module.characterSelectionMenu:destroy()
+      module.characterSelectionMenu:hide()
 
       camera.stop()
-      module.isInMenu = false
       camera.setMouseIn(false)
-    elseif item.name == "none" then
-
     else
       request("esx:character:fetchSkin", function(skinContent)
         if skinContent then
@@ -171,7 +173,21 @@ module.RequestIdentitySelection = function(identities)
       end, item.name)
     end
   end)
+end
 
+module.ReOpenCharacterSelect = function()
+  module.characterSelectionMenu:show()
+  module.characterSelectionMenu:focus()
+  camera.start()
+  module.mainCameraScene()
+  camera.setMouseIn(false)
+end
+
+module.DestroyCharacterSelect = function()
+  module.characterSelectionMenu:destroy()
+  camera.stop()
+  module.isInMenu = false
+  camera.setMouseIn(false)
 end
 
 module.SelectCharacter = function(name, label, identity, skinContent)
@@ -184,7 +200,7 @@ module.SelectCharacter = function(name, label, identity, skinContent)
     {name = "submit", label = "Start", type = "button"},
     {name = "back", label = "Go Back", type = "button"}
   }
-  
+
   if module.characterSelectionMenu.visible then
     module.characterSelectionMenu:hide()
   end
@@ -218,7 +234,7 @@ module.LoadPreviewSkin = function(skinContent)
   if skinContent["model"] == "mp_m_freemode_01" then
 
     local modelHash = GetHashKey(skinContent["model"])
-    
+
     utils.game.requestModel(modelHash, function()
       SetPlayerModel(PlayerId(), modelHash)
 
@@ -335,7 +351,10 @@ module.DestroyCharacterModel = function()
   SetEntityVisible(PlayerPedId(), false)
 end
 
+-- Temporary solution to preventing movement on resource restart (restores movement)
+-- @TODO: Find a more permanent solution
 module.SelectIdentity = function(identity)
   emit("esx:identity:selectIdentity", Identity(identity))
   camera.setMouseIn(false)
+  FreezeEntityPosition(PlayerPedId(), false)
 end

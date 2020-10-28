@@ -20,3 +20,10 @@ on("esx:identity:openRegistration", function()
         module.initIdentity(identity)
     end)
 end)
+
+-- Temporary solution to blocking saving position
+-- @TODO: Find a more permanent solution
+on("esx:identity:preventSaving", function(value)
+    module.preventSaving = value
+end)
+

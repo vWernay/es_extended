@@ -20,6 +20,7 @@ local utils = M('utils')
 
 local spawn = {x = -269.4, y = -955.3, z = 31.2, heading = 205.8}
 module.SavePositionInterval = nil
+module.preventSaving        = false
 
 Identity = Extends(Serializable, 'Identity')
 
@@ -127,20 +128,23 @@ module.DoSpawn = function(data, cb)
 end
 
 -- request a coords sync with the server.
+-- do not request if position saving is blocked (event in events.lua)
 -- @TODO: maybe move this code server-side if we can ensure \
 -- server is running OneSync
 module.SavePosition = function()
-  if NetworkIsPlayerActive(PlayerId()) then
-    local playerCoords = GetEntityCoords(PlayerPedId())
-    local heading      = GetEntityHeading(PlayerPedId())
-    local position     = {
-      x       = math.round(playerCoords.x, 1),
-      y       = math.round(playerCoords.y, 1),
-      z       = math.round(playerCoords.z, 1),
-      heading = math.round(heading, 1)
-    }
+  if not module.preventSaving then
+    if NetworkIsPlayerActive(PlayerId()) then
+      local playerCoords = GetEntityCoords(PlayerPedId())
+      local heading      = GetEntityHeading(PlayerPedId())
+      local position     = {
+        x       = math.round(playerCoords.x, 1),
+        y       = math.round(playerCoords.y, 1),
+        z       = math.round(playerCoords.z, 1),
+        heading = math.round(heading, 1)
+      }
 
-    emitServer('esx:identity:updatePosition', position)
+      emitServer('esx:identity:updatePosition', position)
+    end
   end
 end
 
@@ -151,7 +155,7 @@ module.RequestRegistration = function(cb)
   utils.ui.showNotification(_U('identity_register'))
 
   ESX.Player:field('identity', identity)
-  
+
   module.Menu = Menu("identity", {
     float = "center|middle",
     title = _U('identity_create'),
@@ -160,7 +164,8 @@ module.RequestRegistration = function(cb)
       {name = "lastName",  label =  _U('identity_lastname'),     type = "text", placeholder = "Smith"},
       {name = "dob",       label =  _U('identity_birthdate'),    type = "text", placeholder = "01/02/1234"},
       {name = "isMale",    label =  _U('identity_male'),         type = "check", value = true},
-      {name = "submit",    label =  _U('submit'),                type = "button"}
+      {name = "submit",    label =  _U('submit'),                type = "button"},
+      {name = "back",      label =  _U('back'),                  type = "button"}
     }
   })
 
@@ -187,13 +192,18 @@ module.RequestRegistration = function(cb)
         module.Menu:destroy()
         module.Menu = nil
 
+        emit('esx:character:destroyCharacterSelect')
+
         request('esx:identity:register', cb, props)
 
         utils.ui.showNotification(_U('identity_welcome', props.firstName, props.lastName))
       else
         utils.ui.showNotification(_U('identity_fill_in'))
       end
-
+    elseif item.name == "back" then
+      module.Menu:destroy()
+      module.Menu = nil
+      emit('esx:character:reOpenCharacterSelect')
     end
 
   end)
