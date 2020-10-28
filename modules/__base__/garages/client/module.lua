@@ -179,17 +179,27 @@ module.OpenGarageMenu = function(data)
     if vehicles then
       for _,value in ipairs(vehicles) do
         if value.stored then
-          local name = GetDisplayNameFromVehicleModel(value.vehicle.model)
+
+          print(value.plate .. " | " .. value.model)
+
+          local name = GetDisplayNameFromVehicleModel(value.model)
+
+          print(name)
+
           local plate = utils.math.Trim(value.plate)
 
           local vehicleData = {
             vehicleProps = value.vehicle,
             name         = name,
-            model        = value.vehicle.model,
+            model        = value.model,
             plate        = plate
           }
 
-          items[#items + 1] = {type = 'button', name = model, label = name .. " [" .. plate .. "]", value = vehicleData}
+          if name == "CARNOTFOUND" then
+            items[#items + 1] = {type = 'button', name = 'model_error', label = "[Model Error]", value = vehicleData}
+          else
+            items[#items + 1] = {type = 'button', name = model, label = name .. " [" .. plate .. "]", value = vehicleData}
+          end
         elseif value.stored == 0 then
           local name = GetDisplayNameFromVehicleModel(value.vehicle.model)
           local plate = utils.math.Trim(value.plate)
@@ -228,24 +238,14 @@ module.OpenGarageMenu = function(data)
           camera.destroy()
         elseif item.name == 'not_in_garage' then
           utils.ui.showNotification("Your " .. item.value.name .. " with the plates " .. item.value.plate .. " is not in the garage.")
+        elseif item.name == "model_error" then
+          utils.ui.showNotification("There was an error with this cars model.")
         else
           module.commit(item.value, data)
         end
       end)
     end
   end)
-
-  module.menuStarted()
-end
-
-module.menuStarted = function()
-  Citizen.Wait(500)
-
-  camera.setPolarAzimuthAngle(220.0, 120.0)
-  camera.setRadius(3.5)
-  emit('esx:identity:preventSaving', true)
-
-  DoScreenFadeIn(250)
 end
 
 module.OpenRetrievalMenu = function(vehicleData, data)
@@ -341,6 +341,14 @@ module.EnterGarage = function(data)
     FreezeEntityPosition(ped, true)
     SetEntityVisible(ped, false)
   end)
+
+  Citizen.Wait(500)
+
+  camera.setPolarAzimuthAngle(220.0, 120.0)
+  camera.setRadius(3.5)
+  emit('esx:identity:preventSaving', true)
+
+  DoScreenFadeIn(250)
 end
 
 module.ExitGarage = function()

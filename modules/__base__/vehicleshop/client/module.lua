@@ -1008,39 +1008,21 @@ module.commit = function(model)
 
   utils.game.waitForVehicleToLoad(model)
 
-  request('vehicleshop:spawnPreviewVehicle', function(result)
+  utils.game.createLocalVehicle(model, module.Config.ShopInside.Pos, module.Config.ShopInside.Heading, function(vehicle)
+    module.currentDisplayVehicle = vehicle
 
-    if result then
-      if NetworkDoesEntityExistWithNetworkId(result) then
-        local ped = PlayerPedId()
-        local vehicle = NetToVeh(result)
-        while not DoesEntityExist(vehicle) do
-          Wait(100)
-          vehicle = NetToVeh(result)
-        end
+    TaskWarpPedIntoVehicle(ped, vehicle, -1)
+    
+    FreezeEntityPosition(vehicle, true)
 
-        FreezeEntityPosition(ped, false)
-        SetEntityVisible(ped, true)
+    SetModelAsNoLongerNeeded(model)
 
-        if DoesEntityExist(vehicle) then
-          while not IsPedInVehicle(ped, vehicle, false) do
-            Wait(10)
+    module.vehicleLoaded = true
 
-            module.currentDisplayVehicle = vehicle
-            TaskWarpPedIntoVehicle(ped, vehicle, -1)
-            FreezeEntityPosition(vehicle, true)
-            SetModelAsNoLongerNeeded(model)
-            module.vehicleLoaded = true
-            if module.enableVehicleStats then
-              module.showVehicleStats()
-            end
-          end
-        end
-      end
-    else
-      print("Failure to spawn vehicle preview. Please contact the server administrator.")
+    if module.enableVehicleStats then
+      module.showVehicleStats()
     end
-  end, model)
+  end)
 end
 
 module.RenderBox = function(xMin,xMax,yMin,yMax,color1,color2,color3,color4)

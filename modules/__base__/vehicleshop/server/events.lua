@@ -149,22 +149,6 @@ onRequest("vehicleshop:startTestDrive", function(source, cb, model)
   end
 end)
 
-onRequest("vehicleshop:spawnPreviewVehicle", function(source, cb, model)
-  if model and type(model) == 'string' then
-    utils.game.createVehicle(model, module.Config.ShopInside.Pos, module.Config.ShopInside.Heading, function(vehicle)
-      while not DoesEntityExist(vehicle) do
-        Wait(100)
-      end
-
-      local vehicleID = NetworkGetNetworkIdFromEntity(vehicle)
-
-      cb(vehicleID)
-    end)
-  else
-    cb(false)
-  end
-end)
-
 onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPrice, formattedPrice)
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
