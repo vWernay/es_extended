@@ -239,6 +239,7 @@ Locales['fr'] = {
   ['tint_platinum'] = 'skin platine',
 
   -- Identity
+  ['identity_create'] = 'Enregistrement d\'identité.',
   ['identity_register'] = 'Veuillez enregistrer votre personnage.',
   ['identity_welcome'] = 'Bonjour, ~b~%s %s',
   ['identity_fill_in'] = 'Veuillez remplir tous les champs avant de soumettre!',
