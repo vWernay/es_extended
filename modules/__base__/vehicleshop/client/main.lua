@@ -80,15 +80,3 @@ ESX.SetInterval(20, function()
     DisableControlAction(27, 75, true)
   end
 end)
-
--- ESX.SetInterval(0, function()
-
---   if module.inMarker and not module.isInShopMenu then
---     local coords = GetEntityCoords(PlayerPedId(), true)
---     utils.ui.draw3DText(coords.x, coords.y, coords.z, 0, 255, 0, 68, "In Zone")
---   elseif not module.inMarker and not module.isInShopMenu then
---     local coords = GetEntityCoords(PlayerPedId(), true)
---     utils.ui.draw3DText(coords.x, coords.y, coords.z, 255, 0, 0, 68, "Not In Zone")
---   end
-
--- end)
