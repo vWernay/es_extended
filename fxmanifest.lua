@@ -247,6 +247,7 @@ client_scripts {
   'locales/cs.lua',
   'locales/de.lua',
   'locales/en.lua',
+  'locales/it.lua',
   'locales/es.lua',
   'locales/fi.lua',
   'locales/fr.lua',
