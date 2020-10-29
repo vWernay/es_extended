@@ -13,8 +13,10 @@
 M('events')
 local Input = M('input')
 
-Input.On('released', Input.Groups.LOOK, Input.Controls.SCRIPTED_FLY_ZUP, function()
-  module.OpenMenu()
+Input.On('pressed', Input.Groups.LOOK, Input.Controls.SCRIPTED_FLY_ZUP, function()
+  if IsInputDisabled(2) then
+    module.OpenMenu()
+  end
 end)
 
 Input.On('released', Input.Groups.CELLPHONE_NAVIGATE, Input.Controls.FRONTEND_CANCEL, function()
