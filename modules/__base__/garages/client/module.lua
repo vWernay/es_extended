@@ -159,24 +159,24 @@ end
 -----------------------------------------------------------------------------------
 
 module.OpenGarageMenu = function(data)
-
-  module.savedPosition = data.Pos
-
-  DoScreenFadeOut(250)
-
-  while not IsScreenFadedOut() do
-    Citizen.Wait(0)
-  end
-
-  module.StartGarageRestriction()
-  module.EnterGarage(data)
-
-  module.isInGarageMenu = true
-
-  local items = {}
-
   request('garages:getOwnedVehicles', function(vehicles)
     if vehicles then
+
+      module.savedPosition = data.Pos
+
+      DoScreenFadeOut(250)
+
+      while not IsScreenFadedOut() do
+        Citizen.Wait(0)
+      end
+
+      module.StartGarageRestriction()
+      module.EnterGarage(data)
+
+      module.isInGarageMenu = true
+
+      local items = {}
+
       for _,value in ipairs(vehicles) do
         if value.stored and value.sold == 0 then
 
@@ -210,37 +210,40 @@ module.OpenGarageMenu = function(data)
       end
 
       items[#items + 1] = {name = 'exit', label = '>> Exit <<', type = 'button'}
-
-      module.garageMenu = Menu('garages.garage', {
-        title = "Garage",
-        float = 'top|left', -- not needed, default value
-        items = items
-      })
-
-      module.currentMenu = module.garageMenu
-
-      module.garageMenu:on('item.click', function(item, index)
-        if item.name == 'exit' then
-          module.DeleteDisplayVehicleInsideGarage()
-          module.DestroyGarageMenu()
-          DoScreenFadeOut(1000)
-
-          while not IsScreenFadedOut() do
-            Citizen.Wait(0)
-          end
-
-          module.ExitGarage()
-          module.ReturnPlayer(module.savedPosition)
-          camera.destroy()
-        elseif item.name == 'not_in_garage' then
-          utils.ui.showNotification("Your " .. item.value.name .. " with the plates " .. item.value.plate .. " is not in the garage.")
-        elseif item.name == "model_error" then
-          utils.ui.showNotification("There was an error with this cars model.")
-        else
-          module.commit(item.value, data)
-        end
-      end)
+    else
+      utils.ui.showNotification("You do not own any vehicles.")
+      return
     end
+
+    module.garageMenu = Menu('garages.garage', {
+      title = "Garage",
+      float = 'top|left', -- not needed, default value
+      items = items
+    })
+
+    module.currentMenu = module.garageMenu
+
+    module.garageMenu:on('item.click', function(item, index)
+      if item.name == 'exit' then
+        module.DeleteDisplayVehicleInsideGarage()
+        module.DestroyGarageMenu()
+        DoScreenFadeOut(1000)
+
+        while not IsScreenFadedOut() do
+          Citizen.Wait(0)
+        end
+
+        module.ExitGarage()
+        module.ReturnPlayer(module.savedPosition)
+        camera.destroy()
+      elseif item.name == 'not_in_garage' then
+        utils.ui.showNotification("Your " .. item.value.name .. " with the plates " .. item.value.plate .. " is not in the garage.")
+      elseif item.name == "model_error" then
+        utils.ui.showNotification("There was an error with this cars model.")
+      else
+        module.commit(item.value, data)
+      end
+    end)
   end)
 end
 
