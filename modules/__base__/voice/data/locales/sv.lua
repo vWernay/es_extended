@@ -12,7 +12,7 @@
 
 Translations= {
   ['voice']   = '~y~Röst: ~s~%s',
-  ['normal']  = 'prata',
+  ['normal']  = 'normalt',
   ['shout']   = 'skrik',
   ['whisper'] = 'viska',
 }
