@@ -21,11 +21,11 @@ module.OpenMenu = function()
     float = 'top|left',
     title = 'Administrator Menu',
     items = {
-		{label = _U('admin:menu_player'), name = 'OpenPlayerMenu',  type = 'button'},
-		{label = _U('admin:menu_vehicle'), name = 'OpenVehicleMenu',  type = 'button'},
-		{label = _U('admin:menu_job'), name = 'OpenJobMenu',  type = 'button'},
-		{label = _U('admin:menu_esx'), name = 'OpenEsxMenu',  type = 'button'},
-		{label = _U('admin:close'), name = 'close', type = 'button'}
+		{label = _U('menu_admin_player'), name = 'OpenPlayerMenu',  type = 'button'},
+		{label = _U('menu_admin_vehicle'), name = 'OpenVehicleMenu',  type = 'button'},
+		{label = _U('menu_admin_job'), name = 'OpenJobMenu',  type = 'button'},
+		{label = _U('menu_admin_esx'), name = 'OpenEsxMenu',  type = 'button'},
+		{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.click', function(item)
@@ -43,19 +43,19 @@ module.OpenPlayerMenu = function(m)
     float = 'top|left',
     title = 'Player Menu',
     items = {
-		{label = _U('admin:command_tptm'), name = 'TPTMarkerMenu', type='button'},
-		{label = _U('admin:command_tptp'), name = 'TPTPlayerMenu', type='button'},
-		{label = _U('admin:command_spectate'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SpectatePlayer', value = true, type = 'button'},
-		{label = _U('admin:command_revive'), name = 'ReviveMenu', type='button'},
-		{label = _U('admin:command_health'), name = 'HealthMenu', type='button'},
-		{label = _U('admin:command_armor'), name = 'ArmorMenu', type='button'},
-		{label = _U('admin:command_give_weapon'), name = 'GiveWeaponMenu', type='button'},
+		{label = _U('admin_command_tptm'), name = 'TPTMarkerMenu', type='button'},
+		{label = _U('admin_command_tptp'), name = 'TPTPlayerMenu', type='button'},
+		{label = _U('admin_command_revive'), name = 'ReviveMenu', type='button'},
+		{label = _U('admin_command_health'), name = 'HealthMenu', type='button'},
+		{label = _U('admin_command_armor'), name = 'ArmorMenu', type='button'},
+		{label = _U('admin_command_set_weapon'), name = 'SetWeaponMenu', type='button'},
+		{label = _U('admin_command_spectate_player'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SpectatePlayer', self = true, type = 'button', after = 'close'},
 		-- {label = _U('admin:command_del_weapon'), name = 'DelWeaponMenu', type='button'},
 		-- {label = _U('admin:command_kick'), name = 'KickPlayerMenu', type='button'},
 		-- {label = _U('admin:command_ban'), name = 'BanPlayerMenu', type='button'},
 		-- {label = _U('admin:command_unban'), name = 'UnBanPlayerMenu', type='button'},
-		{label = _U('admin:back'), name = 'back', type = 'button'},
-		{label = _U('admin:close'), name = 'close', type = 'button'}
+		{label = _U('back'), name = 'back', type = 'button'},
+		{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.click', function(item)
@@ -72,10 +72,10 @@ module.TPTMarkerMenu = function(m)
 		float = 'top|left',
 		title = 'Teleport Menu (TPTM)',
 		items = {
-			{label = _U('admin:command_tptm'), name = 'TPTMarker', type='button'},
-			{label = _U('admin:command_on_player'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'TPTMarker', value = false, type='button'},
-			{label = _U('admin:back'), name = 'back', type = 'button'},
-			{label = _U('admin:close'), name = 'close', type = 'button'}
+			{label = _U('admin_command_tptm'), name = 'TPTMarker', type='button'},
+			{label = _U('menu_admin_oplayer'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'TPTMarker', self = false, type='button'},
+			{label = _U('back'), name = 'back', type = 'button'},
+			{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.click', function(item)
@@ -94,10 +94,10 @@ module.TPTPlayerMenu = function(m)
 		float = 'top|left',
 		title = 'Teleport Menu (TPTP)',
 		items = {
-			{label = _U('admin:command_tptp'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'TPTPlayer', value = true, type='button'},
-			{label = _U('admin:command_tptp_rev'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'TPTPlayer', value = false, type='button', arg = { GetPlayerServerId(PlayerId()) }},
-			{label = _U('admin:back'), name = 'back', type = 'button'},
-			{label = _U('admin:close'), name = 'close', type = 'button'}
+			{label = _U('admin_command_tptp'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'TPTPlayer', self = true, type='button'},
+			{label = _U('admin_command_tptp_rev'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'TPTPlayer', self = false, type='button', arg = { GetPlayerServerId(PlayerId()) }},
+			{label = _U('back'), name = 'back', type = 'button'},
+			{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.click', function(item)
@@ -112,10 +112,10 @@ module.ReviveMenu = function(m)
 		float = 'top|left',
 		title = 'Revive Menu',
 		items = {
-			{label = _U('admin:command_revive'), name = 'RevivePlayer', type='button'},
-			{label = _U('admin:command_on_player'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'RevivePlayer', value = false, type='button'},
-			{label = _U('admin:back'), name = 'back', type = 'button'},
-			{label = _U('admin:close'), name = 'close', type = 'button'}
+			{label = _U('admin_command_revive'), name = 'RevivePlayer', type='button'},
+			{label = _U('menu_admin_oplayer'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'RevivePlayer', self = false, type='button'},
+			{label = _U('back'), name = 'back', type = 'button'},
+			{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.click', function(item)
@@ -134,11 +134,11 @@ module.HealthMenu = function(m)
 		float = 'top|left',
 		title = 'Health Menu',
 		items = {
-			{label = _U('admin:command_health'), name = 'SetPlayerHealth', type='button', arg = { 100 }},
-			{label = _U('admin:command_on_player'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SetPlayerHealth', value = false, type='button', arg = { 100 }},
-			{label = _U('admin:command_kill_player'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SetPlayerHealth', value = false, type='button', arg = { 0 }},
-			{label = _U('admin:back'), name = 'back', type = 'button'},
-			{label = _U('admin:close'), name = 'close', type = 'button'}
+			{label = _U('admin_command_health'), name = 'SetPlayerHealth', type='button', arg = { 100 }},
+			{label = _U('menu_admin_oplayer'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SetPlayerHealth', self = false, type='button', arg = { 100 }},
+			{label = _U('admin_command_kill_player'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SetPlayerHealth', self = false, type='button', arg = { 0 }},
+			{label = _U('back'), name = 'back', type = 'button'},
+			{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.click', function(item)
@@ -157,10 +157,10 @@ module.ArmorMenu = function(m)
 		float = 'top|left',
 		title = 'Armor Menu',
 		items = {
-			{label = _U('admin:command_armor'), name = 'SetPlayerArmor', type='button', arg = { 100 }},
-			{label = _U('admin:command_on_player'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SetPlayerArmor', value = false, type='button', arg = { 100 }},
-			{label = _U('admin:back'), name = 'back', type = 'button'},
-			{label = _U('admin:close'), name = 'close', type = 'button'}
+			{label = _U('admin_command_armor'), name = 'SetPlayerArmor', type='button', arg = { 100 }},
+			{label = _U('menu_admin_oplayer'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'SetPlayerArmor', self = false, type='button', arg = { 100 }},
+			{label = _U('back'), name = 'back', type = 'button'},
+			{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.click', function(item)
@@ -172,7 +172,7 @@ module.ArmorMenu = function(m)
 	end)
 end
 
-module.GiveWeaponMenu = function(m) -- maybe need optimization
+module.SetWeaponMenu = function(m) -- maybe need optimization | weaponHashName 
 	module.HideMenu(m)
 
 	local weaponHashName = module.WeaponList[1].name
@@ -182,10 +182,10 @@ module.GiveWeaponMenu = function(m) -- maybe need optimization
 		title = 'Give Weapon Menu',
 		items = {
 			{label = module.WeaponList[1].label .. '	' .. weaponHashName, type = 'slider', max = #module.WeaponList - 1},
-			{label = _U('admin:command_get_weapon'), name = 'GiveWeaponPlayer', type='button'},
-			{label = _U('admin:command_on_player'), toUser = true, source = GetPlayerServerId(PlayerId()), name = 'GiveWeaponPlayer', value = false, type='button'},
-			{label = _U('admin:back'), name = 'back', type = 'button'},
-			{label = _U('admin:close'), name = 'close', type = 'button'}
+			{label = _U('admin_command_set_weapon'), name = 'GiveWeaponPlayer', type='button'},
+			{label = _U('menu_admin_oplayer'), playerList = true, source = GetPlayerServerId(PlayerId()), name = 'GiveWeaponPlayer', self = false, type='button', arg = { weaponHashName, 250 }},
+			{label = _U('back'), name = 'back', type = 'button'},
+			{label = _U('close'), name = 'close', type = 'button'}
 	}})
 
 	menu:on('item.change', function(item, prop, val)
@@ -194,11 +194,9 @@ module.GiveWeaponMenu = function(m) -- maybe need optimization
 	end)
 
 	menu:on('item.click', function(item, index)
-		if module.BasicButtonsMenu(item, menu, m) then return end
+		item.arg = {weaponHashName, 250}
 
-		if item.toUser then
-			return module.UserListMenu(menu, item.value, item.name, item.source, weaponHashName, 250)
-		end
+		if module.BasicButtonsMenu(item, menu, m) then return end
 
 		if item.type ~= "slider" then
 			module.CloseMenu(false, menu)
@@ -209,23 +207,20 @@ module.GiveWeaponMenu = function(m) -- maybe need optimization
 end
 
 -- Vehicle menu
-module.OpenVehicleMenu = function(m)
-	module.HideMenu(m)
+-- module.OpenVehicleMenu = function(m)
+-- 	module.HideMenu(m)
 
+-- end
 
-
-end
-
--- 
 -- Reusable functions
-module.UserListMenu = function(m, onSelf, ...)
+module.UserListMenu = function(m, self, ...)
 	module.HideMenu(m)
 
 	elements = {
-		{label = _U('admin:back'), name = 'back', type = 'button'},
-		{label = _U('admin:close'), name = 'close', type = 'button'},
+		{label = _U('back'), name = 'back', type = 'button'},
+		{label = _U('close'), name = 'close', type = 'button'},
 	}
-	
+
 	local playersActive = GetActivePlayers()
 
 	if #playersActive > 0 then
@@ -257,7 +252,7 @@ module.UserListMenu = function(m, onSelf, ...)
 	menu:on('item.click', function(item)
 		if module.BasicButtonsMenu(item, menu, m) then return end
 
-		if onSelf then
+		if self then
 			module.OnSelfCommand(table.unpack(vArg), item.id)
 		else
 			emitServer('esx:admin:sendToPlayer', item.id, table.unpack(vArg))
@@ -283,9 +278,9 @@ module.BasicButtonsMenu = function(item, menu, m)
 
 	if item.playerList then
 		if item.arg then
-			module.UserListMenu(menu, item.value, item.name, item.source, table.unpack(item.arg))
+			module.UserListMenu(menu, item.self, item.name, item.source, table.unpack(item.arg))
 		else
-			module.UserListMenu(menu, item.value, item.name, item.source)
+			module.UserListMenu(menu, item.self, item.name, item.source)
 		end
 		return true
 	end

@@ -50,22 +50,21 @@ module.TPTMarker = function(sourceId)
 			local waypointCoords = GetBlipInfoIdCoord(GetFirstBlipInfoId(8))
 	
 			for height = 1, 1000, 10 do
-	
 				SetPedCoordsKeepVehicle(PlayerPedId(), waypointCoords["x"], waypointCoords["y"], height + 0.0)
 	
-				local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords["x"], waypointCoords["y"], 6000.0)
+				local foundGround, zPos = GetGroundZFor_3dCoord(waypointCoords["x"], waypointCoords["y"], 2500.0)
 	
 				if foundGround then
 					SetPedCoordsKeepVehicle(PlayerPedId(), vector3(waypointCoords["x"], waypointCoords["y"], zPos))
 					break
 				end
 	
-				Citizen.Wait(20)
+				Citizen.Wait(60)
 			end
 
-			utils.ui.showNotification(_U('admin_tp_res'))
+			utils.ui.showNotification(_U('admin_result_tp'))
 		else
-			utils.ui.showNotification(_U('admin_tptm_waypoint'))
+			utils.ui.showNotification(_U('admin_result_tptm'))
 		end
 	end, sourceId)
 end
@@ -151,12 +150,12 @@ module.FreezeUnfreeze = function(sourceId, action)
 			FreezeEntityPosition(PlayerPedId(), true)
 			SetEntityCollision(PlayerPedId(), false)
 			SetPlayerInvincible(PlayerId(), true)
-			utils.ui.showNotification(_U('admin_freeze_res'))
+			utils.ui.showNotification(_U('admin_result_freeze'))
 		elseif action == 'unfreeze' then
 			FreezeEntityPosition(PlayerPedId(), false)
 			SetEntityCollision(PlayerPedId(), true)
 			SetPlayerInvincible(PlayerId(), false)
-			utils.ui.showNotification(_U('admin_unfreeze_res'))
+			utils.ui.showNotification(_U('admin_result_unfreeze'))
 		end
 	end, sourceId)
 end
@@ -173,7 +172,7 @@ module.RevivePlayer = function(sourceId)
 			ResetPedVisibleDamage(PlayerPedId())
 			ClearPedLastWeaponDamage(PlayerPedId())
 			RemoveParticleFxFromEntity(PlayerPedId())
-			utils.ui.showNotification(_U('admin_revive_res'))
+			utils.ui.showNotification(_U('admin_result_revive'))
 		end, sourceId)
 	end
 end
@@ -194,7 +193,7 @@ end
 
 module.SpectatePlayer = function(sourceId, targetId)
 	if module.CancelCurrentAction then
-		return utils.ui.showNotification(_U('admin_current_active'))
+		return utils.ui.showNotification(_U('admin_result_current_active'))
 	end
 
 	request("esx:admin:isAuthorized", function(a)
@@ -218,7 +217,7 @@ module.SpectatePlayer = function(sourceId, targetId)
 			utils.game.teleport(PlayerPedId(), coords)
 		end
 
-		Interact.ShowHelpNotification("Press ~INPUT_FRONTEND_CANCEL~ to exit spectate mode.")
+		Interact.ShowHelpNotification(_U('admin_result_spectate'))
 	end, sourceId)
 end
 
@@ -236,7 +235,7 @@ module.SetPlayerHealth = function(sourceId, health)
 			SetEntityHealth(PlayerPedId(), health)
 		end
 
-		utils.ui.showNotification(_U('admin_health_res'))
+		utils.ui.showNotification(_U('admin_result_health'))
 	end, sourceId)
 end
 
@@ -245,7 +244,7 @@ module.SetPlayerArmor = function(sourceId, armor)
 		if not a then return end
 
 		SetPedArmour(PlayerPedId(), armor)
-  	utils.ui.showNotification(_U('admin_armor_res'))
+  	utils.ui.showNotification(_U('admin_result_armor'))
 	end, sourceId)
 end
 

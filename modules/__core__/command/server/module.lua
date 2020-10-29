@@ -193,7 +193,7 @@ function Command:register()
 
   if (self.group ~= nil) then
     -- allow this command to be executed by the provided group
-    ExecuteCommand(('remove_aces_for_object command.%s'):format(self.name))
+    -- ExecuteCommand(('remove_aces_for_object command.%s'):format(self.name))    -- can't find a use for this right now
     ExecuteCommand(('add_ace group.%s command.%s allow'):format(self.group, self.name))
   end
 
