@@ -10,14 +10,24 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-AddEventHandler('chatMessage', function(playerId, playerName, message)
+module.Config = run('data/config.lua', {vector3 = vector3})['Config']
+
+onClient('chatMessage', function(playerId, playerName, message)
+  CancelEvent()
+
   if string.sub(message, 1, string.len('/')) ~= '/' then
-    CancelEvent()
+    if not module.Config.DisableOOC then
+      local player = Player.fromId(playerId):getIdentity()
+      local firstname = player:getFirstName()
+      local lastname = player:getLastName()
 
-    local player = Player.fromId(playerId):getIdentity()
-    local firstname = player:getFirstName()
-    local lastname = player:getLastName()
+      local arg = {args = {'OOC | ' .. firstname .. ' ' .. lastname, message}, color = {128, 128, 128}}
 
-    emitClient('chat:addMessage', -1, {args = {'OOC | ' .. firstname .. ' ' .. lastname, message}, color = {128, 128, 128}})
+      if module.Config.proximityMode then
+        emitClient('rpchat:proximitySendNUIMessage', -1, playerId, arg)
+      else
+        emitClient('chat:addMessage', -1, arg)
+      end
+    end
   end
 end)
