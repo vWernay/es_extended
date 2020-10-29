@@ -11,6 +11,10 @@
 --   This copyright should appear in every part of the project code
 
 Locales['br'] = {
+    -- Global
+    ['submit'] = 'Enviar',
+    ['back'] = 'Voltar',
+
   -- Inventory
   ['inventory'] = 'inventário %s / %s',
   ['use'] = 'usar',
@@ -66,10 +70,6 @@ Locales['br'] = {
   ['in_vehicle'] = 'voce não pode dar nada para alguem no veículo',
 
   -- Commands
-  ['command_car'] = 'spawnar um veículo',
-  ['command_car_car'] = 'nome do veículo',
-  ['command_cardel'] = 'excluir veículo',
-  ['command_cardel_radius'] = 'Opcional, excluir veículos em um certo raio.',
   ['command_clear'] = 'limpar o chat',
   ['command_clearall'] = 'limpar o chat para todos',
   ['command_clearinventory'] = 'remover todos os itens do inventário',
@@ -113,8 +113,54 @@ Locales['br'] = {
   ['commanderror_invalidplayerid'] = 'Não existe nenhum jogador com este ID de Servidor.',
   ['commandgeneric_playerid'] = 'o ID do jogador',
 
+  --- Admin
+  ['admin_command_tptm'] = 'Teleportar no lugar marcado',
+  ['admin_commandgeneric_playerid'] = '<playerid>',
+  ['admin_command_tptp'] = 'Teleportar a algum jogador',
+  ['command_tptp_rev'] = 'Jogador até você',
+  ['admin_command_car'] = 'Spawnar um veículo',
+  ['admin_command_car_car'] = 'Spawnar um veículo por nome ou hash',
+  ['admin_command_cardel'] = 'Deletar veículo nas proximidades',
+  ['admin_cardel_radius'] = 'Opcional, deleta qualquer veículo em certo rádio.',
+  ['admin_command_revive'] = 'Reviver',
+  ['admin_command_freeze'] = 'Congelar',
+  ['admin_command_unfreeze'] = 'Descongelar',
+  ['admin_command_get_coords'] = 'Printar suas cordenadas no seu console (F8)',
+  ['admin_player_list'] = 'Printar players conectados no console(F8) ou no menu.',
+  ['admin_tp_res'] = 'Teleportado.',
+  ['admin_freeze_res'] = 'Você foi congelado pelo admin.',
+  ['admin_unfreeze_res'] = 'Você foi descongelado pelo admin.',
+  ['admin_revive_res'] = Você foi revivido pelo admin.',
+  ['admin_health_res'] = 'Sua vida foi modificada.',
+  ['admin_armor_res'] = 'Seu colete foi modificado.',
+  ['admin_tptm_waypoint'] = 'Por favor marque um lugar.',
+  ['admin_error_self'] = 'Você não pode fazer isso com você mesmo.',
+  ['admin_current_active'] = 'Você já tem uma ação ativa.',
+  ['admin_act_imp'] = 'Ação impossível.',
+
+  -- Unfinished
+  -- ['command_on_player'] = 'No jogador',
+	-- ['command_health'] = 'Restaurar vida',
+	-- ['command_kill_player'] = 'Matar jogador',
+	-- ['command_armor'] = 'Restaurar colete',
+	-- ['command_spectate'] = 'Espectador',
+	-- ['command_give_weapon'] = 'Givar arma',
+	-- ['command_get_weapon'] = 'Pegar arma',
+	-- ['command_del_weapon'] = 'Deletar arma',
+	-- ['command_kick'] = 'Kickar',
+	-- ['command_ban'] = 'Banir',
+  -- ['command_unban'] = 'Desbanir',
+	-- ['admin_back'] = 'Voltar',
+	-- ['admin_close'] = 'Fechar',
+
+	-- Menu
+	-- ['menu_player'] = 'Jogador',
+	-- ['menu_vehicle'] = 'Veículo',
+	-- ['menu_job'] = 'Empregos',
+	-- ['menu_esx'] = 'esx',
+
   -- Locale settings
-  ['locale_digit_grouping_symbol'] = ' ',
+  ['locale_digit_grouping_symbol'] = ',',
   ['locale_currency'] = 'R$%s',
 
   -- Weapons
@@ -194,15 +240,15 @@ Locales['br'] = {
   ['weapon_doubleaction'] = 'Revolver de Dupla-Ação',
 
   -- Weapon Components
-  ['component_clip_default'] = 'aderência padrão',
-  ['component_clip_extended'] = 'aderência prolongada',
-  ['component_clip_drum'] = 'drum Magazine',
-  ['component_clip_box'] = 'box Magazine',
+  ['component_clip_default'] = 'Carregador padrão',
+  ['component_clip_extended'] = 'Carregador prolongada',
+  ['component_clip_drum'] = 'Carregador de Tambor',
+  ['component_clip_box'] = 'Carregador de Baixa',
   ['component_flashlight'] = 'lanterna',
   ['component_scope'] = 'mira',
   ['component_scope_advanced'] = 'mira avançada',
   ['component_suppressor'] = 'supressor',
-  ['component_grip'] = 'grip',
+  ['component_grip'] = 'Empunhadura',
   ['component_luxary_finish'] = 'acabamento de arma de luxo',
 
   -- Weapon Ammo
@@ -236,7 +282,14 @@ Locales['br'] = {
   ['tint_platinum'] = 'Pintura platina ',
 
   -- Identity
+  ['identity_create'] = 'Criação de Identidade',
   ['identity_register'] = 'Por favor, registre seu personagem.',
   ['identity_welcome'] = 'Bem-vindo(a), ~b~%s %s',
   ['identity_fill_in'] = 'Preencha todos os campos antes de enviar!',
+  ['identity_firstname'] = 'Primeiro nome',
+  ['identity_lastname'] = 'Sobrenome',
+  ['identity_birthdate'] = 'Data de Nascimento',
+  ['identity_sex'] = "Sexo",
+  ['identity_female'] = "Masculino",
+  ['identity_female'] = "Feminino",
 }
