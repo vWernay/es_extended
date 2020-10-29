@@ -11,6 +11,10 @@
 --   This copyright should appear in every part of the project code
 
 Locales['sv'] = {
+    -- Global
+    ['submit'] = 'Godkän',
+    ['back'] = 'Tillbaka',
+
   -- Inventory
   ['inventory'] = 'mitt förråd %s / %s',
   ['use'] = 'använd',
@@ -112,6 +116,31 @@ Locales['sv'] = {
   ['commanderror_invalidcommand'] = '^3%s^0 är inte ett giltigt kommando!',
   ['commanderror_invalidplayerid'] = 'det finns ingen spelare som matchar det angivna id',
   ['commandgeneric_playerid'] = 'spelarid',
+
+  --- Admin
+  ['admin_command_tptm'] = 'TP:a till markering',
+  ['admin_commandgeneric_playerid'] = '<playerid>',
+	['admin_command_tptp'] = 'TP:a till spelare',
+  ['command_tptp_rev'] = 'TP:a spelare till dig',
+  ['admin_command_car'] = 'ta fram en bil',
+  ['admin_command_car_car'] = 'fordonsnamn eller hash',
+  ['admin_command_cardel'] = 'ta bort bil i omgivningen',
+  ['admin_cardel_radius'] = 'ta bort fordon inom en vis radie',
+	['admin_command_revive'] = 'återuppliva',
+	['admin_command_freeze'] = 'Frys',
+  ['admin_command_unfreeze'] = 'Ta bort frysningen',
+	['admin_command_get_coords'] = 'Skriv ut dina koordinater i konsolen(F8)',
+	['admin_player_list'] = 'Skriv ut spelarlistan i konsolen(F8) eller i en meny',
+	['admin_tp_res'] = 'Teleporterad.',
+	['admin_freeze_res'] = 'Du har blivit fryst av en admin.',
+	['admin_unfreeze_res'] = 'En admin har tagit bort frysningen från dig.',
+	['admin_revive_res'] = 'Du har blivit återupplivad av en admin.',
+	['admin_health_res'] = 'Din hälsa har ändrats.',
+	['admin_armor_res'] = 'Din armor har ändrats.',
+	['admin_tptm_waypoint'] = 'Var god och placera din markering.',
+	['admin_error_self'] = 'Du kan inte göra detta mot dig själv.',
+	['admin_current_active'] = 'Du har något aktivt.',
+  ['admin_act_imp'] = 'Detta går ej att utföra.',
 
   -- Locale settings
   ['locale_digit_grouping_symbol'] = ' ',
@@ -236,7 +265,14 @@ Locales['sv'] = {
   ['tint_platinum'] = 'platina',
 
   -- Identity
+  ['identity_create'] = 'Registrering',
   ['identity_register'] = 'Var god och skapa din karaktär.',
   ['identity_welcome'] = 'Välkommen, ~b~%s %s',
   ['identity_fill_in'] = 'Var god och fyll i samtliga fält innan du går vidare!',
+  ['identity_firstname'] = 'Förnamn',
+  ['identity_lastname'] = 'Efternamn',
+  ['identity_birthdate'] = 'Födelsedatum',
+  ['identity_sex'] = "Kön",
+  ['identity_male'] = "Man",
+  ['identity_female'] = "Kvinna",
 }
