@@ -142,6 +142,27 @@ Locales['sv'] = {
 	['admin_current_active'] = 'Du har något aktivt.',
   ['admin_act_imp'] = 'Detta går ej att utföra.',
 
+  -- Unfinished
+  -- ['command_on_player'] = 'På en spelare',
+	-- ['command_health'] = 'Återställ hälsa',
+	-- ['command_kill_player'] = 'Döda spelare',
+	-- ['command_armor'] = 'Återställ armor',
+	-- ['command_spectate'] = 'Titta på',
+	-- ['command_give_weapon'] = 'Ge vapen',
+	-- ['command_get_weapon'] = 'Få vapen',
+	-- ['command_del_weapon'] = 'Tabort vapen',
+	-- ['command_kick'] = 'Sparka',
+	-- ['command_ban'] = 'Banlys',
+  -- ['command_unban'] = 'Ta bort banlysning',
+	-- ['admin_back'] = 'Tillbaka',
+	-- ['admin_close'] = 'Stäng',
+
+	-- Menu
+	-- ['menu_player'] = 'spelare',
+	-- ['menu_vehicle'] = 'fordon',
+	-- ['menu_job'] = 'jobb',
+	-- ['menu_esx'] = 'esx',
+
   -- Locale settings
   ['locale_digit_grouping_symbol'] = ' ',
   ['locale_currency'] = '%s kr',
