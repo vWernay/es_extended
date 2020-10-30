@@ -46,6 +46,7 @@ files {
   'modules/__base__/accessories/data/locales/sv.lua',
   'modules/__base__/garages/data/config.lua',
   'modules/__base__/garages/data/locales/en.lua',
+  'modules/__base__/garages/data/locales/fr.lua',
   'modules/__base__/rpchat/data/config.lua',
   'modules/__base__/society/data/config.lua',
   'modules/__base__/society/data/locales/br.lua',

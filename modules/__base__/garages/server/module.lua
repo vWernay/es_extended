@@ -16,6 +16,13 @@ local utils   = M("utils")
 module.Cache = {}
 module.Cache.ownedVehicles = {}
 
+module.Config  = run('data/config.lua', {vector3 = vector3})['Config']
+
+module.Init = function()
+  local translations = run('data/locales/' .. module.Config.Locale .. '.lua')['Translations']
+  LoadLocale('garages', module.Config.Locale, translations)
+end
+
 module.UpdateVehicle = function(vehicleProps, plate)
   local player = Player.fromId(source)
 
