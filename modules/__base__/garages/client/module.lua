@@ -159,6 +159,8 @@ end
 -----------------------------------------------------------------------------------
 
 module.OpenGarageMenu = function(data)
+  local items = {}
+
   request('garages:getOwnedVehicles', function(vehicles)
     if vehicles then
 
@@ -174,8 +176,6 @@ module.OpenGarageMenu = function(data)
       module.EnterGarage(data)
 
       module.isInGarageMenu = true
-
-      local items = {}
 
       for _,value in ipairs(vehicles) do
         if value.stored and value.sold == 0 then
