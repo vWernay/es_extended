@@ -14,8 +14,6 @@ local Command = M("events")
 local Cache   = M("cache")
 local utils   = M("utils")
 
-module.Config = run('data/config.lua', {vector3 = vector3})['Config']
-
 onClient('garages:updateVehicle', function(vehicleProps, plate)
   module.UpdateVehicle(vehicleProps, plate)
 end)
@@ -145,14 +143,16 @@ onRequest("garages:storeAllVehicles", function(source, cb, plate)
     MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored', {
       ['@stored'] = 1,
     }, function(rowsChanged)
-      print("^2returned all owned vehicles to their garages^7")
+      -- print("^2returned all owned vehicles to their garages^7")
+      print(_U('garages:returned_vehicles_to_garages_server'))
       cb(true)
     end)
   else
     MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored', {
       ['@stored'] = 1,
     }, function(rowsChanged)
-      print("^2returned all owned vehicles to their garages^7")
+      -- print("^2returned all owned vehicles to their garages^7")
+      print(_U('garages:returned_vehicles_to_garages_server'))
       cb(true)
     end)
   end

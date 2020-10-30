@@ -34,6 +34,9 @@ module.vehicleLoaded     = false
 -----------------------------------------------------------------------------------
 
 module.Init = function()
+  local translations = run('data/locales/' .. module.Config.Locale .. '.lua')['Translations']
+  LoadLocale('garages', module.Config.Locale, translations)
+
   Citizen.CreateThread(function()
     for k,v in pairs(module.Config.GarageEntrances) do
       local blip = AddBlipForCoord(v.Pos.x, v.Pos.y, v.Pos.z)
@@ -51,7 +54,7 @@ module.Init = function()
   end)
 
   request("garages:storeAllVehicles", function(result)
-    print("Returned all owned vehicles to their garages.")
+    print(_U('garages:returned_vehicles_to_garages_client'))
   end)
 
   for k, v in pairs(module.Config.GarageEntrances) do
@@ -81,7 +84,7 @@ module.Init = function()
           Pos      = module.Config.GarageEntrances[data.location].Pos
         }
 
-        Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to get a vehicle from your garage.")
+        Interact.ShowHelpNotification(_U('garages:press_to_retrieve'))
 
         module.CurrentAction = function()
           module.OpenGarageMenu(module.CurrentActionData)
@@ -127,7 +130,7 @@ module.Init = function()
 
           if GetPedInVehicleSeat(vehicle, -1) == ped then
 
-            Interact.ShowHelpNotification("Press ~INPUT_CONTEXT~ to store this vehicle in the garage.")
+            Interact.ShowHelpNotification(_U('garages:press_to_store'))
 
             module.CurrentActionData = { 
               Location = data.location,
@@ -143,7 +146,7 @@ module.Init = function()
             end
           end
         else
-          Interact.ShowHelpNotification("~r~You must be in a vehicle to use this.")
+          Interact.ShowHelpNotification(_U('garages:must_be_in_vehicle'))
         end
       end
     end)
@@ -178,23 +181,21 @@ module.OpenGarageMenu = function(data)
       module.isInGarageMenu = true
 
       for _,value in ipairs(vehicles) do
-        if value.stored and value.sold == 0 then
+        if value.stored and value.plate and value.sold == 0 then
 
           local name = GetDisplayNameFromVehicleModel(value.model)
-
-          local plate = utils.math.Trim(value.plate)
 
           local vehicleData = {
             vehicleProps = value.vehicle,
             name         = name,
             model        = value.model,
-            plate        = plate
+            plate        = value.plate
           }
 
           if name == "CARNOTFOUND" then
-            items[#items + 1] = {type = 'button', name = 'model_error', label = "[Model Error]", value = vehicleData}
+            items[#items + 1] = {type = 'button', name = 'model_error', label = '[' .. _U('garages:model_error_label') .. ']', value = "CARNOTFOUND"}
           else
-            items[#items + 1] = {type = 'button', name = model, label = name .. " [" .. plate .. "]", value = vehicleData}
+            items[#items + 1] = {type = 'button', name = name, label = name .. ' [' .. value.plate .. ']', value = {vehicleProps = value.vehicle, name = name, model = value.model, plate = value.plate}}
           end
         elseif value.stored == 0 then
           local name = GetDisplayNameFromVehicleModel(value.vehicle.model)
@@ -205,18 +206,18 @@ module.OpenGarageMenu = function(data)
             plate = plate
           }
 
-          items[#items + 1] = {type = 'button', name = 'not_in_garage', label = name .. " - [NOT IN GARAGE]", value = vehicleData}
+          items[#items + 1] = {type = 'button', name = 'not_in_garage', label = name .. ' - [' .. _U('garages:not_in_garage_label') .. ']', value = vehicleData}
         end
       end
 
-      items[#items + 1] = {name = 'exit', label = '>> Exit <<', type = 'button'}
+      items[#items + 1] = {name = 'exit', label = '>> ' .. _U('garages:exit') .. ' <<', type = 'button'}
     else
-      utils.ui.showNotification("You do not own any vehicles.")
+      utils.ui.showNotification(_U('garages:no_vehicles'))
       return
     end
 
     module.garageMenu = Menu('garages.garage', {
-      title = "Garage",
+      title = _U('garages:menu_title'),
       float = 'top|left', -- not needed, default value
       items = items
     })
@@ -225,40 +226,34 @@ module.OpenGarageMenu = function(data)
 
     module.garageMenu:on('item.click', function(item, index)
       if item.name == 'exit' then
-        module.DeleteDisplayVehicleInsideGarage()
-        module.DestroyGarageMenu()
-        DoScreenFadeOut(1000)
-
-        while not IsScreenFadedOut() do
-          Citizen.Wait(0)
-        end
-
         module.ExitGarage()
-        module.ReturnPlayer(module.savedPosition)
-        camera.destroy()
       elseif item.name == 'not_in_garage' then
-        utils.ui.showNotification("Your " .. item.value.name .. " with the plates " .. item.value.plate .. " is not in the garage.")
+        utils.ui.showNotification(_U('garages:not_in_garage', item.value.name, item.value.plate))
       elseif item.name == "model_error" then
-        utils.ui.showNotification("There was an error with this cars model.")
+        utils.ui.showNotification(_U('garages:model_error'))
       else
-        module.commit(item.value, data)
+        if item.value.plate then
+          module.commit(item.value.plate, item.value.model, item.value.vehicleProps, item.value.name, data)
+        else
+          utils.ui.showNotification(_U('garages:plate_error'))
+        end
       end
     end)
   end)
 end
 
-module.OpenRetrievalMenu = function(vehicleData, data)
+module.OpenRetrievalMenu = function(plate, model, vehicleProps, name, data)
   local items = {}
 
-  items[#items + 1] = {name = 'yes', label = '>> Yes <<', type = 'button', value = vehicle}
-  items[#items + 1] = {name = 'no', label = '>> No <<', type = 'button'}
+  items[#items + 1] = {name = 'yes', label = '>> ' .. _U('garages:yes') .. ' <<', type = 'button'}
+  items[#items + 1] = {name = 'no', label = '>> ' .. _U('garages:no') .. ' <<', type = 'button'}
 
   if module.garageMenu.visible then
     module.garageMenu:hide()
   end
 
   module.retrievalMenu = Menu('garages.retrieval', {
-    title = "Retrieve " .. vehicleData.name .. " from the garage?",
+    title = _U('garages:retrieve_confirm', name),
     float = 'top|left', -- not needed, default value
     items = items
   })
@@ -280,44 +275,38 @@ module.OpenRetrievalMenu = function(vehicleData, data)
 
       module.garageMenu:focus()
     elseif item.name == 'yes' then
-
-      module.retrievalMenu:hide()
-
-      ------------------------------------
-      -- SERVER-SIDE VEHICLE SPAWNING HERE
-      ------------------------------------
-
       request("garages:removeVehicleFromGarage", function(success)
         if success then
-
-          local ped = PlayerPedId()
-
           module.ExitGarageWithSelectedVehicle()
 
           while not IsScreenFadedOut() do
             Citizen.Wait(0)
           end
 
-          FreezeEntityPosition(ped, false)
+          FreezeEntityPosition(PlayerPedId(), false)
 
-          SetEntityCoords(ped, module.Config.GarageSpawns[data.Location].Pos)
+          SetEntityCoords(PlayerPedId(), module.Config.GarageSpawns[data.Location].Pos)
 
           Citizen.Wait(100)
 
-          utils.game.createVehicle(vehicleData.vehicleProps.model, module.Config.GarageSpawns[data.Location].Pos, module.Config.GarageSpawns[data.Location].Heading, function(vehicle)
+          utils.game.createVehicle(model, module.Config.GarageSpawns[data.Location].Pos, module.Config.GarageSpawns[data.Location].Heading, function(vehicle)
             local ped = PlayerPedId()
-            SetEntityVisible(ped, true)
-            TaskWarpPedIntoVehicle(ped, vehicle, -1)
+            TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, -1)
 
-            utils.game.setVehicleProperties(vehicle, vehicleData.vehicleProps)
-            SetVehicleNumberPlateText(vehicle, vehicleData.vehicleProps.plate)
+            utils.game.setVehicleProperties(vehicle, vehicleProps)
+            SetVehicleNumberPlateText(vehicle, plate)
           end)
 
-          Citizen.Wait(400)
+          Citizen.Wait(1000)
+          SetEntityVisible(PlayerPedId(), true)
+          DoScreenFadeIn(500)
+          utils.ui.showNotification(_U('garages:retrieve_success'))
+        else
+          module.ExitGarage()
 
-          utils.ui.showNotification("You have taken your vehicle out of the garage.")
+          utils.ui.showNotification(_U('garages:retrieve_failure'))
         end
-      end, vehicleData.vehicleProps.plate)
+      end, plate)
     end
   end)
 end
@@ -346,52 +335,65 @@ module.EnterGarage = function(data)
   camera.setPolarAzimuthAngle(220.0, 120.0)
   camera.setRadius(3.5)
   emit('esx:identity:preventSaving', true)
-
   DoScreenFadeIn(250)
 end
 
 module.ExitGarage = function()
-  Citizen.CreateThread(function()
-    local ped = PlayerPedId()
+  DoScreenFadeOut(100)
 
-    FreezeEntityPosition(ped, false)
-    SetEntityVisible(ped, true)
-  end)
+  if module.retrievalMenu then
+    module.retrievalMenu:destroy()
+  end
+
+  if module.garageMenu then
+    module.garageMenu:destroy()
+  end
+
+  while not IsScreenFadedOut() do
+    Citizen.Wait(0)
+  end
+
+  FreezeEntityPosition(PlayerPedId(), false)
+  SetEntityVisible(PlayerPedId(), true)
+
+  module.ReturnPlayer(module.savedPosition)
+  camera.destroy()
 
   emit('esx:identity:preventSaving', false)
 
   module.isInGarageMenu = false
+
+  Citizen.Wait(250)
+  DoScreenFadeIn(500)
 end
 
 module.ExitGarageWithSelectedVehicle = function()
-  Citizen.CreateThread(function()
-    DoScreenFadeOut(250)
 
-    while not IsScreenFadedOut() do
-      Citizen.Wait(0)
-    end
+  DoScreenFadeOut(100)
 
-    if module.currentDisplayVehicle then
-      module.DeleteDisplayVehicleInsideGarage()
-      module.currentDisplayVehicle = nil
-      module.vehicleLoaded = false
-    end
+  if module.retrievalMenu then
+    module.retrievalMenu:destroy()
+  end
 
-    if module.retrievalMenu then
-      module.retrievalMenu:destroy()
-    end
+  if module.garageMenu then
+    module.garageMenu:destroy()
+  end
 
-    module.DestroyGarageMenu()
-    camera.destroy()
+  while not IsScreenFadedOut() do
+    Citizen.Wait(0)
+  end
 
-    emit('esx:identity:preventSaving', false)
-    module.isInGarageMenu = false
-    module.Exit()
+  if module.currentDisplayVehicle then
+    module.DeleteDisplayVehicleInsideGarage()
+    module.currentDisplayVehicle = nil
+    module.vehicleLoaded = false
+  end
 
-    Citizen.Wait(400)
+  camera.destroy()
 
-    DoScreenFadeIn(500)
-  end)
+  emit('esx:identity:preventSaving', false)
+  module.isInGarageMenu = false
+  module.Exit()
 end
 
 module.StartGarageRestriction = function()
@@ -451,19 +453,20 @@ module.SetMouseIn = function(value)
   camera.setMouseIn(value)
 end
 
-module.commit = function(vehicleData, data)
+module.commit = function(plate, model, vehicleProps, name, data)
+
   local playerPed = PlayerPedId()
 
   module.DeleteDisplayVehicleInsideGarage()
 
-  utils.game.waitForVehicleToLoad(vehicleData.model)
+  utils.game.waitForVehicleToLoad(model)
 
-  utils.game.createLocalVehicle(vehicleData.model, module.Config.GarageMenuLocation, module.Config.GarageMenuLocatioHeading, function(vehicle)
+  utils.game.createLocalVehicle(model, module.Config.GarageMenuLocation, module.Config.GarageMenuLocatioHeading, function(vehicle)
     module.currentDisplayVehicle = vehicle
     
     TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
 
-    utils.game.setVehicleProperties(vehicle, vehicleData.vehicleProps)
+    utils.game.setVehicleProperties(vehicle, vehicleProps)
 
     FreezeEntityPosition(vehicle, true)
 
@@ -471,7 +474,7 @@ module.commit = function(vehicleData, data)
 
     SetModelAsNoLongerNeeded(model)
 
-    module.OpenRetrievalMenu(vehicleData, data)
+    module.OpenRetrievalMenu(plate, model, vehicleProps, name, data)
 
     module.vehicleLoaded = true
 
@@ -507,10 +510,6 @@ module.ReturnPlayer = function(pos)
   DoScreenFadeIn(250)
 end
 
-module.DestroyGarageMenu = function()
-  module.garageMenu:destroy()
-end
-
 module.Exit = function()
   module.CurrentAction     = nil
   module.CurrentActionData = nil
@@ -541,10 +540,10 @@ module.StoreVehicle = function()
           utils.game.deleteVehicle(vehicle)
 
           Citizen.Wait(500)
-          utils.ui.showNotification("You have stored your vehicle in the garage.")
+          utils.ui.showNotification(_U('garages:store_success'))
           DoScreenFadeIn(250)
         else
-          utils.ui.showNotification("~r~You do not own this vehicle.")
+          utils.ui.showNotification(_U('garages:do_not_own'))
         end
       end, plate)
     end
