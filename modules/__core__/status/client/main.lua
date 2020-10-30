@@ -10,6 +10,23 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-M('ui.hud')
+ESX.SetInterval(300, function()
+  if module.IsPauseMenuActive() and not module.isPaused then
+    module.isPaused = true
+    emit('status:setDisplay', 0.0)
+  elseif not IsPauseMenuActive() and module.isPaused then
+    module.isPaused = false 
+    emit('status:setDisplay', 0.5)
+  end
+end)
 
-module.Frame = Frame()
+ESX.SetInterval(module.Config.UpdateInterval, function()
+	emitServer('status:update', module.GetStatusData(true))
+end)
+
+ESX.SetInterval(1, function()
+  module.Frame:postMessage({
+    update = true,
+    status = module.Status
+  })
+end)
