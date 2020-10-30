@@ -290,6 +290,6 @@ Locales['br'] = {
   ['identity_lastname'] = 'Sobrenome',
   ['identity_birthdate'] = 'Data de Nascimento',
   ['identity_sex'] = "Sexo",
-  ['identity_female'] = "Masculino",
+  ['identity_male'] = "Masculino",
   ['identity_female'] = "Feminino",
 }
