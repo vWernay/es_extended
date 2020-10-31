@@ -213,10 +213,6 @@
 			{/if}
 
 		{/each}
-		<div class="navigation">
-			<button class="nav-btn">back</button>
-			<button class="nav-btn">next</button>
-		</div>
 	</main-wrap>
 </main>
 
@@ -428,15 +424,6 @@
   .color-restrict-preview {
     width: 100%;
     height: 16px;
-  }
-
-  .navigation {
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
-  }
-  .nav-btn {
-	  margin: 1em;
   }
 
 </style>
