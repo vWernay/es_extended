@@ -29,10 +29,7 @@ Translations = {
 
   -- Menu
   ['menu_title'] = 'Garages',
-  ['exit'] = 'Exit',
   ['not_in_garage_label'] = "NOT IN GARAGE",
   ['model_error_label'] = "MODEL ERROR",
-  ['yes'] = 'Yes',
-  ['no'] = 'No',
   ['retrieve_confirm'] = 'Retrieve %s from the garage?'
 }

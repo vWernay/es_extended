@@ -89,7 +89,7 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
 
         Cache.InsertIntoBasicCache("usedPlates", plate)
 
-        print("^7[^4" .. player:getIdentityId() .. "^7 |^5 " .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
+        print(_U('vehicleshop:server_buy_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, tostring(formattedPrice)))
 
         utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
           while not DoesEntityExist(vehicle) do
@@ -102,7 +102,7 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
           cb(vehicleID)
         end)
       else
-        print("^1Error purchasing vehicle. Please contact the server administrator.^7")
+        print(_U('vehicleshop:server_buy_failure'))
       end
     else
       MySQL.Async.execute('INSERT INTO owned_vehicles (identifier, id, plate, model, sell_price, vehicle) VALUES (@identifier, @identityId, @plate, @model, @sell_price, @vehicle)', {
@@ -114,7 +114,7 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
         ['@vehicle']    = json.encode({model = GetHashKey(model), plate = plate}),
       }, function(rowsChanged)
 
-        print("^7[^4" .. player:getIdentityId() .. "^7/^5" .. playerData:getFirstName() .. " " .. playerData:getLastName() .. "^7] ^3bought^7: ^5" .. name .. "^7 with the plates ^3" .. plate .. " ^7for ^2$" .. tostring(formattedPrice) .. "^7")
+        print(_U('vehicleshop:server_buy_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, tostring(formattedPrice)))
 
         utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
           while not DoesEntityExist(vehicle) do
@@ -158,11 +158,14 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
 
     if vehicleCheck then
       if Cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "sold", 1) then
+        print(_U('vehicleshop:server_sell_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, module.GroupDigits(resellPrice)))
         cb(true)
       else
+        print(_U('vehicleshop:server_sell_failure'))
         cb(false)
       end
     else
+      print(_U('vehicleshop:server_sell_failure'))
       cb(false)
     end
   else
@@ -176,9 +179,10 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
           MySQL.Async.execute('UPDATE owned_vehicles SET sold = @sold WHERE plate = @plate', {
             ['@plate'] = plate,
             ['@sold']  = 1
-          })
-
-          cb(true)
+          }, function(rowsChanged)
+            print(_U('vehicleshop:server_sell_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, module.GroupDigits(resellPrice)))
+            cb(true)
+          end)
         else
           cb(false)
         end

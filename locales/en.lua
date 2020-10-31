@@ -16,6 +16,8 @@ Locales['en'] = {
   ['back'] = 'Go Back',
   ['close'] = 'Close',
   ['exit'] = 'Exit',
+  ['yes'] = 'Yes',
+  ['no'] = 'No',
 
   -- Inventory
   ['inventory'] = 'inventory %s / %s',
