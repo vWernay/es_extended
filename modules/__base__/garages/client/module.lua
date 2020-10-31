@@ -210,7 +210,7 @@ module.OpenGarageMenu = function(data)
         end
       end
 
-      items[#items + 1] = {name = 'exit', label = '>> ' .. _U('garages:exit') .. ' <<', type = 'button'}
+      items[#items + 1] = {name = 'exit', label = '>> ' .. _U('exit') .. ' <<', type = 'button'}
     else
       utils.ui.showNotification(_U('garages:no_vehicles'))
       return
@@ -245,8 +245,8 @@ end
 module.OpenRetrievalMenu = function(plate, model, vehicleProps, name, data)
   local items = {}
 
-  items[#items + 1] = {name = 'yes', label = '>> ' .. _U('garages:yes') .. ' <<', type = 'button'}
-  items[#items + 1] = {name = 'no', label = '>> ' .. _U('garages:no') .. ' <<', type = 'button'}
+  items[#items + 1] = {name = 'yes', label = '>> ' .. _U('yes') .. ' <<', type = 'button'}
+  items[#items + 1] = {name = 'no', label = '>> ' .. _U('no') .. ' <<', type = 'button'}
 
   if module.garageMenu.visible then
     module.garageMenu:hide()
