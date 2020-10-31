@@ -11,9 +11,5 @@
 --   This copyright should appear in every part of the project code
 
 Translations = {
-  ['skin_menu'] = 'utseende meny',
-  ['use_rotate_view'] = 'använd ~INPUT_VEH_FLY_ROLL_LEFT_ONLY~ och ~INPUT_VEH_FLY_ROLL_RIGHT_ONLY~ för att rotera.',
-  ['skin'] = 'ändra utseende',
-  ['saveskin'] = 'spara utseende till fil',
-  ['skin_saved'] = 'utseende sparat',
+  ['vehicleshop:press_access'] = 'Tryck ~INPUT_CONTEXT~ för att komma åt bilfirman.'
 }
