@@ -72,7 +72,8 @@ export default {
 		})
 	],
 	watch: {
-		clearScreen: true
+		clearScreen: true,
+		chokidar: false
 	}
 };
 
