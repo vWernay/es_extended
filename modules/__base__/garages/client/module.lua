@@ -34,8 +34,8 @@ module.vehicleLoaded     = false
 -----------------------------------------------------------------------------------
 
 module.Init = function()
-  local translations = run('data/locales/' .. module.Config.Locale .. '.lua')['Translations']
-  LoadLocale('garages', module.Config.Locale, translations)
+  local translations = run('data/locales/' .. Config.Locale .. '.lua')['Translations']
+  LoadLocale('garages', Config.Locale, translations)
 
   Citizen.CreateThread(function()
     for k,v in pairs(module.Config.GarageEntrances) do
