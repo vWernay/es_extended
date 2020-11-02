@@ -9,30 +9,23 @@ setTimeout(() => {
   window.dispatchEvent(
     new MessageEvent("message", {
       data: {
-        app: "STATUS",
-        method: "setStatus",
+        app: 'STATUS',
+        method: 'setStatus',
         data: [
           {
             id: 1,
-            color: "#ff9800",
-            value: 10,
-            icon: "fastfood",
-            iconType: "material",
+            color: 'blue',
+            value: 50,
+            icon: 'fa-car',
+            iconType: 'fontawesome'
           },
           {
             id: 2,
-            color: "#2196f3",
+            color: 'orange',
             value: 75,
-            icon: "opacity",
-            iconType: "material",
-          },
-          {
-            id: 3,
-            color: "#ec407a",
-            icon: "fa-brain",
-            iconType: "fontawesome",
-            value: 25,
-          },
+            icon: 'fastfood',
+            iconType: 'material'
+          }
         ]
       }
     })
