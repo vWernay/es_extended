@@ -323,8 +323,6 @@ module.EnterGarage = function(data)
 
   Citizen.CreateThread(function()
     local ped = PlayerPedId()
-
-    local pos = vector3(227.6369, -990.8311, -99.06071)
     SetEntityCoords(ped, module.Config.GarageMenuLocation)
     FreezeEntityPosition(ped, true)
     SetEntityVisible(ped, false)
