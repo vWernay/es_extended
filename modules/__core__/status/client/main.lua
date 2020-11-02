@@ -11,22 +11,34 @@
 --   This copyright should appear in every part of the project code
 
 ESX.SetInterval(300, function()
-  if module.IsPauseMenuActive() and not module.isPaused then
+  if IsPauseMenuActive() and not module.isPaused then
     module.isPaused = true
-    emit('status:setDisplay', 0.0)
+    -- Hide HUD
   elseif not IsPauseMenuActive() and module.isPaused then
-    module.isPaused = false 
-    emit('status:setDisplay', 0.5)
+    module.isPaused = false
+    -- Allow HUD To Be Shown
   end
 end)
 
-ESX.SetInterval(module.Config.UpdateInterval, function()
-	emitServer('status:update', module.GetStatusData(true))
-end)
+StatusTest = {
+  {
+    id = "hunger",
+    color = "red",
+    value = 100,
+    icon = "fa-car",
+    iconType = "fontawesome"
+  },
+  {
+    id = "hunger",
+    color = "blue",
+    value = 100,
+    icon = "fa-car",
+    iconType = "fontawesome"
+  }
+}
 
-ESX.SetInterval(1, function()
-  module.Frame:postMessage({
-    update = true,
-    status = module.Status
-  })
+ESX.SetInterval(Config.Modules.Status.UpdateInterval * 1000, function() -- update with 1000
+  if module.StatusReady == true then
+    module.UpdateStatusThroughTick()
+  end
 end)
