@@ -19,6 +19,11 @@ module.Cache.usedPlates = {}
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
+module.Init = function()
+  local translations = run('data/locales/' .. Config.Locale .. '.lua')['Translations']
+  LoadLocale('vehicleshop', Config.Locale, translations)
+end
+
 module.isPlateTaken = function(plate)
   if module.Cache.usedPlates then
     module.Cache.usedPlates = {}
@@ -61,4 +66,10 @@ module.UpdateVehicle = function(vehicleProps, plate, model)
       ['@vehicle'] = json.encode(vehicleProps)
     })
   end
+end
+
+module.GroupDigits = function(value)
+  local left,num,right = string.match(value,'^([^%d]*%d)(%d*)(.-)$')
+
+  return left..(num:reverse():gsub('(%d%d%d)','%1' .. ","):reverse())..right
 end

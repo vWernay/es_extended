@@ -11,5 +11,3 @@
 --   This copyright should appear in every part of the project code
 
 Config = {}
-
-Config.Locale = 'en'

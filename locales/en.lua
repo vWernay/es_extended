@@ -14,6 +14,10 @@ Locales['en'] = {
   -- Global
   ['submit'] = 'Submit',
   ['back'] = 'Go Back',
+  ['close'] = 'Close',
+  ['exit'] = 'Exit',
+  ['yes'] = 'Yes',
+  ['no'] = 'No',
 
   -- Inventory
   ['inventory'] = 'inventory %s / %s',
@@ -70,10 +74,6 @@ Locales['en'] = {
   ['in_vehicle'] = 'you cannot give anything to someone in a vehicle',
 
   -- Commands
-  ['command_car'] = 'spawn a vehicle',
-  ['command_car_car'] = 'vehicle spawn name or hash',
-  ['command_cardel'] = 'delete vehicle in proximity',
-  ['command_cardel_radius'] = 'optional, delete every vehicle within the specified radius',
   ['command_clear'] = 'clear chat',
   ['command_clearall'] = 'clear chat for all players',
   ['command_clearinventory'] = 'clear player inventory',
@@ -113,9 +113,52 @@ Locales['en'] = {
   ['commanderror_invaliditem'] = 'invalid item name',
   ['commanderror_invalidweapon'] = 'invalid weapon',
   ['commanderror_console'] = 'that command cannot be run from console',
+  ['commanderror_self'] = 'You can`t do that to yourself',
   ['commanderror_invalidcommand'] = '^3%s^0 is not a valid command!',
   ['commanderror_invalidplayerid'] = 'there is no player online matching that server id',
   ['commandgeneric_playerid'] = 'player id',
+
+  --- Admin
+  ['admin_command_tptm'] = 'TP to marker',
+	['admin_command_tptp'] = 'TP to player',
+  ['admin_command_tptp_rev'] = 'bring',
+  ['admin_command_car'] = 'spawn a vehicle',
+  ['admin_command_car_hashname'] = 'vehicle spawn name or hash',
+  ['admin_command_cardel'] = 'delete vehicle in proximity',
+  ['admin_command_cardel_radius'] = 'optional, delete every vehicle within the specified radius',
+  ['admin_command_freeze'] = 'Freeze',
+  ['admin_command_unfreeze'] = 'UnFreeze',
+	['admin_command_revive'] = 'Revive',
+	['admin_command_get_coords'] = 'Print your or player coords in console(F8)',
+	['admin_command_player_list'] = 'Print connected users in console(F8)',
+  ['admin_command_spectate_player'] = 'spectate player',
+  ['admin_command_health'] = 'set health',
+	['admin_command_kill_player'] = 'kill player',
+  ['admin_command_armor'] = 'set armor',
+	['admin_command_set_weapon'] = 'set weapon',
+  ['admin_result_tp'] = 'Teleported',
+	['admin_result_freeze'] = 'You have been freezed by admin.',
+	['admin_result_unfreeze'] = 'You have been unfreezed by admin.',
+	['admin_result_revive'] = 'You have been ressurected by admin.',
+	['admin_result_health'] = 'Your health has been changed.',
+	['admin_result_armor'] = 'Your armor has been changed.',
+	['admin_result_tptm'] = 'Please place your waypoint.',
+  ['admin_result_current_active'] = 'You have an action active.',
+  ['admin_result_spectate'] = 'Press ~INPUT_FRONTEND_CANCEL~ to exit spectate mode.',
+
+  -- Unfinished
+  -- ['command_kick'] = 'Kick',
+  -- ['command_ban'] = 'Ban',
+  -- ['command_unban'] = 'Unban',
+  -- ['admin_back'] = 'Back',
+  -- ['admin_close'] = 'Close',
+
+  -- Menu
+  ['menu_admin_oplayer'] = 'some player',
+  ['menu_admin_player'] = 'player',
+	['menu_admin_vehicle'] = 'vechicle',
+	['menu_admin_job'] = 'jobs',
+  ['menu_admin_esx'] = 'esx',
 
   -- Locale settings
   ['locale_digit_grouping_symbol'] = ',',
