@@ -3607,6 +3607,7 @@ function SkinEditor:saveFromMenu()
   end, self.skin:serialize())
 
   self:returnPlayer()
+  emit('esx:skin:loaded')
 end
 
 function SkinEditor:save()
@@ -3644,6 +3645,7 @@ module.init = function()
       module.askOpenEditor()
     else
       module.loadPlayerSkin(skinContent)
+      emit('esx:skin:loaded')
     end
   end)
 end
