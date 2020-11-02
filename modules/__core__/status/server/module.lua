@@ -10,77 +10,75 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-module.Config  = run('data/config.lua', {vector3 = vector3})['Config']
+-- moduel.CreateStatus = function(xPlayer, name, default, color, visible, tickCallback, clientAction)
 
-moduel.CreateStatus = function(xPlayer, name, default, color, visible, tickCallback, clientAction)
+-- 	local self = {}
 
-	local self = {}
+-- 	self.val          = default
+-- 	self.xPlayer      = xPlayer
+-- 	self.name         = name
+-- 	self.default      = default
+-- 	self.color        = color
+-- 	self.visible      = visible
+-- 	self.tickCallback = tickCallback
+-- 	self.clientAction = clientAction
 
-	self.val          = default
-	self.xPlayer      = xPlayer
-	self.name         = name
-	self.default      = default
-	self.color        = color
-	self.visible      = visible
-	self.tickCallback = tickCallback
-	self.clientAction = clientAction
+-- 	self._set = function(k, v)
+-- 		self[k] = v
+-- 	end
 
-	self._set = function(k, v)
-		self[k] = v
-	end
+-- 	self._get = function(k)
+-- 		return self[k]
+-- 	end
 
-	self._get = function(k)
-		return self[k]
-	end
+-- 	self.onTick = function()
+-- 		self.tickCallback(self)
+-- 	end
 
-	self.onTick = function()
-		self.tickCallback(self)
-	end
+-- 	self.set = function(val)
+-- 		self.val = val
+-- 	end
 
-	self.set = function(val)
-		self.val = val
-	end
+-- 	self.add = function(val)
+-- 		if self.val + val > module.Config.StatusMax then
+-- 			self.val = module.Config.StatusMax
+-- 		else
+-- 			self.val = self.val + val
+-- 		end
+-- 	end
 
-	self.add = function(val)
-		if self.val + val > module.Config.StatusMax then
-			self.val = module.Config.StatusMax
-		else
-			self.val = self.val + val
-		end
-	end
+-- 	self.remove = function(val)
+-- 		if self.val - val < 0 then
+-- 			self.val = 0
+-- 		else
+-- 			self.val = self.val - val
+-- 		end
+-- 	end
 
-	self.remove = function(val)
-		if self.val - val < 0 then
-			self.val = 0
-		else
-			self.val = self.val - val
-		end
-	end
+-- 	self.getPercent = function()
+-- 		return (self.val / module.Config.StatusMax) * 100
+-- 	end
 
-	self.getPercent = function()
-		return (self.val / module.Config.StatusMax) * 100
-	end
+-- 	self.updateClient = function()
+-- 		emit('status:updateClient', self.xPlayer.source)
+-- 	end
 
-	self.updateClient = function()
-		emit('status:updateClient', self.xPlayer.source)
-	end
+-- 	return self
 
-	return self
-
-end
+-- end
 
 module.SaveData = function()
-	local xPlayers = ESX.GetPlayers()
+	-- local xPlayers = ESX.GetPlayers()
 
-	for i=1, #xPlayers, 1 do
-		local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-		local status  = xPlayer.get('status')
+	-- for i=1, #xPlayers, 1 do
+	-- 	local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
+	-- 	local status  = xPlayer.get('status')
 
-		MySQL.Async.execute('UPDATE users SET status = @status WHERE identifier = @identifier', {
-			['@status']     = json.encode(status),
-			['@identifier'] = xPlayer.identifier
-		})
-	end
+	-- 	MySQL.Async.execute('UPDATE users SET status = @status WHERE identifier = @identifier', {
+	-- 		['@status']     = json.encode(status),
+	-- 		['@identifier'] = xPlayer.identifier
+	-- 	})
+	-- end
 
-	SetTimeout(10 * 60 * 1000, SaveData)
+	-- SetTimeout(10 * 60 * 1000, SaveData)
 end
