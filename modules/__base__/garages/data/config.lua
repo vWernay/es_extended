@@ -171,8 +171,8 @@ Config.GarageSpawns = {
   },
 
   SanAndreasAve = {
-    Pos         = vector3(-34.79, -697.73, 32.34),
-    Heading     = 350.42
+    Pos         = vector3(229.83, -804.35, 29.7),
+    Heading     = 160.25
   },
 
   DidionWay = {
@@ -186,28 +186,28 @@ Config.GarageSpawns = {
   },
 
   SteeleWay1150 = {
-    Pos         = vector3(-931.5, 210.98, 66.46),
-    Heading     = 12.15
+    Pos         = vector3(-933.3, 209.06, 66.46),
+    Heading     = 158.79
   },
 
   Route68 = {
-    Pos         = vector3(-931.5, 210.98, 66.46),
-    Heading     = 12.15
+    Pos         = vector3(993.63, 2672.98, 38.7),
+    Heading     = 1.81
   },
 
   PaletoBlvd = {
-    Pos         = vector3(-931.5, 210.98, 66.46),
+    Pos         = vector3(-212.94, 6339.37, 30.19),
     Heading     = 12.15
   },
 
   GrapeseedAve = {
-    Pos         = vector3(-931.5, 210.98, 66.46),
-    Heading     = 12.15
+    Pos         = vector3(2550.69, 4682.46, 32.5),
+    Heading     = 12.55
   },
 
   AlgonquinBlvd = {
-    Pos         = vector3(-931.5, 210.98, 66.46),
-    Heading     = 12.15
+    Pos         = vector3(1720.83, 3716.37, 32.86),
+    Heading     = 21.85
   },
 
   AltaSt = {
@@ -215,7 +215,6 @@ Config.GarageSpawns = {
     Heading     = 246.54820251465
   }
 }
-
 -- Config.Zones = {
 --   MiltonDrive = {
 --     VehicleSpawner = {
