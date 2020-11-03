@@ -323,7 +323,8 @@ module.EnterGarage = function(data)
 
   Citizen.CreateThread(function()
     local ped = PlayerPedId()
-    SetEntityCoords(ped, module.Config.GarageMenuLocation)
+    --SetEntityCoords(ped, module.Config.GarageMenuLocation)
+    SetEntityCoords(ped, module.Config.GarageSpawns[data.Location].Pos)
     FreezeEntityPosition(ped, true)
     SetEntityVisible(ped, false)
   end)
@@ -459,7 +460,7 @@ module.commit = function(plate, model, vehicleProps, name, data)
 
   utils.game.waitForVehicleToLoad(model)
 
-  utils.game.createLocalVehicle(model, module.Config.GarageMenuLocation, module.Config.GarageMenuLocatioHeading, function(vehicle)
+  utils.game.createLocalVehicle(model, module.Config.GarageSpawns[data.Location].Pos, module.Config.GarageSpawns[data.Location].Heading, function(vehicle)
     module.currentDisplayVehicle = vehicle
     
     TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
