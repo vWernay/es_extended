@@ -365,6 +365,7 @@ module.game.getVehicleProperties = function(vehicle)
 
       bodyHealth        = math.round(GetVehicleBodyHealth(vehicle), 1),
       engineHealth      = math.round(GetVehicleEngineHealth(vehicle), 1),
+      tankHealth        = math.round(GetVehiclePetrolTankHealth(vehicle), 1),
 
       fuelLevel         = math.round(GetVehicleFuelLevel(vehicle), 1),
       dirtLevel         = math.round(GetVehicleDirtLevel(vehicle), 1),
