@@ -27,8 +27,7 @@ Identity.define({
   {name = 'DOB',        field = {name = 'dob',        type = 'VARCHAR',    length = 10,  default = 'NULL',             extra = nil}},
   {name = 'isMale',     field = {name = 'is_male',    type = 'INT',        length = nil, default = 1,                  extra = nil}},
   {name = 'roles',      field = {name = 'roles',      type = 'MEDIUMTEXT', length = nil, default = '["user"]',         extra = nil}, encode = json.encode, decode = json.decode},
-  {name = 'accounts',   field = {name = 'accounts',   type = 'LONGTEXT',   length = nil, default = '',                 extra = nil}, encode = json.encode, decode = json.decode},
-  {name = 'status',     field = {name = 'status',     type = 'LONGTEXT',   length = nil, default = '',                 extra = nil}, encode = json.encode, decode = json.decode},
+  {name = 'status',     field = {name = 'status',     type = 'LONGTEXT',   length = nil, default = '',                 extra = nil}, encode = json.encode, decode = json.decode}
 })
 
 Identity.all = setmetatable({}, {
