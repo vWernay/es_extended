@@ -34,6 +34,7 @@ files {
   'modules/__examples__/modules.json',
   'modules/__user__/modules.json',
   'modules/__base__/accessories/data/config.lua',
+  'modules/__base__/accessories/data/locales/br.lua',
   'modules/__base__/accessories/data/locales/cs.lua',
   'modules/__base__/accessories/data/locales/en.lua',
   'modules/__base__/accessories/data/locales/es.lua',
