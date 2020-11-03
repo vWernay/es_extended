@@ -21,7 +21,7 @@ end)
 onRequest('garages:storeVehicle', function(source, cb, plate)
   local player = Player.fromId(source)
 
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
     if vehicleCheck then
@@ -45,7 +45,7 @@ onRequest('garages:checkOwnedVehicle', function(source, cb, plate)
   local player = Player.fromId(source)
 
   if player then
-    if module.Config.UseCache then
+    if Config.Modules.Cache.UseCache then
       local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
       if vehicleCheck then
@@ -92,7 +92,7 @@ end)
 onRequest('garages:removeVehicleFromGarage', function(source, cb, plate)
   local player = Player.fromId(source)
 
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
     if vehicleCheck then
@@ -117,7 +117,7 @@ end)
 onRequest('garages:getOwnedVehicles', function(source, cb)
   local player = Player.fromId(source)
 
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     module.Cache.ownedVehicles = Cache.getCacheByName("owned_vehicles")
 
     if module.Cache.ownedVehicles then
@@ -139,7 +139,7 @@ onRequest('garages:getOwnedVehicles', function(source, cb)
 end)
 
 onRequest("garages:storeAllVehicles", function(source, cb, plate)
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored', {
       ['@stored'] = 1,
     }, function(rowsChanged)

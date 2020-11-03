@@ -752,7 +752,7 @@ module.startTestDrive = function(model)
 end
 
 module.LoadAssets = function()
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     request("vehicleshop:getCategories", function(categories)
       module.categories = categories
 

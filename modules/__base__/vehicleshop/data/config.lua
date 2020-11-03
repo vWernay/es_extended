@@ -12,7 +12,6 @@
 
 Config = {}
 
-Config.UseCache       = true
 Config.EnableControls = true
 
 Config.DrawDistance = 20
