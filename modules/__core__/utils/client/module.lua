@@ -322,8 +322,8 @@ module.game.getPeds = function(onlyOtherPeds)
   return peds
 end
 
-module.game.getVehiclesInArea = function(coords, maxDistance) 
-  return module.enumerateEntitiesWithinDistance(module.game.getVehicles(), false, coords, maxDistance) 
+module.game.getVehiclesInArea = function(coords, maxDistance)  
+  return module.game.enumerateEntitiesWithinDistance(module.game.getVehicles(), false, coords, maxDistance) 
 end
 
 module.game.getVehicleInDirection = function()
