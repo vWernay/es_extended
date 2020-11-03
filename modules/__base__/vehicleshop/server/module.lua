@@ -55,7 +55,7 @@ end
 module.UpdateVehicle = function(vehicleProps, plate, model)
   local player = Player.fromId(source)
 
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     local value = json.encode(vehicleProps)
 
     Cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "vehicle", value)
