@@ -25,39 +25,47 @@ module.CreateStatus = function(name, color, iconType, icon, val)
   end
 end
 
+
+
 module.SetStatus = function(statusName, value)
+  local Statuses = {}
+  local existingStatuses = {}
+
   if module.Status then
-    local Statuses = {}
-    local existingStatuses = {}
-
-    if module.Status[statusName] then
-      if module.Status[statusName]["value"] then
-        module.Status[statusName]["value"] = value
-      end
-    end
-
-    for k,v in pairs(module.Status) do
+    for k,v in pairs(Config.Modules.Status.StatusIndex) do
       if k then
-        if module.Status[k] then
-          if module.Status[k]["value"] then
+        if tostring(v) == tostring(statusName) then
+          if module.Status[v] then
+            if module.Status[v]["value"] then
+              module.Status[v]["value"] = value
 
-            if v then
-              if not existingStatuses[k] then
-                existingStatuses[k] = v
-                table.insert(Statuses, v)
+              if not existingStatuses[v] then
+                existingStatuses[v] = value
+                table.insert(Statuses, module.Status[v])
+              end
+            end
+          end
+        else
+          if module.Status[v] then
+            if module.Status[v]["value"] then
+              if not existingStatuses[v] then
+                existingStatuses[v] = value
+                table.insert(Statuses, module.Status[v])
               end
             end
           end
         end
       end
     end
-
-    module.Frame:postMessage({
-      app = "STATUS",
-      method = "setStatus",
-      data = Statuses
-    })
   end
+
+  emitServer('status:updateStatus', module.Status)
+
+  module.Frame:postMessage({
+    app = "STATUS",
+    method = "setStatus",
+    data = Statuses
+  })
 end
 
 module.UpdateStatusThroughTick = function()
@@ -65,20 +73,20 @@ module.UpdateStatusThroughTick = function()
   local existingStatuses = {}
 
   if module.Status then
-    for k,v in pairs(module.Status) do
+    for k,v in pairs(Config.Modules.Status.StatusIndex) do
       if k then
-        if module.Status[k] then
-          if module.Status[k]["value"] then
-            if module.Status[k]["value"] then
-              if module.Status[k]["value"] > 0 then
-                module.Status[k]["value"] = module.Status[k]["value"] - 1
+        if module.Status[v] then
+          if module.Status[v]["value"] then
+            if module.Status[v]["value"] then
+              if module.Status[v]["value"] > 0 then
+                module.Status[v]["value"] = module.Status[v]["value"] - 1
               end
             end
 
             if v then
-              if not existingStatuses[k] then
-                existingStatuses[k] = v
-                table.insert(Statuses, v)
+              if not existingStatuses[v] then
+                existingStatuses[v] = v
+                table.insert(Statuses, module.Status[v])
               end
             end
           end
@@ -86,6 +94,8 @@ module.UpdateStatusThroughTick = function()
       end
     end
   end
+
+  emitServer('status:updateStatus', module.Status)
 
   module.Frame:postMessage({
     app = "STATUS",
@@ -97,17 +107,18 @@ end
 module.UpdateStatusWithoutTick = function()
   local Statuses = {}
   local existingStatuses = {}
+  local index = 0
 
   if module.Status then
-    for k,v in pairs(module.Status) do
+    for k,v in pairs(Config.Modules.Status.StatusIndex) do
       if k then
-        if module.Status[k] then
-          if module.Status[k]["value"] then
+        if module.Status[v] then
+          if module.Status[v]["value"] then
 
             if v then
-              if not existingStatuses[k] then
-                existingStatuses[k] = v
-                table.insert(Statuses, v)
+              if not existingStatuses[v] then
+                existingStatuses[v] = v
+                table.insert(Statuses, module.Status[v])
               end
             end
           end
@@ -115,6 +126,8 @@ module.UpdateStatusWithoutTick = function()
       end
     end
   end
+
+  emitServer('status:updateStatus', module.Status)
 
   module.Frame:postMessage({
     app = "STATUS",

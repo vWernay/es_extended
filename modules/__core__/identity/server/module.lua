@@ -14,20 +14,23 @@ M('table')
 M('persistent')
 
 local spawn = {x = -269.4, y = -955.3, z = 31.2, heading = 205.8}
+local status   = {hunger = 100, thirst = 100, drugs  = 0, drunk  = 0, stress = 0}
+local accounts = {wallet = 0, fleeca = 0, maze = 0}
 
 Identity = Persist('identities', 'id', Enrolable)
 
 Identity.define({
-  {name = 'id',         field = {name = 'id',         type = 'INT',        length = nil, default = nil,                extra = 'NOT NULL AUTO_INCREMENT'}},
-  {name = 'identifier', field = {name = 'identifier', type = 'VARCHAR',    length = 64,  default = 'UUID()',           extra = 'NOT NULL'}},
-  {name = 'owner',      field = {name = 'owner',      type = 'VARCHAR',    length = 64,  default  = nil,               extra = 'NOT NULL'}},
-  {name = 'position',   field = {name = 'position',   type = 'VARCHAR',    length = 255, default = json.encode(spawn), extra = nil}, encode = json.encode, decode = json.decode},
-  {name = 'firstName',  field = {name = 'first_name', type = 'VARCHAR',    length = 32,  default = 'NULL',             extra = nil}},
-  {name = 'lastName',   field = {name = 'last_name',  type = 'VARCHAR',    length = 32,  default = 'NULL',             extra = nil}},
-  {name = 'DOB',        field = {name = 'dob',        type = 'VARCHAR',    length = 10,  default = 'NULL',             extra = nil}},
-  {name = 'isMale',     field = {name = 'is_male',    type = 'INT',        length = nil, default = 1,                  extra = nil}},
-  {name = 'roles',      field = {name = 'roles',      type = 'MEDIUMTEXT', length = nil, default = '["user"]',         extra = nil}, encode = json.encode, decode = json.decode},
-  {name = 'status',     field = {name = 'status',     type = 'LONGTEXT',   length = nil, default = '',                 extra = nil}, encode = json.encode, decode = json.decode}
+  {name = 'id',         field = {name = 'id',         type = 'INT',        length = nil, default = nil,                   extra = 'NOT NULL AUTO_INCREMENT'}},
+  {name = 'identifier', field = {name = 'identifier', type = 'VARCHAR',    length = 64,  default = 'UUID()',              extra = 'NOT NULL'}},
+  {name = 'owner',      field = {name = 'owner',      type = 'VARCHAR',    length = 64,  default  = nil,                  extra = 'NOT NULL'}},
+  {name = 'position',   field = {name = 'position',   type = 'VARCHAR',    length = 255, default = json.encode(spawn),    extra = nil}, encode = json.encode, decode = json.decode},
+  {name = 'firstName',  field = {name = 'first_name', type = 'VARCHAR',    length = 32,  default = 'NULL',                extra = nil}},
+  {name = 'lastName',   field = {name = 'last_name',  type = 'VARCHAR',    length = 32,  default = 'NULL',                extra = nil}},
+  {name = 'DOB',        field = {name = 'dob',        type = 'VARCHAR',    length = 10,  default = 'NULL',                extra = nil}},
+  {name = 'isMale',     field = {name = 'is_male',    type = 'INT',        length = nil, default = 1,                     extra = nil}},
+  {name = 'roles',      field = {name = 'roles',      type = 'MEDIUMTEXT', length = nil, default = '["user"]',            extra = nil}, encode = json.encode, decode = json.decode},
+  {name = 'status',     field = {name = 'status',     type = 'VARCHAR',    length = 999, default = json.encode(status),   extra = nil}, encode = json.encode, decode = json.decode},
+  {name = 'accounts',   field = {name = 'accounts',   type = 'VARCHAR',    length = 255, default = json.encode(accounts), extra = nil}, encode = json.encode, decode = json.decode}
 })
 
 Identity.all = setmetatable({}, {

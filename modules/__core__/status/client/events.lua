@@ -15,8 +15,19 @@ onServer('status:setStatusCommand', function(statusName, value)
 end)
 
 on('esx:skin:loaded', function()
-  module.CreateStatus("hunger", "orange", "fontawesome", "fa-car", 100)
-  module.CreateStatus("thirst", "blue", "fontawesome", "fa-car", 80)
-  module.StatusReady = true
-  module.UpdateStatusWithoutTick()
+  if Config.Modules.Cache.UseCache then
+    request('status:getStatuses', function(statuses)
+      if statuses then
+        local config = Config.Modules.Status.StatusInfo
+        for k,v in ipairs(Config.Modules.Status.StatusIndex) do
+          if statuses[v] then
+            module.CreateStatus(v, config[v].color, config[v].iconType, config[v].icon, statuses[v], config[v].fadeType)
+          end
+        end
+
+        module.StatusReady = true
+        module.UpdateStatusWithoutTick()
+      end
+    end)
+  end
 end)

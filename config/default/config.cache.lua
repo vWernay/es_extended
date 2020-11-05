@@ -8,11 +8,9 @@ Config.Modules.Cache = {
     "usedPlates"
   },
   IdentityCachedTables         = {
-    "owned_vehicles"
+    "owned_vehicles",
+    "identities"
   },
   BasicCachedTablesToUpdate    = {
-  },
-  IdentityCachedTablesToUpdate = {
-    "owned_vehicles"
   }
 }
