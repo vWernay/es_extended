@@ -12,3 +12,5 @@
 
 module.Cache = {}
 module.Cache.statuses = {}
+
+module.Cache.alreadyHasStatus = false

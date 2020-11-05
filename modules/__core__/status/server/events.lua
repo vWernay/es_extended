@@ -10,7 +10,7 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-local Cache    = M("cache")
+local Cache = M("cache")
 
 onRequest('status:getStatuses', function(source, cb)
 	local player = Player.fromId(source)
@@ -19,6 +19,7 @@ onRequest('status:getStatuses', function(source, cb)
 	  module.Cache.statuses = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "status")
 
 	  if module.Cache.statuses then
+		module.Cache.alreadyHasStatus = true
 		cb(module.Cache.statuses)
 	  else
 		module.Cache.statuses = {}
@@ -38,5 +39,9 @@ end)
 
 onClient('status:updateStatus', function(status)
 	local player = Player.fromId(source)
-	Cache.UpdateTableInIdentityCache("identities", player.identifier, player:getIdentityId(), Config.Modules.Status.StatusIndex, "status", "value", status)
+	if module.Cache.alreadyHasStatus then
+		Cache.UpdateTableInIdentityCache("identities", player.identifier, player:getIdentityId(), Config.Modules.Status.StatusIndex, "status", "value", status)
+	else
+		Cache.InsertTableIntoIdentityCache("identities", player.identifier, player:getIdentityId(), Config.Modules.Status.StatusIndex, "status", "value", status)
+	end
 end)
