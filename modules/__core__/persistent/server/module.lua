@@ -135,7 +135,6 @@ Persist = function(schema, pk, ...)
     local sql, data = baseQuery.escape().build()
 
     MySQL.Async.fetchAll(sql, data, function(rows)
-
       if not(rows) then
         error("A MySQL error occured, this probably isn't on the ESX end.")
       end
@@ -203,7 +202,7 @@ Persist = function(schema, pk, ...)
 
     if tostring(schema) == "identities" then
       for k,v in pairs(fields) do
-        if tostring(k) == "position" or tostring(k) == "roles" then
+        if tostring(k) == "position" or tostring(k) == "roles" or tostring(k) == "status" or tostring(k) == "accounts" then
           fields[k] = nil
         end
       end

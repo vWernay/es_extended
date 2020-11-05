@@ -23,6 +23,7 @@
     "character",
     "skin",
     "serializable",
+    "status",
     "string",
     "table",
     "ui.hud",

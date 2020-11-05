@@ -322,8 +322,8 @@ module.game.getPeds = function(onlyOtherPeds)
   return peds
 end
 
-module.game.getVehiclesInArea = function(coords, maxDistance) 
-  return module.enumerateEntitiesWithinDistance(module.game.getVehicles(), false, coords, maxDistance) 
+module.game.getVehiclesInArea = function(coords, maxDistance)  
+  return module.game.enumerateEntitiesWithinDistance(module.game.getVehicles(), false, coords, maxDistance) 
 end
 
 module.game.getVehicleInDirection = function()
@@ -365,6 +365,7 @@ module.game.getVehicleProperties = function(vehicle)
 
       bodyHealth        = math.round(GetVehicleBodyHealth(vehicle), 1),
       engineHealth      = math.round(GetVehicleEngineHealth(vehicle), 1),
+      tankHealth        = math.round(GetVehiclePetrolTankHealth(vehicle), 1),
 
       fuelLevel         = math.round(GetVehicleFuelLevel(vehicle), 1),
       dirtLevel         = math.round(GetVehicleDirtLevel(vehicle), 1),
@@ -455,7 +456,8 @@ module.game.setVehicleProperties = function(vehicle, props)
     if props.plate             then SetVehicleNumberPlateText(vehicle, props.plate) end
     if props.plateIndex        then SetVehicleNumberPlateTextIndex(vehicle, props.plateIndex) end
     if props.bodyHealth        then SetVehicleBodyHealth(vehicle, props.bodyHealth + 0.0) end
-    if props.engineHealth      then SetVehicleEngineHealth(vehicle, props.engineHealth + 0.0) end
+    if props.engineHealth      then SetVehicleEngineHealth(vehicle, props.engineHealth + 0.0) end    
+    if props.tankHealth        then SetVehiclePetrolTankHealth(vehicle, props.tankHealth + 0.0) end
     if props.fuelLevel         then SetVehicleFuelLevel(vehicle, props.fuelLevel + 0.0) end
     if props.dirtLevel         then SetVehicleDirtLevel(vehicle, props.dirtLevel + 0.0) end
     if props.color1            then SetVehicleColours(vehicle, props.color1, colorSecondary) end

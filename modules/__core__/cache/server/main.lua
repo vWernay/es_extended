@@ -23,7 +23,5 @@ local forcesaveCommand = Command("forcesave", "admin", "force a cache save")
 forcesaveCommand:setHandler(function(player, args, baseArgs)
   module.SaveCache()
 end)
-    
 forcesaveCommand:setRconAllowed(true)
-    
 forcesaveCommand:register()

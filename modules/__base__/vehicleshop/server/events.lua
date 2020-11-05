@@ -24,7 +24,7 @@ onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
   local player = Player.fromId(source)
 
   if player then
-    if module.Config.UseCache then
+    if Config.Modules.Cache.UseCache then
       local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
       if vehicleCheck then
@@ -72,7 +72,7 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
   if player then
-    if module.Config.UseCache then
+    if Config.Modules.Cache.UseCache then
       local data = {
         identifier   = player.identifier,
         id           = player:getIdentityId(),
@@ -153,7 +153,7 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
 
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
     if vehicleCheck then
@@ -194,7 +194,7 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
 end)
 
 onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace, plateLetters, plateNumbers)
-  if module.Config.UseCache then
+  if Config.Modules.Cache.UseCache then
     if module.isPlateTaken(plate) then
       cb(true)
     else
