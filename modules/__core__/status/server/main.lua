@@ -17,10 +17,8 @@ setStatus:addArgument("statusName", "string", _U('status_name'))
 setStatus:addArgument("value", "number", _U('status_value'))
 setStatus:addArgument("player", "player", _U('commandgeneric_playerid'))
 setStatus:setHandler(function(player, args)
-	print("Got it!")
   if args.statusName and args.value then
 	if not args.player then args.player = player end
-	print("/setStatus " .. args.player.source .. " | " .. args.statusName .. " | " .. tostring(args.value))
 	emitClient("status:setStatusCommand", args.player.source, args.statusName, args.value)
 	return
   else
@@ -35,26 +33,3 @@ setStatus:setHandler(function(player, args)
 end)
 
 setStatus:register()
-
-module.SaveData()
-
-ESX.SetInterval(1000, function()
-	-- local players = ESX.GetPlayers()
-
-	-- for _,playerId in ipairs(players) do
-	-- 	local xPlayer = ESX.GetPlayerFromId(playerId)
-
-	-- 	MySQL.Async.fetchAll('SELECT status FROM users WHERE identifier = @identifier', {
-	-- 		['@identifier'] = xPlayer.identifier
-	-- 	}, function(result)
-	-- 		local data = {}
-
-	-- 		if result[1].status then
-	-- 			data = json.decode(result[1].status)
-	-- 		end
-
-	-- 		xPlayer.set('status', data)
-	-- 		emitClient('esx_status:load', playerId, data)
-	-- 	end)
-	-- end
-end)

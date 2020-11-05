@@ -67,7 +67,7 @@ module.initIdentity = function(identity)
   local identity = Identity(identity)
 
   ESX.Player:field('identity', identity)
-  local position = spawn
+  local position = Config.Modules.identity.spawn
 
   request('esx:identity:getSavedPosition', function(savedPos)
     module.DoSpawn({
