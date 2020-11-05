@@ -32,7 +32,7 @@ function StatusCircle(): any {
   const status = useStatus();
   const classes = useStyles();
 
-  let fadeValue = [100, 75, 50, 25, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+  let fadeValue = [100, 75, 50, 25, 20, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
   return (
     <div
