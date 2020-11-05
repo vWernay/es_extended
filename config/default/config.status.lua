@@ -8,31 +8,31 @@ Config.Modules.Status = {
     ["hunger"] = {
       color    = "orange",
       iconType = "fontawesome",
-      icon     = "fa-car",
+      icon     = "fa-hamburger",
       fadeType = "desc"
     },
     ["thirst"] = {
       color    = "cyan",
       iconType = "fontawesome",
-      icon     = "fa-car",
+      icon     = "fa-tint",
       fadeType = "desc"
     },
     ["drugs"] = {
       color    = "green",
       iconType = "fontawesome",
-      icon     = "fa-car",
+      icon     = "fa-cannabis",
       fadeType = "asc"
     },
     ["drunk"] = {
       color    = "purple",
       iconType = "fontawesome",
-      icon     = "fa-car",
+      icon     = "fa-glass-martini-alt",
       fadeType = "asc"
     },
     ["stress"] = {
       color    = "pink",
       iconType = "fontawesome",
-      icon     = "fa-car",
+      icon     = "fa-brain",
       fadeType = "asc"
     },
   }

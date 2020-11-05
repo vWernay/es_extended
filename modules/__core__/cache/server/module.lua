@@ -57,7 +57,6 @@ module.InsertIntoIdentityCache = function(cacheName, identifier, id, updateData)
 end
 
 module.InsertTableIntoIdentityCache = function(cacheName, identifier, id, queryIndex, table, field, data)
-  print("Inserting")
   if module.Cache[cacheName] then
     if not module.Cache[cacheName][identifier] then
       module.Cache[cacheName][identifier] = {}
