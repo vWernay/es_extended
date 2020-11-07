@@ -57,6 +57,18 @@ Locales['en'] = {
   ['threw_cannot_pickup'] = 'you cannot pickup that because your inventory is full!',
   ['threw_pickup_prompt'] = 'press ~y~E~s~ to pickup',
 
+  -- Account
+  ['account_moniker'] = "$",
+  ['account_add_money'] = 'add money to a player account',
+  ['account_account_name'] = 'account name',
+  ['account_money_value'] =  'amount',
+  ['account_commandderror_account'] = 'account missing',
+  ['account_commanderror_money'] = 'amount missing',
+  ['account_remove_money'] = 'remove money from a player account',
+  ['account_notify_moneychange'] = 'Transaction of ~g~%s%s~s~ approved for the account \"~y~%s~s~\".',
+  ['account_notify_not_enough_money'] = 'Transaction of ~g~%s%s ~s~declined. Your account \"~y~%s~s~\" does not have enough funds.',
+  ['account_notify_transaction_error'] = 'There was an error retrieving the account \"~y~%s~s~\".',
+
   -- Key mapping
   ['keymap_showinventory'] = 'show Inventory',
 
