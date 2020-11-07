@@ -14,6 +14,7 @@ M('events')
 M('class')
 M('table')
 M('persistent')
+local Cache = M("cache")
 
 Account = Persist('accounts', 'id')
 
@@ -23,6 +24,32 @@ Account.define({
   {name = 'owner', field = {name = 'owner',  type = 'VARCHAR', length = 64,  default = 'NULL', extra = nil}},
   {name = 'money', field = {name = 'money',  type = 'INT',     length = nil, default = 0,      extra = nil}},
 })
+
+Account.AddIdentityMoney = function(account, money, player)
+  local accounts = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts")
+  if accounts[account] then
+    local transaction = Cache.AddValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", account, money)
+    if transaction.type == "success" then
+      emitClient('esx:account:notify', player.source, account, money, transaction.value)
+    else
+      emitClient('esx:account:transactionError', player.source)
+    end
+  end
+end
+
+Account.RemoveIdentityMoney = function(account, money, player)
+  local accounts = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts")
+  if accounts[account] then
+    local transaction = Cache.RemoveValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", account, money)
+    if transaction.type == "success" then
+      emitClient('esx:account:notify', player.source, account, money, transaction.value)
+    elseif transaction.type == "not_enough_money" then
+      emitClient('esx:account:notEnoughMoney', player.source, account, money)
+    else
+      emitClient('esx:account:transactionError', player.source, account)
+    end
+  end
+end
 
 function Account:setMoney(money)
 

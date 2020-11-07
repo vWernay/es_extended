@@ -10,10 +10,16 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-on('esx:account:addMoney', function(account, money, player)
-    Account.AddIdentityMoney(account, money, player)
+M('events')
+
+onServer('esx:account:notify', function(account, transactionAmount, balance)
+  Account.Notify(account, transactionAmount, balance)
 end)
 
-on('esx:account:removeMoney', function(account, money, player)
-    Account.RemoveIdentityMoney(account, money, player)
+onServer('esx:account:notEnoughMoney', function(account, money)
+  Account.NotEnoughMoney(account, money)
+end)
+
+onServer('esx:account:transactionError', function(account)
+  Account.TransactionError(account)
 end)

@@ -89,6 +89,82 @@ module.InsertTableIntoIdentityCache = function(cacheName, identifier, id, queryI
   end
 end
 
+module.AddValueInIdentityCache = function(cacheName, identifier, id, table, field, value)
+  if module.Cache[cacheName] then
+    if module.Cache[cacheName][identifier] then
+      if module.Cache[cacheName][identifier][id] then
+        if module.Cache[cacheName][identifier][id][table] then
+          for k,v in pairs(module.Cache[cacheName][identifier][id][table]) do
+            if tostring(k) == tostring(field) then
+              if module.Cache[cacheName][identifier][id][table][field] >= 0 then
+                module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] + value
+
+                local result = {
+                  type = "success",
+                  value = module.Cache[cacheName][identifier][id][table][field]
+                }
+
+                return result
+              end
+            end
+          end
+        else
+          return false
+        end
+        return false
+      else
+        return false
+      end
+    else
+      return false
+    end
+  else
+    return false
+  end
+end
+
+module.RemoveValueInIdentityCache = function(cacheName, identifier, id, table, field, value)
+  if module.Cache[cacheName] then
+    if module.Cache[cacheName][identifier] then
+      if module.Cache[cacheName][identifier][id] then
+        if module.Cache[cacheName][identifier][id][table] then
+          for k,v in pairs(module.Cache[cacheName][identifier][id][table]) do
+            if tostring(k) == tostring(field) then
+              if module.Cache[cacheName][identifier][id][table][field] then
+                if (module.Cache[cacheName][identifier][id][table][field] - value) > 0 then
+                  module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] - value
+
+                  local result = {
+                    type = "success",
+                    value = module.Cache[cacheName][identifier][id][table][field]
+                  }
+
+                  return result
+                else
+                  local result = {
+                    type = "not_enough_money"
+                  }
+
+                  return result
+                end
+              end
+            end
+          end
+        else
+          return false
+        end
+        return false
+      else
+        return false
+      end
+    else
+      return false
+    end
+  else
+    return false
+  end
+end
+
 module.UpdateTableInIdentityCache = function(cacheName, identifier, id, queryIndex, table, field, data)
   if module.Cache[cacheName] then
     if module.Cache[cacheName][identifier] then
@@ -445,30 +521,25 @@ module.SaveCache = function()
             for k2,v2 in pairs(module.Cache[tab][k]) do
               for k3,data in pairs(module.Cache[tab][k][k2]) do
                 if k3 == "status" then
-                  MySQL.Async.fetchAll('SELECT * FROM identities WHERE id = @id AND owner = @owner', {
-                    ['@id'] = k2,
-                    ['@owner'] = k
-                  }, function(result)
-                    if Config.Modules.Cache.EnableDebugging then
-                      print("Updating Status In Cache For : ^2" .. tostring(k) .. "^7")
-                    end
+                  if Config.Modules.Cache.EnableDebugging then
+                    print("Updating Status In Cache For : ^2" .. tostring(k) .. "^7")
+                  end
 
-                    MySQL.Async.execute('UPDATE identities SET status = @status WHERE id = @id AND owner = @owner', {
-                      ['@status'] = json.encode(data),
-                      ['@id']     = tonumber(k2),
-                      ['@owner']  = tostring(k)
-                    })
-                  end)
-                -- elseif k3 == "accounts" then
-                --   if Config.Modules.Cache.EnableDebugging then
-                --     print("Updating Accounts In Cache For : ^2" .. tostring(k) .. "^7")
-                --   end
+                  MySQL.Async.execute('UPDATE identities SET status = @status WHERE id = @id AND owner = @owner', {
+                    ['@status'] = json.encode(data),
+                    ['@id']     = tonumber(k2),
+                    ['@owner']  = tostring(k)
+                  })
+                elseif k3 == "accounts" then
+                  if Config.Modules.Cache.EnableDebugging then
+                    print("Updating Accounts In Cache For : ^2" .. tostring(k) .. "^7")
+                  end
 
-                --   MySQL.Async.execute('UPDATE identities SET accounts = @accounts WHERE id = @id AND owner = @owner', {
-                --     ['@status'] = json.encode(data),
-                --     ['@id']     = tonumber(k2),
-                --     ['@owner']  = tostring(k)
-                --   })
+                  MySQL.Async.execute('UPDATE identities SET accounts = @accounts WHERE id = @id AND owner = @owner', {
+                    ['@accounts'] = json.encode(data),
+                    ['@id']     = tonumber(k2),
+                    ['@owner']  = tostring(k)
+                  })
                 end
               end
             end
