@@ -165,6 +165,74 @@ module.RemoveValueInIdentityCache = function(cacheName, identifier, id, table, f
   end
 end
 
+module.CreateTableAndAddValueInIdentityCache = function(cacheName, identifier, id, table, data, field, value)
+  if module.Cache[cacheName] then
+    if not module.Cache[cacheName][identifier] then
+      module.Cache[cacheName][identifier] = {}
+    end
+
+    if not module.Cache[cacheName][identifier][id] then
+      module.Cache[cacheName][identifier][id] = {}
+    end
+
+    if not module.Cache[cacheName][identifier][id][table] then
+      module.Cache[cacheName][identifier][id][table] = data
+    end
+
+    if module.Cache[cacheName][identifier][id][table][field] then
+      if module.Cache[cacheName][identifier][id][table][field] >= 0 then
+        module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] + value
+
+        local result = {
+          type = "success",
+          value = module.Cache[cacheName][identifier][id][table][field]
+        }
+
+        return result
+      end
+    else
+      return false
+    end
+  end
+end
+
+module.CreateTableAndRemoveValueInIdentityCache = function(cacheName, identifier, id, table, data, field, value)
+  if module.Cache[cacheName] then
+    if not module.Cache[cacheName][identifier] then
+      module.Cache[cacheName][identifier] = {}
+    end
+
+    if not module.Cache[cacheName][identifier][id] then
+      module.Cache[cacheName][identifier][id] = {}
+    end
+
+    if not module.Cache[cacheName][identifier][id][table] then
+      module.Cache[cacheName][identifier][id][table] = data
+    end
+
+    if module.Cache[cacheName][identifier][id][table][field] then
+      if (module.Cache[cacheName][identifier][id][table][field] - value) > 0 then
+        module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] - value
+
+        local result = {
+          type = "success",
+          value = module.Cache[cacheName][identifier][id][table][field]
+        }
+
+        return result
+      else
+        local result = {
+          type = "not_enough_money"
+        }
+
+        return result
+      end
+    else
+      return false
+    end
+  end
+end
+
 module.UpdateTableInIdentityCache = function(cacheName, identifier, id, queryIndex, table, field, data)
   if module.Cache[cacheName] then
     if module.Cache[cacheName][identifier] then
