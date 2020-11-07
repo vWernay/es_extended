@@ -11,6 +11,7 @@
 --   This copyright should appear in every part of the project code
 
 local utils = M('utils')
+M("command")
 
 local setStatus = Command("setStatus", "admin", _U('set_status'))
 setStatus:addArgument("statusName", "string", _U('status_name'))
