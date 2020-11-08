@@ -4,10 +4,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import { useStatus } from "./hooks/useStatus";
-import Switch from "@material-ui/core/Switch";
 import Fade from "@material-ui/core/Fade";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { stat } from "fs";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
