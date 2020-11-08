@@ -34,17 +34,17 @@ function StatusCircle(): any {
     <div
       className="App"
       style={{ display: "flex", position: "absolute", right: 14, bottom: 20 }}
-
     >
       {status.map((stat) => (
         <Fade
           in={
             stat.fadeType === "asc" && stat.value > 0
-              ? true :
-            stat.fadeType === "desc"
-              ? fadeValue.includes(stat.value) 
-              : stat.fadeType === "desc" && stat.value === 0 
-              ? false : false
+              ? true
+              : stat.fadeType === "desc"
+              ? fadeValue.includes(stat.value)
+              : stat.fadeType === "desc" && stat.value === 0
+              ? false
+              : false
           }
         >
           <div key={stat.id} className={classes.wrapper}>
