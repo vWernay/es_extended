@@ -13,7 +13,7 @@
 M('ui.hud')
 module.Ready, module.Frame, module.Status, module.StatusReady, module.isPaused = false, nil, {}, false, false
 
-module.CreateStatus = function(name, color, iconType, icon, val)
+module.CreateStatus = function(name, color, iconType, icon, val, fadeType)
   if not module.Status[name] then
     module.Status[name] = {}
 
@@ -22,6 +22,7 @@ module.CreateStatus = function(name, color, iconType, icon, val)
     module.Status[name]["value"] = val
     module.Status[name]["icon"] = icon
     module.Status[name]["iconType"] = iconType
+    module.Status[name]["fadeType"] = fadeType
   end
 end
 
@@ -50,7 +51,16 @@ module.SetStatus = function(statusName, value)
             if module.Status[v]["value"] then
               if not existingStatuses[v] then
                 existingStatuses[v] = value
-                table.insert(Statuses, module.Status[v])
+                if module.Status[v]["fadeType"] == "desc" then
+                  if module.HasValue(module.Status[v]["value"]) then
+                    print(module.Status[v]["id"] .. " | " .. module.Status[v]["value"])
+                    table.insert(Statuses, module.Status[v])
+                  end
+                elseif module.Status[v]["fadeType"] == "asc" then
+                  if module.Status[v]["value"] > 0 then
+                    table.insert(Statuses, module.Status[v])
+                  end
+                end
               end
             end
           end
@@ -66,6 +76,16 @@ module.SetStatus = function(statusName, value)
     method = "setStatus",
     data = Statuses
   })
+end
+
+module.HasValue = function(val)
+  for k,v in ipairs(Config.Modules.Status.NotificationValues) do
+    if tonumber(v) == tonumber(val) then
+      print("value found " .. v)
+      return true
+    end
+  end
+  return false
 end
 
 module.UpdateStatusThroughTick = function()
@@ -86,7 +106,16 @@ module.UpdateStatusThroughTick = function()
             if v then
               if not existingStatuses[v] then
                 existingStatuses[v] = v
-                table.insert(Statuses, module.Status[v])
+                if module.Status[v]["fadeType"] == "desc" then
+                  if module.HasValue(module.Status[v]["value"]) then
+                    print(module.Status[v]["id"] .. " | " .. module.Status[v]["value"])
+                    table.insert(Statuses, module.Status[v])
+                  end
+                elseif module.Status[v]["fadeType"] == "asc" then
+                  if module.Status[v]["value"] > 0 then
+                    table.insert(Statuses, module.Status[v])
+                  end
+                end
               end
             end
           end
@@ -118,7 +147,16 @@ module.UpdateStatusWithoutTick = function()
             if v then
               if not existingStatuses[v] then
                 existingStatuses[v] = v
-                table.insert(Statuses, module.Status[v])
+                if module.Status[v]["fadeType"] == "desc" then
+                  if module.HasValue(module.Status[v]["value"]) then
+                    print(module.Status[v]["id"] .. " | " .. module.Status[v]["value"])
+                    table.insert(Statuses, module.Status[v])
+                  end
+                elseif module.Status[v]["fadeType"] == "asc" then
+                  if module.Status[v]["value"] > 0 then
+                    table.insert(Statuses, module.Status[v])
+                  end
+                end
               end
             end
           end
