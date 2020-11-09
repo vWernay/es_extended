@@ -53,7 +53,6 @@ module.SetStatus = function(statusName, value)
                 existingStatuses[v] = value
                 if module.Status[v]["fadeType"] == "desc" then
                   if module.HasValue(module.Status[v]["value"]) then
-                    print(module.Status[v]["id"] .. " | " .. module.Status[v]["value"])
                     table.insert(Statuses, module.Status[v])
                   end
                 elseif module.Status[v]["fadeType"] == "asc" then
@@ -81,7 +80,6 @@ end
 module.HasValue = function(val)
   for k,v in ipairs(Config.Modules.Status.NotificationValues) do
     if tonumber(v) == tonumber(val) then
-      print("value found " .. v)
       return true
     end
   end
@@ -108,7 +106,6 @@ module.UpdateStatusThroughTick = function()
                 existingStatuses[v] = v
                 if module.Status[v]["fadeType"] == "desc" then
                   if module.HasValue(module.Status[v]["value"]) then
-                    print(module.Status[v]["id"] .. " | " .. module.Status[v]["value"])
                     table.insert(Statuses, module.Status[v])
                   end
                 elseif module.Status[v]["fadeType"] == "asc" then
@@ -149,7 +146,6 @@ module.UpdateStatusWithoutTick = function()
                 existingStatuses[v] = v
                 if module.Status[v]["fadeType"] == "desc" then
                   if module.HasValue(module.Status[v]["value"]) then
-                    print(module.Status[v]["id"] .. " | " .. module.Status[v]["value"])
                     table.insert(Statuses, module.Status[v])
                   end
                 elseif module.Status[v]["fadeType"] == "asc" then
