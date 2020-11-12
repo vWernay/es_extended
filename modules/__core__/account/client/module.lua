@@ -13,10 +13,11 @@
 local utils = M('utils')
 M('ui.hud')
 
-module.Dict = "cellphone@"
-module.InAnim = "cellphone_text_in"
-module.OutAnim = "cellphone_text_out"
-module.IdleAnim = "cellphone_text_read_base"
+module.Dict          = "cellphone@"
+module.InAnim        = "cellphone_text_in"
+module.OutAnim       = "cellphone_text_out"
+module.IdleAnim      = "cellphone_text_read_base"
+module.WalletShowing = false
 
 Account = {}
 Account.Ready, Account.Frame, Account.isPaused = false, nil, false
@@ -33,25 +34,60 @@ Account.TransactionError = function(account)
   utils.ui.showNotification(_U('account_notify_transaction_error', account))
 end
 
+Account.ShowMoneyCommand = function()
+  local Accounts = {}
+
+  request('esx:account:getPlayerAccounts', function(data)
+    if data then
+      if not module.WalletShowing then
+        module.WalletShowing = true
+        local Accounts = {}
+        local index = 0
+
+        for k,v in pairs(Config.Modules.Account.AccountsIndex) do
+          if data[v] and not Accounts[v] then
+            index = index + 1
+            table.insert(Accounts, {
+              id = index,
+              type = v,
+              amount = data[v]
+            })
+          end
+        end
+
+        module.WalletAnimation(PlayerPedId(), Accounts)
+      end
+    else
+      module.WalletShowing = false
+    end
+  end)
+end
+
 Account.ShowMoney = function()
   local Accounts = {}
 
   request('esx:account:getPlayerAccounts', function(data)
-    local Accounts = {}
-    local index = 0
+    if data then
+      local Accounts = {}
+      local index = 0
 
-    for k,v in pairs(Config.Modules.Account.AccountsIndex) do
-      if data[v] and not Accounts[v] then
-        index = index + 1
-        table.insert(Accounts, {
-          id = index,
-          type = v,
-          amount = data[v]
-        })
+      for k,v in pairs(Config.Modules.Account.AccountsIndex) do
+        if data[v] and not Accounts[v] then
+          index = index + 1
+          table.insert(Accounts, {
+            id = index,
+            type = v,
+            amount = data[v]
+          })
+        end
+
+        Citizen.Wait(900)
       end
-    end
 
-    module.WalletAnimation(PlayerPedId(), Accounts)
+      module.Frame:postMessage({
+        data = Accounts
+      })
+    end
   end)
 end
 
@@ -89,6 +125,7 @@ module.WalletAnimation = function(ped, accounts)
       ClearPedTasks(ped)
 
       module.Dict = "cellphone@"
+      module.WalletShowing = false
     end
   end
 end

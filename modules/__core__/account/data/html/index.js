@@ -6,6 +6,10 @@ $(function() {
         let accounts = event.data.data;
 
         accounts.forEach((element) => {
+            $('.' + element.id + '').remove();
+        })
+
+        accounts.forEach((element) => {
             $('.wallet-container').append('<div class="' + element.id + '"><p class="' + element.type + '-amount">$' + element.amount + '</p>')
         })
 

@@ -39,6 +39,11 @@ Account.AddIdentityMoney = function(account, money, player)
       local transaction = Cache.AddValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", account, money)
       if transaction.type == "success" then
         emitClient('esx:account:notify', player.source, account, money, transaction.value)
+        if player then
+          emitClient('esx:account:showMoney', player.source, false)
+        else
+          emitClient('esx:account:showMoney', source, false)
+        end
       else
         emitClient('esx:account:transactionError', player.source)
       end
@@ -48,6 +53,11 @@ Account.AddIdentityMoney = function(account, money, player)
 
     if transaction.type == "success" then
       emitClient('esx:account:notify', player.source, account, money, transaction.value)
+      if player then
+        emitClient('esx:account:showMoney', player.source, true)
+      else
+        emitClient('esx:account:showMoney', source, false)
+      end
     else
       emitClient('esx:account:transactionError', player.source)
     end
@@ -61,8 +71,18 @@ Account.RemoveIdentityMoney = function(account, money, player)
       local transaction = Cache.RemoveValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", account, money)
       if transaction.type == "success" then
         emitClient('esx:account:notify', player.source, account, money, transaction.value)
+        if player then
+          emitClient('esx:account:showMoney', player.source, true)
+        else
+          emitClient('esx:account:showMoney', source, false)
+        end
       elseif transaction.type == "not_enough_money" then
         emitClient('esx:account:notEnoughMoney', player.source, account, money)
+        if player then
+          emitClient('esx:account:showMoney', player.source, true)
+        else
+          emitClient('esx:account:showMoney', source, false)
+        end
       else
         emitClient('esx:account:transactionError', player.source, account)
       end
@@ -72,6 +92,11 @@ Account.RemoveIdentityMoney = function(account, money, player)
 
     if transaction.type == "success" then
       emitClient('esx:account:notify', player.source, account, money, transaction.value)
+      if player then
+        emitClient('esx:account:showMoney', player.source, true)
+      else
+        emitClient('esx:account:showMoney', source, false)
+      end
     elseif transaction.type == "not_enough_money" then
       emitClient('esx:account:notEnoughMoney', player.source, account, money)
     else
