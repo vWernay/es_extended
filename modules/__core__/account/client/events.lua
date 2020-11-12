@@ -23,3 +23,11 @@ end)
 onServer('esx:account:transactionError', function(account)
   Account.TransactionError(account)
 end)
+
+onServer('esx:account:showMoney', function(command)
+  if command then
+    Account.ShowMoneyCommand()
+  else
+    Account.ShowMoney()
+  end
+end)

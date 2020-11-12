@@ -33,6 +33,17 @@ if Config.EnableHud then
   end)
 end
 
+ESX.SetInterval(1, function()
+  HideHudComponentThisFrame(3)
+  HideHudComponentThisFrame(4)
+  HideHudComponentThisFrame(6)
+  HideHudComponentThisFrame(7)
+  HideHudComponentThisFrame(8)
+  HideHudComponentThisFrame(9)
+  HideHudComponentThisFrame(13)
+  HideHudComponentThisFrame(19)
+end)
+
 -- Disable wanted level
 if Config.DisableWantedLevel then
   if Config.DisableWantedLevel then
