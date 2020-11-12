@@ -35,6 +35,6 @@ Config.Modules.Status = {
       iconType = "fontawesome",
       icon     = "fa-brain",
       fadeType = "asc"
-    },
+    }
   }
 }

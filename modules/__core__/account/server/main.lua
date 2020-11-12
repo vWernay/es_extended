@@ -38,20 +38,26 @@ removeMoneyCommand:addArgument("account", "string", _U('account_account_name'))
 removeMoneyCommand:addArgument("money", "number", _U('account_money_value'))
 removeMoneyCommand:addArgument("player", "player", _U('commandgeneric_playerid'))
 removeMoneyCommand:setHandler(function(player, args)
-    if args.account and args.money then
-        if not args.player then args.player = player end
-        emit("esx:account:removeMoney", args.account, args.money, args.player)
+if args.account and args.money then
+    if not args.player then args.player = player end
+    emit("esx:account:removeMoney", args.account, args.money, args.player)
+    return
+  else
+    if not args.account then
+        emitClient("chat:addMessage", player.source, {args = {'^1SYSTEM', _U('account_commandderror_account')}})
         return
-      else
-        if not args.account then
-            emitClient("chat:addMessage", player.source, {args = {'^1SYSTEM', _U('account_commandderror_account')}})
-            return
-        elseif not args.money then
-            emitClient("chat:addMessage", player.source, {args = {'^1SYSTEM', _U('account_commanderror_money')}})
-            return
-        end
-      end
-    end)
+    elseif not args.money then
+        emitClient("chat:addMessage", player.source, {args = {'^1SYSTEM', _U('account_commanderror_money')}})
+        return
+    end
+  end
+end)
+
+local showMoneyCommand = Command("money", "admin", _U('account_show_money_test'))
+showMoneyCommand:setHandler(function(player, args)
+  emitClient("esx:account:showMoney", player.source)
+end)
 
 addMoneyCommand:register()
 removeMoneyCommand:register()
+showMoneyCommand:register()

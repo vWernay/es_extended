@@ -17,6 +17,12 @@ M('persistent')
 local Cache = M("cache")
 local Identity = M("identity")
 
+module.Cache               = {}
+module.Cache.Accounts      = {}
+module.Cache.AccountsFound = false
+
+Account = {}
+
 Account = Persist('accounts', 'id')
 
 Account.define({

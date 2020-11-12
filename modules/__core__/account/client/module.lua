@@ -11,8 +11,15 @@
 --   This copyright should appear in every part of the project code
 
 local utils = M('utils')
+M('ui.hud')
+
+module.Dict = "cellphone@"
+module.InAnim = "cellphone_text_in"
+module.OutAnim = "cellphone_text_out"
+module.IdleAnim = "cellphone_text_read_base"
 
 Account = {}
+Account.Ready, Account.Frame, Account.isPaused = false, nil, false
 
 Account.Notify = function(account, transactionAmount, balance)
   utils.ui.showNotification(_U('account_notify_moneychange', _U('account_moniker'), transactionAmount, account, _U('account_moniker'), balance))
@@ -25,3 +32,70 @@ end
 Account.TransactionError = function(account)
   utils.ui.showNotification(_U('account_notify_transaction_error', account))
 end
+
+Account.ShowMoney = function()
+  local Accounts = {}
+
+  request('esx:account:getPlayerAccounts', function(data)
+    local Accounts = {}
+    local index = 0
+
+    for k,v in pairs(Config.Modules.Account.AccountsIndex) do
+      if data[v] and not Accounts[v] then
+        index = index + 1
+        table.insert(Accounts, {
+          id = index,
+          type = v,
+          amount = data[v]
+        })
+      end
+    end
+
+    module.WalletAnimation(PlayerPedId(), Accounts)
+  end)
+end
+
+module.WalletAnimation = function(ped, accounts)
+  if (DoesEntityExist(ped) and not IsEntityDead(ped)) then
+    ClearPedTasks(ped)
+
+    if IsPedInAnyVehicle(ped, false) then
+      module.Dict = module.Dict .. "in_car@ds"
+    end
+
+    if not HasAnimDictLoaded(module.Dict) then
+      RequestAnimDict(module.Dict)
+    end
+
+    if HasAnimDictLoaded(module.Dict)then
+      AttachEntityToEntity(prop, ped, module.Bone, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0, 2, 1)
+      TaskPlayAnim(ped, module.Dict, module.InAnim, 4.0, -1, -1, 50, 0, false, false, false)
+
+      Citizen.Wait(157)
+
+      StopAnimTask(ped, module.Dict, module.InAnim, 1.0)
+      TaskPlayAnim(ped, module.Dict, module.IdleAnim, 8.0, -8.0, 1000, 1, 1.0, false, false, false)
+
+      module.Frame:postMessage({
+        data = accounts
+      })
+
+      Citizen.Wait(900)
+
+      StopAnimTask(ped, module.Dict, module.IdleAnim, 1.0)
+      TaskPlayAnim(ped, module.Dict, module.OutAnim, 5.0, -1, -1, 50, 0, false, false, false)
+      StopAnimTask(ped, module.Dict, module.OutAnim, 1.0)
+      RemoveAnimDict(module.Dict)
+      ClearPedTasks(ped)
+
+      module.Dict = "cellphone@"
+    end
+  end
+end
+
+module.Frame = Frame('account', 'nui://' .. __RESOURCE__ .. '/modules/__core__/account/data/html/index.html', true)
+
+module.Frame:on('load', function()
+  module.Ready = true
+  emit('esx:account:ready')
+end)

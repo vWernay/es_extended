@@ -1,36 +1,22 @@
 $(function() {
 
-  $('.wallet-container').hide();
+    $('.wallet-container').hide();
 
-  window.addEventListener("message", (event) => {
-    let item = event.data;
-    let accounts;
+    window.addEventListener("message", (event) => {
+        let accounts = event.data.data;
 
-    if (item.hide === true) {
-      $('.wallet-container').hide();
-    } else if (item.hide === false) {
-      $('.wallet-container').show();
-    }
-  })
+        accounts.forEach((element) => {
+            $('.wallet-container').append('<div class="' + element.id + '"><p class="' + element.type + '-amount">$' + element.amount + '</p>')
+        })
 
-  accounts = [
-    {
-      id: 1,
-      type: 'cash',
-      amount: 340
-    },
-    {
-      id: 2,
-      type: 'maze bank',
-      amount: 500
-    }
-  ]
-
-  accounts.forEach((element) => {
-    $('.wallet-container').append('<p class="money-type">' + element.type + '</p>')
-    $('.wallet-container').append('<p class="account-amount">$' + element.amount + '</p>')
-    console.log("fuck")
-  })
-
-
+        $(".wallet-container").fadeIn(function() {
+            setTimeout(function() {
+                $(".wallet-container").fadeOut("fast");
+                accounts.forEach((element) => {
+                    $('.' + element.id + '').remove();
+                    // $('.' + element.id + element.type + '').remove();
+                })
+            }, 3000);
+        });
+    })
 })
