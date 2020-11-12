@@ -53,7 +53,7 @@ if args.account and args.money then
   end
 end)
 
-local showMoneyCommand = Command("money", "admin", _U('account_show_money_test'))
+local showMoneyCommand = Command("money", "user", _U('account_show_money_test'))
 showMoneyCommand:setHandler(function(player, args)
   emitClient("esx:account:showMoney", player.source)
 end)
