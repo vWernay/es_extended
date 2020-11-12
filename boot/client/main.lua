@@ -46,9 +46,7 @@ end)
 
 -- Disable wanted level
 if Config.DisableWantedLevel then
-  if Config.DisableWantedLevel then
-    SetMaxWantedLevel(0)
-  end
+  SetMaxWantedLevel(0)
 end
 
 --RichPresence
