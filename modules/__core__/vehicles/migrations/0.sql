@@ -119,7 +119,7 @@ INSERT INTO `vehicles` (name, model, price, category, category_label) VALUES
   ('The Liberator','monster',210000,'offroad','Offroad'),
   ('Trophy Truck','trophytruck',60000,'offroad','Offroad'),
   ('Trophy Truck Limited','trophytruck2',80000,'offroad','Offroad'),
-  ('riata', 'riata', 380000, 'offroad','Offroad'),
+  ('Riata', 'riata', 380000, 'offroad','Offroad'),
   ('Kamacho', 'kamacho', 345000, 'offroad','Offroad'),
   ('blazer5', 'blazer5', 1755600, 'offroad','Offroad'),
 
@@ -174,7 +174,7 @@ INSERT INTO `vehicles` (name, model, price, category, category_label) VALUES
   ('Surano','surano',50000,'sports','Sports'),
   ('Tropos','tropos',40000,'sports','Sports'),
   ('Verlierer','verlierer2',70000,'sports','Sports'),
-  ('raiden', 'raiden', 1375000, 'sports','Sports'),
+  ('Raiden', 'raiden', 1375000, 'sports','Sports'),
   ('Pariah', 'pariah', 1420000, 'sports','Sports'),
   ('Stromberg', 'stromberg', 3185350, 'sports','Sports'),
   ('Streiter', 'streiter', 500000, 'sports','Sports'),
