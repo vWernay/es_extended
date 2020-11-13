@@ -34,3 +34,9 @@ setStatus:setHandler(function(player, args)
 end)
 
 setStatus:register()
+
+ESX.SetInterval(Config.Modules.Status.UpdateInterval * 1000, function() -- update with 1000
+	if module.Ready == true then
+	  module.UpdateStatus()
+	end
+end)

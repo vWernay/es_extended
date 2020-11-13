@@ -44,6 +44,12 @@ ESX.SetInterval(1, function()
   HideHudComponentThisFrame(19)
 end)
 
+if Config.DisableHealthRegeneration then
+  ESX.SetInterval(10, function()
+    SetPlayerHealthRechargeMultiplier(PlayerId(), 0.0)
+  end)
+end
+
 -- Disable wanted level
 if Config.DisableWantedLevel then
   SetMaxWantedLevel(0)

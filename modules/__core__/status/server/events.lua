@@ -12,36 +12,33 @@
 
 local Cache = M("cache")
 
-onRequest('status:getStatuses', function(source, cb)
-	local player = Player.fromId(source)
+onClient('esx:status:initialize', function()
+  local player = Player.fromId(source)
+  local identifier = player.identifier
+  local id = player:getIdentityId()
 
-	if Config.Modules.Cache.UseCache then
-	  module.Cache.statuses = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "status")
-
-	  if module.Cache.statuses then
-		module.Cache.alreadyHasStatus = true
-		cb(module.Cache.statuses)
-	  else
-		module.Cache.statuses = {}
-
-		for k,v in ipairs(Config.Modules.Status.StatusIndex) do
-			if not module.Cache.statuses[v] then
-				module.Cache.statuses[v] = Config.Modules.Status.DefaultValues[k]
-			end
-		end
-
-		cb(module.Cache.statuses)
-	  end
-	else
-		cb(nil)
+	if not module.Cache.Statuses[identifier] then
+    module.Cache.Statuses[identifier] = {}
 	end
+
+	if not module.Cache.Statuses[identifier][id] then
+    module.Cache.Statuses[identifier][id] = {}
+	end
+
+	local statuses = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "status")
+
+  local config = Config.Modules.Status.StatusInfo
+
+  for k,v in ipairs(Config.Modules.Status.StatusIndex) do
+    if statuses[v] then
+      module.CreateStatus(identifier, id, v, config[v].color, config[v].iconType, config[v].icon, statuses[v], config[v].fadeType)
+    end
+  end
+
+  module.Ready = true
+  module.StatusesCreated()
 end)
 
-onClient('status:updateStatus', function(status)
-	local player = Player.fromId(source)
-	if module.Cache.alreadyHasStatus then
-		Cache.UpdateTableInIdentityCache("identities", player.identifier, player:getIdentityId(), Config.Modules.Status.StatusIndex, "status", "value", status)
-	else
-		Cache.InsertTableIntoIdentityCache("identities", player.identifier, player:getIdentityId(), Config.Modules.Status.StatusIndex, "status", "value", status)
-	end
+onClient('esx:status:setStatus', function(statusName, value)
+  module.SetStatus(statusName, value)
 end)
