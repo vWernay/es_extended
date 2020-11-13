@@ -10,8 +10,8 @@
 --   If you redistribute this software, you must link to ORIGINAL repository at https://github.com/ESX-Org/es_extended
 --   This copyright should appear in every part of the project code
 
-ESX.SetInterval(Config.Modules.Status.UpdateInterval * 1000, function() -- update with 1000
-  if module.StatusReady == true then
-    module.UpdateStatusThroughTick()
-  end
-end)
+-- ESX.SetInterval(Config.Modules.Status.UpdateInterval * 1000, function() -- update with 1000
+--   if module.StatusReady == true then
+--     module.UpdateStatusThroughTick()
+--   end
+-- end)

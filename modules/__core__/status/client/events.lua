@@ -11,23 +11,17 @@
 --   This copyright should appear in every part of the project code
 
 onServer('status:setStatusCommand', function(statusName, value)
-  module.SetStatus(statusName, value)
+  emitServer('esx:status:setStatus', statusName, value)
+end)
+
+onServer('esx:status:updateStatus', function(statuses)
+  module.UpdateStatus(statuses)
+end)
+
+onServer('esx:status:damagePlayer', function()
+  module.DamagePlayer()
 end)
 
 on('esx:skin:loaded', function()
-  if Config.Modules.Cache.UseCache then
-    request('status:getStatuses', function(statuses)
-      if statuses then
-        local config = Config.Modules.Status.StatusInfo
-        for k,v in ipairs(Config.Modules.Status.StatusIndex) do
-          if statuses[v] then
-            module.CreateStatus(v, config[v].color, config[v].iconType, config[v].icon, statuses[v], config[v].fadeType)
-          end
-        end
-
-        module.StatusReady = true
-        module.UpdateStatusWithoutTick()
-      end
-    end)
-  end
+  emitServer('esx:status:initialize')
 end)
