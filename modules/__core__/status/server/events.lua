@@ -30,8 +30,14 @@ onClient('esx:status:initialize', function()
   local config = Config.Modules.Status.StatusInfo
 
   for k,v in ipairs(Config.Modules.Status.StatusIndex) do
-    if statuses[v] then
-      module.CreateStatus(identifier, id, v, config[v].color, config[v].iconType, config[v].icon, statuses[v], config[v].fadeType)
+    if statuses then
+      if statuses[v] then
+        module.CreateStatus(identifier, id, v, config[v].color, config[v].iconType, config[v].icon, statuses[v], config[v].fadeType)
+      else
+        module.CreateStatus(identifier, id, v, config[v].color, config[v].iconType, config[v].icon, Config.Modules.Status.DefaultValues[k], config[v].fadeType)
+      end
+    else
+      module.CreateStatus(identifier, id, v, config[v].color, config[v].iconType, config[v].icon, Config.Modules.Status.DefaultValues[k], config[v].fadeType)
     end
   end
 
