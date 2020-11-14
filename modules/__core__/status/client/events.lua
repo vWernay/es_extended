@@ -31,17 +31,17 @@ onServer('esx:status:statCheck', function(low, dying, drunk, drugs, stress)
 
   if drunk > 0 then
     print("drunk")
-    module.Drunk()
+    module.Drunk(drunk)
   end
 
   if drugs > 0 then
     print("drugs")
-    module.Drugs()
+    module.Drugs(drugs)
   end
 
   if stress > 0 then
     print("stress")
-    module.Stress()
+    module.Stress(stress)
   end
 end)
 
