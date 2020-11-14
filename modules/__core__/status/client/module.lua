@@ -32,7 +32,7 @@ end
 
 module.Stress = function(value)
 -- INSERT YOUR CRAZY SHIT HERE
-end
+end 
 
 module.UpdateStatus = function(statuses)
   if statuses then
