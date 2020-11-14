@@ -22,15 +22,15 @@ module.StatusLow = function()
 -- INSERT YOUR CRAZY SHIT HERE
 end
 
-module.Drunk = function()
+module.Drunk = function(value)
 -- INSERT YOUR CRAZY SHIT HERE
 end
 
-module.Drugs = function()
+module.Drugs = function(value)
 -- INSERT YOUR CRAZY SHIT HERE
 end
 
-module.Stress = function()
+module.Stress = function(value)
 -- INSERT YOUR CRAZY SHIT HERE
 end
 
