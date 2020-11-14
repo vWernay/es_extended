@@ -234,32 +234,32 @@ module.CreateTableAndRemoveValueInIdentityCache = function(cacheName, identifier
 end
 
 module.UpdateTableInIdentityCache = function(cacheName, identifier, id, queryIndex, table, field, data)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        if module.Cache[cacheName][identifier][id][table] then
+  if not module.Cache[cacheName] then
+    module.Cache[cacheName] = {}
+  end
 
-          for k,v in pairs(queryIndex) do
-            if module.Cache[cacheName][identifier][id][table][v] then
-              if data[v] then
-                if data[v][field] then
-                  module.Cache[cacheName][identifier][id][table][v] = data[v][field]
-                end
-              end
-            end
-          end
-        else
-          return false
-        end
-        return false
-      else
-        return false
-      end
-    else
-      return false
+  if not module.Cache[cacheName][identifier] then
+    module.Cache[cacheName][identifier] = {}
+  end
+
+  if not module.Cache[cacheName][identifier][id] then
+    module.Cache[cacheName][identifier][id] = {}
+  end
+
+  if not module.Cache[cacheName][identifier][id][table] then
+    module.Cache[cacheName][identifier][id][table] = {}
+  end
+
+  for k,v in pairs(queryIndex) do
+    if not module.Cache[cacheName][identifier][id][table][v] then
+      module.Cache[cacheName][identifier][id][table][v] = nil
     end
-  else
-    return false
+
+    if data[v] then
+      if data[v][field] then
+        module.Cache[cacheName][identifier][id][table][v] = data[v][field]
+      end
+    end
   end
 end
 
