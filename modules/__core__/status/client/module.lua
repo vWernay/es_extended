@@ -14,10 +14,23 @@ M('ui.hud')
 module.Ready, module.Frame, module.isPaused = false, nil, false
 
 module.StatusDying = function()
+  -- INSERT YOUR CRAZY SHIT HERE
   ApplyDamageToPed(PlayerPedId(), 10, false)
 end
 
 module.StatusLow = function()
+-- INSERT YOUR CRAZY SHIT HERE
+end
+
+module.Drunk = function(value)
+-- INSERT YOUR CRAZY SHIT HERE
+end
+
+module.Drugs = function(value)
+-- INSERT YOUR CRAZY SHIT HERE
+end
+
+module.Stress = function(value)
 -- INSERT YOUR CRAZY SHIT HERE
 end
 
