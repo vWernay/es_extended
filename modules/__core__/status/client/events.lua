@@ -18,6 +18,16 @@ onServer('esx:status:updateStatus', function(statuses)
   module.UpdateStatus(statuses)
 end)
 
+onServer('esx:status:statCheck', function(low, dying)
+  if low then
+    module.StatusLow()
+  end
+
+  if dying then
+    module.StatusDying()
+  end
+end)
+
 onServer('esx:status:damagePlayer', function()
   module.DamagePlayer()
 end)

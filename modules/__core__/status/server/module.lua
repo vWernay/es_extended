@@ -63,25 +63,41 @@ module.UpdateStatus = function()
         local id               = player:getIdentityId()
         local existingStatuses = {}
         local status           = {}
+        module.StatusLow       = false
+        module.StatusDying     = false
 
         if module.Cache.StatusReady[identifier][id] then
             for k,v in pairs(Config.Modules.Status.StatusIndex) do
-                if module.Cache.Statuses[identifier][id][v]["value"] > 0 then
-                    if module.Cache.Statuses[identifier][id][v]["fadeType"] == "asc" and module.Cache.Statuses[identifier][id][v]["value"] == 100 then
-                        emitClient('esx:status:damagePlayer', player.source)
+                if module.Cache.Statuses[identifier][id][v]["fadeType"] == "desc" then
+                    if module.Cache.Statuses[identifier][id][v]["value"] > 0 and module.Cache.Statuses[identifier][id][v]["value"] <= 10 then
+                        module.StatusLow   = true
+                    elseif module.Cache.Statuses[identifier][id][v]["value"] == 0 then
+                        module.StatusLow   = true
+                        module.StatusDying = true
                     end
 
-                    module.Cache.Statuses[identifier][id][v]["value"] = module.Cache.Statuses[identifier][id][v]["value"] - 1
-                    table.insert(status, {k = module.Cache.Statuses[identifier][id][v]["value"]})
-                else
-                    if module.Cache.Statuses[identifier][id][v]["fadeType"] == "desc" then
-                        emitClient('esx:status:damagePlayer', player.source)
+                    if module.Cache.Statuses[identifier][id][v]["value"] > 0 then
+                        module.Cache.Statuses[identifier][id][v]["value"] = module.Cache.Statuses[identifier][id][v]["value"] - 1
+                        table.insert(status, {k = module.Cache.Statuses[identifier][id][v]["value"]})
+                    end
+                elseif module.Cache.Statuses[identifier][id][v]["fadeType"] == "asc" then
+                    if module.Cache.Statuses[identifier][id][v]["value"] >= 100 then
+                        module.StatusLow   = true
+                        module.StatusDying = true
+                    elseif module.Cache.Statuses[identifier][id][v]["value"] > 75 and module.Cache.Statuses[identifier][id][v]["value"] < 100 then
+                        module.StatusLow = true
+                    end
+
+                    if module.Cache.Statuses[identifier][id][v]["value"] > 0 then
+                        module.Cache.Statuses[identifier][id][v]["value"] = module.Cache.Statuses[identifier][id][v]["value"] - 1
+                        table.insert(status, {k = module.Cache.Statuses[identifier][id][v]["value"]})
                     end
                 end
             end
 
             Cache.UpdateTableInIdentityCache("identities", player.identifier, player:getIdentityId(), Config.Modules.Status.StatusIndex, "status", "value", module.Cache.Statuses[identifier][id])
             emitClient('esx:status:updateStatus', player.source, module.Cache.Statuses[identifier][id])
+            emitClient('esx:status:statCheck', player.source, module.StatusLow, module.StatusDying)
         end
     end
 end

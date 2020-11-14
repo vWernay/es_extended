@@ -13,8 +13,12 @@
 M('ui.hud')
 module.Ready, module.Frame, module.isPaused = false, nil, false
 
-module.DamagePlayer = function()
+module.StatusDying = function()
   ApplyDamageToPed(PlayerPedId(), 10, false)
+end
+
+module.StatusLow = function()
+-- INSERT YOUR CRAZY SHIT HERE
 end
 
 module.UpdateStatus = function(statuses)
