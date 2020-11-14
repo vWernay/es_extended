@@ -51,6 +51,7 @@ module.StatusesCreated = function()
         end
 
         if module.Cache.Statuses[identifier][id] and module.Cache.StatusReady[identifier][id] then
+           Cache.UpdateTableInIdentityCache("identities", player.identifier, player:getIdentityId(), Config.Modules.Status.StatusIndex, "status", "value", module.Cache.Statuses[identifier][id])
            emitClient('esx:status:updateStatus', player.source, module.Cache.Statuses[identifier][id])
         end
     end
