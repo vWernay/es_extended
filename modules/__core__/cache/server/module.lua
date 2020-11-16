@@ -167,6 +167,93 @@ module.AddUsedPlates = function(cacheName, updateData)
   end
 end
 
+-------------------------
+--       Account       --
+-------------------------
+
+module.RetrieveAccounts = function(identifier, id)
+  if module.Cache["identities"] then
+    if not module.Cache["identities"][identifier] then
+      module.Cache["identities"][identifier] = {}
+    end
+
+    if not module.Cache["identities"][identifier][id] then
+      module.Cache["identities"][identifier][id] = {}
+    end
+
+    if not module.Cache["identities"][identifier][id]["accounts"] then
+      module.Cache["identities"][identifier][id]["accounts"] = {}
+
+      for k,v in ipairs(Config.Modules.Account.AccountsIndex) do
+        module.Cache["identities"][identifier][id]["accounts"][v] = 100
+      end
+    end
+
+    return module.Cache["identities"][identifier][id]["accounts"]
+  else
+    return nil
+  end
+end
+
+module.AddMoneyToAccount = function(identifier, id, field, value)
+  if module.Cache["identities"][identifier][id]["accounts"] then
+    for k,v in pairs(module.Cache["identities"][identifier][id]["accounts"]) do
+      if tostring(k) == tostring(field) then
+        module.Cache["identities"][identifier][id]["accounts"][field] = module.Cache["identities"][identifier][id]["accounts"][field] + value
+
+        local result = {
+          type = "success",
+          value = module.Cache["identities"][identifier][id]["accounts"][field]
+        }
+
+        return result
+      end
+    end
+  else
+    return false
+  end
+end
+
+module.RemoveMoneyFromAccount = function(identifier, id, field, value)
+  if module.Cache["identities"][identifier][id]["accounts"] then
+    for k,v in pairs(module.Cache["identities"][identifier][id]["accounts"]) do
+      if tostring(k) == tostring(field) then
+        if module.Cache["identities"][identifier][id]["accounts"][field] then
+          if (v - value) >= 0 then
+            module.Cache["identities"][identifier][id]["accounts"][field] = v - value
+
+            local result = {
+              type = "success",
+              value = module.Cache["identities"][identifier][id]["accounts"][field]
+            }
+
+            return result
+          else
+            local result = {
+              type = "not_enough_money"
+            }
+
+            return result
+          end
+        end
+      end
+    end
+  else
+    return false
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
 module.InsertIntoBasicCache = function(cacheName, updateData)
   if module.Cache[cacheName] then
     if Config.Modules.Cache.EnableDebugging then

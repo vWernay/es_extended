@@ -33,10 +33,10 @@ Account.define({
 })
 
 Account.AddIdentityMoney = function(account, money, player)
-  local accounts = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts")
+  local accounts = Cache.RetrieveAccounts(player.identifier, player:getIdentityId())
   if accounts then
     if accounts[account] then
-      local transaction = Cache.AddValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", account, money)
+      local transaction = Cache.AddMoneyToAccount(player.identifier, player:getIdentityId(), account, money)
       if transaction.type == "success" then
         emitClient('esx:account:notify', player.source, account, money, transaction.value)
         if player then
@@ -48,27 +48,14 @@ Account.AddIdentityMoney = function(account, money, player)
         emitClient('esx:account:transactionError', player.source)
       end
     end
-  else
-    local transaction = Cache.CreateTableAndAddValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", Identity.accounts, account, money)
-
-    if transaction.type == "success" then
-      emitClient('esx:account:notify', player.source, account, money, transaction.value)
-      if player then
-        emitClient('esx:account:showMoney', player.source, true)
-      else
-        emitClient('esx:account:showMoney', source, false)
-      end
-    else
-      emitClient('esx:account:transactionError', player.source)
-    end
   end
 end
 
 Account.RemoveIdentityMoney = function(account, money, player)
-  local accounts = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts")
+  local accounts = Cache.RetrieveAccounts(player.identifier, player:getIdentityId())
   if accounts then
     if accounts[account] then
-      local transaction = Cache.RemoveValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", account, money)
+      local transaction = Cache.RemoveMoneyFromAccount(player.identifier, player:getIdentityId(), account, money)
       if transaction.type == "success" then
         emitClient('esx:account:notify', player.source, account, money, transaction.value)
         if player then
@@ -87,60 +74,50 @@ Account.RemoveIdentityMoney = function(account, money, player)
         emitClient('esx:account:transactionError', player.source, account)
       end
     end
-  else
-    local transaction = Cache.CreateTableAndRemoveValueInIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts", Identity.accounts, account, money)
-
-    if transaction.type == "success" then
-      emitClient('esx:account:notify', player.source, account, money, transaction.value)
-      if player then
-        emitClient('esx:account:showMoney', player.source, true)
-      else
-        emitClient('esx:account:showMoney', source, false)
-      end
-    elseif transaction.type == "not_enough_money" then
-      emitClient('esx:account:notEnoughMoney', player.source, account, money)
-    else
-      emitClient('esx:account:transactionError', player.source, account)
-    end
   end
 end
 
-function Account:setMoney(money)
 
-  local orig = self.money
-  self.money = money
+----------------------------------------------------------------------------------------------------
+--       EVERYTHING BELOW IS FOR SOCIETY ACCOUNTS IN THE FUTURE, PLEASE DO NOT REMOVE             --
+----------------------------------------------------------------------------------------------------
 
-  if money < orig then
-    self:emit('remove', orig - money)
-  elseif money > orig then
-    self:emit('add', money - orig)
-  end
+-- function Account:setMoney(money)
 
-end
+--   local orig = self.money
+--   self.money = money
 
-function Account:addMoney(money)
+--   if money < orig then
+--     self:emit('remove', orig - money)
+--   elseif money > orig then
+--     self:emit('add', money - orig)
+--   end
 
-  self.money = self.money + money
+-- end
 
-  if money < 0 then
-    self:emit('remove', math.abs(money))
-  elseif money > 0 then
-    self:emit('add', money)
-  end
+-- function Account:addMoney(money)
 
-end
+--   self.money = self.money + money
 
-function Account:removeMoney(money)
+--   if money < 0 then
+--     self:emit('remove', math.abs(money))
+--   elseif money > 0 then
+--     self:emit('add', money)
+--   end
 
-  self.money = self.money - money
+-- end
 
-  if money < 0 then
-    self:emit('add', math.abs(money))
-  elseif money > 0 then
-    self:emit('remove', money)
-  end
+-- function Account:removeMoney(money)
 
-end
+--   self.money = self.money - money
+
+--   if money < 0 then
+--     self:emit('add', math.abs(money))
+--   elseif money > 0 then
+--     self:emit('remove', money)
+--   end
+
+-- end
 
 --[[
 on('esx:db:ready', function()
