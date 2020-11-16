@@ -34,35 +34,6 @@ Account.TransactionError = function(account)
   utils.ui.showNotification(_U('account_notify_transaction_error', account))
 end
 
-Account.ShowMoneyCommand = function()
-  local Accounts = {}
-
-  request('esx:account:getPlayerAccounts', function(data)
-    if data then
-      if not module.WalletShowing then
-        module.WalletShowing = true
-        local Accounts = {}
-        local index = 0
-
-        for k,v in pairs(Config.Modules.Account.AccountsIndex) do
-          if data[v] and not Accounts[v] then
-            index = index + 1
-            table.insert(Accounts, {
-              id = index,
-              type = v,
-              amount = data[v]
-            })
-          end
-        end
-
-        module.WalletAnimation(PlayerPedId(), Accounts)
-      end
-    else
-      module.WalletShowing = false
-    end
-  end)
-end
-
 Account.ShowMoney = function()
   local Accounts = {}
 
@@ -80,8 +51,6 @@ Account.ShowMoney = function()
             amount = data[v]
           })
         end
-
-        Citizen.Wait(900)
       end
 
       module.Frame:postMessage({
@@ -89,45 +58,6 @@ Account.ShowMoney = function()
       })
     end
   end)
-end
-
-module.WalletAnimation = function(ped, accounts)
-  if (DoesEntityExist(ped) and not IsEntityDead(ped)) then
-    ClearPedTasks(ped)
-
-    if IsPedInAnyVehicle(ped, false) then
-      module.Dict = module.Dict .. "in_car@ds"
-    end
-
-    if not HasAnimDictLoaded(module.Dict) then
-      RequestAnimDict(module.Dict)
-    end
-
-    if HasAnimDictLoaded(module.Dict)then
-      AttachEntityToEntity(prop, ped, module.Bone, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1, 1, 0, 0, 2, 1)
-      TaskPlayAnim(ped, module.Dict, module.InAnim, 4.0, -1, -1, 50, 0, false, false, false)
-
-      Citizen.Wait(157)
-
-      StopAnimTask(ped, module.Dict, module.InAnim, 1.0)
-      TaskPlayAnim(ped, module.Dict, module.IdleAnim, 8.0, -8.0, 1000, 1, 1.0, false, false, false)
-
-      module.Frame:postMessage({
-        data = accounts
-      })
-
-      Citizen.Wait(900)
-
-      StopAnimTask(ped, module.Dict, module.IdleAnim, 1.0)
-      TaskPlayAnim(ped, module.Dict, module.OutAnim, 5.0, -1, -1, 50, 0, false, false, false)
-      StopAnimTask(ped, module.Dict, module.OutAnim, 1.0)
-      RemoveAnimDict(module.Dict)
-      ClearPedTasks(ped)
-
-      module.Dict = "cellphone@"
-      module.WalletShowing = false
-    end
-  end
 end
 
 module.Frame = Frame('account', 'nui://' .. __RESOURCE__ .. '/modules/__core__/account/data/html/index.html', true)

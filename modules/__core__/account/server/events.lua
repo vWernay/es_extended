@@ -23,20 +23,11 @@ end)
 onRequest('esx:account:getPlayerAccounts', function(source, cb)
 	local player = Player.fromId(source)
 
-	module.Cache.Accounts = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "accounts")
+	local accounts = Cache.RetrieveAccounts(player.identifier, player:getIdentityId())
 
-	if module.Cache.Accounts then
-	cb(module.Cache.Accounts)
+	if accounts then
+	  cb(accounts)
 	else
-	module.Cache.Accounts = {}
-
-	for k,v in ipairs(Config.Modules.Account.AccountsIndex) do
-		print(tostring(v))
-		if not module.Cache.Accounts[v] then
-			module.Cache.Accounts[v] = Config.Modules.Account.DefaultValues[k]
-		end
-	end
-
-	cb(module.Cache.Accounts)
+	  cb(nil)
 	end
 end)
