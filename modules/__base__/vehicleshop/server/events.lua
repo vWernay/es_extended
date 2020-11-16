@@ -24,44 +24,21 @@ onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
   local player = Player.fromId(source)
 
   if player then
-    if Config.Modules.Cache.UseCache then
-      local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
+    local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
-      if vehicleCheck then
-        if vehicleCheck.model and vehicleCheck.sell_price then
-          local vehicleData = {
-            model = vehicleCheck.model,
-            resellPrice = vehicleCheck.sell_price
-          }
+    if vehicleCheck then
+      if vehicleCheck.model and vehicleCheck.sell_price then
+        local vehicleData = {
+          model = vehicleCheck.model,
+          resellPrice = vehicleCheck.sell_price
+        }
 
-          cb(vehicleData)
-        else
-          cb(false)
-        end
+        cb(vehicleData)
       else
         cb(false)
       end
     else
-      MySQL.Async.fetchAll('SELECT model, sell_price FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND identifier = @identifier', {
-        ['@plate']      = plate,
-        ['@identityId'] = player:getIdentityId(),
-        ['@identifier'] = player.identifier
-      }, function(result)
-        if result then
-          if result[1] then
-            local vehicleData = {
-              model       = result[1].model,
-              resellPrice = result[1].sell_price
-            }
-
-            cb(vehicleData)
-          else
-            cb(false)
-          end
-        else
-          cb(false)
-        end
-      end)
+      cb(false)
     end
   else
     cb(false)
@@ -72,61 +49,36 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
   if player then
-    if Config.Modules.Cache.UseCache then
-      local data = {
-        identifier   = player.identifier,
-        id           = player:getIdentityId(),
-        plate        = plate,
-        model        = model,
-        sell_price   = resellPrice,
-        sold         = 0,
-        stored       = 0,
-        vehicle      = json.encode({model = GetHashKey(model), plate = plate}),
-        container_id = nil
-      }
+    local data = {
+      identifier   = player.identifier,
+      id           = player:getIdentityId(),
+      plate        = plate,
+      model        = model,
+      sell_price   = resellPrice,
+      sold         = 0,
+      stored       = 0,
+      vehicle      = json.encode({model = GetHashKey(model), plate = plate}),
+      container_id = nil
+    }
 
-      if Cache.InsertIntoIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
+    if Cache.InsertIntoIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
 
-        Cache.InsertIntoBasicCache("usedPlates", plate)
+      Cache.InsertIntoBasicCache("usedPlates", plate)
 
-        print(_U('vehicleshop:server_buy_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, tostring(formattedPrice)))
+      print(_U('vehicleshop:server_buy_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, tostring(formattedPrice)))
 
-        utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
-          while not DoesEntityExist(vehicle) do
-            Wait(10)
-          end
+      utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
+        while not DoesEntityExist(vehicle) do
+          Wait(10)
+        end
 
-          local vehicleID = NetworkGetNetworkIdFromEntity(vehicle)
+        local vehicleID = NetworkGetNetworkIdFromEntity(vehicle)
 
-          SetVehicleNumberPlateText(vehicle, plate)
-          cb(vehicleID)
-        end)
-      else
-        print(_U('vehicleshop:server_buy_failure'))
-      end
-    else
-      MySQL.Async.execute('INSERT INTO owned_vehicles (identifier, id, plate, model, sell_price, vehicle) VALUES (@identifier, @identityId, @plate, @model, @sell_price, @vehicle)', {
-        ['@identifier'] = player.identifier,
-        ['@identityId'] = player:getIdentityId(),
-        ['@plate']      = plate,
-        ['@model']      = model,
-        ['@sell_price'] = resellPrice,
-        ['@vehicle']    = json.encode({model = GetHashKey(model), plate = plate}),
-      }, function(rowsChanged)
-
-        print(_U('vehicleshop:server_buy_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, tostring(formattedPrice)))
-
-        utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
-          while not DoesEntityExist(vehicle) do
-            Wait(10)
-          end
-
-          local vehicleID = NetworkGetNetworkIdFromEntity(vehicle)
-
-          SetVehicleNumberPlateText(vehicle, plate)
-          cb(vehicleID)
-        end)
+        SetVehicleNumberPlateText(vehicle, plate)
+        cb(vehicleID)
       end)
+    else
+      print(_U('vehicleshop:server_buy_failure'))
     end
   else
     cb(false)
@@ -153,7 +105,7 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
   local player = Player.fromId(source)
   local playerData = player:getIdentity()
 
-  if Config.Modules.Cache.UseCache then
+  if player then
     local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
 
     if vehicleCheck then
@@ -169,56 +121,19 @@ onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPri
       cb(false)
     end
   else
-    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate AND id = @identityId AND identifier = @identifier', {
-      ['@plate']      = plate,
-      ['@identityId'] = player:getIdentityId(),
-      ['@identifier'] = player.identifier
-    }, function(result)
-      if result then
-        if result[1] then
-          MySQL.Async.execute('UPDATE owned_vehicles SET sold = @sold WHERE plate = @plate', {
-            ['@plate'] = plate,
-            ['@sold']  = 1
-          }, function(rowsChanged)
-            print(_U('vehicleshop:server_sell_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, module.GroupDigits(resellPrice)))
-            cb(true)
-          end)
-        else
-          cb(false)
-        end
-      else
-        cb(false)
-      end
-    end)
+    cb(false)
   end
 end)
 
 onRequest("vehicleshop:isPlateTaken", function(source, cb, plate, plateUseSpace, plateLetters, plateNumbers)
-  if Config.Modules.Cache.UseCache then
-    if module.isPlateTaken(plate) then
+  if module.isPlateTaken(plate) then
+    cb(true)
+  else
+    if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
       cb(true)
     else
-      if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
-        cb(true)
-      else
-        cb(false)
-      end
+      cb(false)
     end
-  else
-    MySQL.Async.fetchAll('SELECT 1 FROM owned_vehicles WHERE plate = @plate', {
-      ['@plate'] = plate
-    }, function(result)
-
-      if result[1] then
-        cb(true)
-      else
-        if module.excessPlateLength(plate, plateUseSpace, plateLetters, plateNumbers) then
-          cb(true)
-        else
-          cb(false)
-        end
-      end
-    end)
   end
 end)
 
@@ -240,60 +155,4 @@ onRequest("vehicleshop:getVehicles", function(source, cb)
   else
     cb(nil)
   end
-end)
-
-
-onRequest("vehicleshop:getVehiclesAndCategories", function(source, cb)
-  MySQL.Async.fetchAll('SELECT * FROM vehicles', {}, function(result)
-    if result then
-      for i=1,#result,1 do
-
-        if  module.Cache.vehicles == nil then
-          module.Cache.vehicles = {}
-        end
-
-        if  module.Cache.categories == nil then
-          module.Cache.categories = {}
-        end
-
-        table.insert(module.Cache.vehicles, {
-          name          = result[i].name,
-          model         = result[i].model,
-          price         = result[i].price,
-          category      = result[i].category,
-          categoryLabel = result[i].category_label
-        })
-      end
-
-      for k,v in pairs(module.Cache.vehicles) do
-        if #module.Cache.categories > 0 then
-          for i,j in pairs(module.Cache.categories) do
-            if v.category == j.category then
-              module.categoryAlreadyExists = true
-            end
-          end
-
-          if module.categoryAlreadyExists then
-            module.categoryAlreadyExists = false
-          else
-            table.insert(module.Cache.categories, {
-              category      = v.category,
-              categoryLabel = v.categoryLabel
-            })
-          end
-        else
-          table.insert(module.Cache.categories, {
-            category      = v.category,
-            categoryLabel = v.categoryLabel
-          })
-        end
-      end
-    end
-
-    if module.Cache.vehicles and module.Cache.categories then
-      cb(module.Cache)
-    else
-      cb(nil)
-    end
-  end)
 end)

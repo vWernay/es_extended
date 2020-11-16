@@ -20,6 +20,98 @@ module.getCacheByName = function(cacheName)
   end
 end
 
+-------------------------
+--       Garages       --
+-------------------------
+
+module.RetrieveOwnedVehicles = function(identifier, id)
+  if module.Cache["owned_vehicles"] then
+    if not module.Cache["owned_vehicles"][identifier] then
+      module.Cache["owned_vehicles"][identifier] = {}
+    end
+
+    if not module.Cache["owned_vehicles"][identifier][id] then
+      module.Cache["owned_vehicles"][identifier][id] = {}
+    end
+
+    return module.Cache["owned_vehicles"][identifier][id]
+  else
+    return nil
+  end
+end
+
+module.CheckOwnedVehicle = function(identifier, id, plate)
+  if module.Cache["owned_vehicles"][identifier][id] then
+    for _,tab in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
+      if tostring(tab["plate"]) == tostring(plate) then
+        return true
+      end
+    end
+
+    return false
+  else
+    return false
+  end
+end
+
+module.GetOwnedVehicle = function(identifier, id, plate)
+  if module.Cache["owned_vehicles"][identifier][id] then
+    for k,v in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
+      if tostring(v["plate"]) == tostring(plate) then
+        return module.Cache["owned_vehicles"][identifier][id][k]
+      end
+    end
+
+    return false
+  else
+    return false
+  end
+end
+
+module.RetrieveVehicle = function(identifier, id, plate)
+  if module.Cache["owned_vehicles"][identifier][id] then
+    for k,v in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
+      if tostring(v["plate"]) == tostring(plate) then
+        module.Cache["owned_vehicles"][identifier][id][k]["stored"] = 0
+        return true
+      end
+    end
+
+    return false
+  else
+    return false
+  end
+end
+
+module.StoreVehicle = function(identifier, id, plate)
+  if module.Cache["owned_vehicles"][identifier][id] then
+    for k,v in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
+      if tostring(v["plate"]) == tostring(plate) then
+        module.Cache["owned_vehicles"][identifier][id][k]["stored"] = 1
+        return true
+      end
+    end
+
+    return false
+  else
+    return false
+  end
+end
+
+module.UpdateVehicle = function(identifier, id, plate, vehicle)
+  if module.Cache["owned_vehicles"][identifier][id] then
+    for k,v in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
+      if tostring(v["plate"]) == tostring(plate) then
+        module.Cache["owned_vehicles"][identifier][id][k]["vehicle"] = vehicle
+      end
+    end
+  end
+end
+
+-------------------------
+--     Vehicleshop     --
+-------------------------
+
 module.InsertIntoBasicCache = function(cacheName, updateData)
   if module.Cache[cacheName] then
     if Config.Modules.Cache.EnableDebugging then

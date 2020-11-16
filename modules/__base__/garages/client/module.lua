@@ -54,7 +54,9 @@ module.Init = function()
   end)
 
   request("garages:storeAllVehicles", function(result)
-    print(_U('garages:returned_vehicles_to_garages_client'))
+    if result then
+      print(_U('garages:returned_vehicles_to_garages_client'))
+    end
   end)
 
   for k, v in pairs(module.Config.GarageEntrances) do
@@ -528,7 +530,7 @@ module.StoreVehicle = function()
       local vehicleProps = utils.game.getVehicleProperties(vehicle)
 
       emitServer('garages:updateVehicle', vehicleProps, plate)
-      request('garages:storeVehicle', function(result)
+      request('garages:storeVehicleInGarage', function(result)
         if result then
           DoScreenFadeOut(250)
 
