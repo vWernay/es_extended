@@ -529,7 +529,7 @@ module.StoreVehicle = function()
       local plate        = utils.math.Trim(GetVehicleNumberPlateText(vehicle))
       local vehicleProps = utils.game.getVehicleProperties(vehicle)
 
-      emitServer('garages:updateVehicle', vehicleProps, plate)
+      emitServer('garages:updateVehicle', plate, vehicleProps)
       request('garages:storeVehicleInGarage', function(result)
         if result then
           DoScreenFadeOut(250)

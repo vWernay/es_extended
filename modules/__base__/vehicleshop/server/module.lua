@@ -52,16 +52,6 @@ module.excessPlateLength = function(plate, plateUseSpace, plateLetters, plateNum
     end
 end
 
-module.UpdateVehicle = function(vehicleProps, plate, model)
-  local player = Player.fromId(source)
-
-  if player then
-    local value = json.encode(vehicleProps)
-
-    Cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "vehicle", value)
-  end
-end
-
 module.GroupDigits = function(value)
   local left,num,right = string.match(value,'^([^%d]*%d)(%d*)(.-)$')
 

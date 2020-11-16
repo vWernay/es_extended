@@ -14,8 +14,12 @@ local Command = M("events")
 local Cache   = M("cache")
 local utils   = M("utils")
 
-onClient('garages:updateVehicle', function(vehicleProps, plate)
-  module.UpdateVehicle(vehicleProps, plate)
+onClient('garages:updateVehicle', function(plate, vehicleProps)
+  local player = Player.fromId(source)
+
+  if player then
+    Cache.UpdateVehicle(player.identifier, player:getIdentityId(), plate, vehicleProps)
+  end
 end)
 
 onRequest('garages:storeVehicleInGarage', function(source, cb, plate)
@@ -58,8 +62,9 @@ onRequest('garages:getOwnedVehicles', function(source, cb)
 end)
 
 onRequest("garages:storeAllVehicles", function(source, cb, plate)
-  MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored', {
+  MySQL.Async.execute('UPDATE owned_vehicles SET stored = @stored WHERE sold = @sold', {
     ['@stored'] = 1,
+    ['@sold'] = 0
   }, function()
     print(_U('garages:returned_vehicles_to_garages_server'))
     cb(true)
