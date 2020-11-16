@@ -20,28 +20,22 @@ end)
 
 onServer('esx:status:statCheck', function(low, dying, drunk, drugs, stress)
   if low then
-    print("statuslow")
     module.StatusLow()
   end
 
   if dying then
-    print("dying")
     module.StatusDying()
   end
 
   if drunk then
-    print("drunk")
     module.Drunk(drunk)
   end
 
   if drugs > 0 then
-    print("drugs")
     module.Drugs(drugs)
   end
 
   if stress > 0 then
-    print(tostring(stress))
-    print("stress")
     module.Stress(stress)
   end
 end)

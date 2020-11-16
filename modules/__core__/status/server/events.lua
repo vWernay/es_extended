@@ -25,8 +25,7 @@ onClient('esx:status:initialize', function()
     module.Cache.Statuses[identifier][id] = {}
 	end
 
-	local statuses = Cache.RetrieveEntryFromIdentityCache("identities", player.identifier, player:getIdentityId(), "status")
-
+	local statuses = Cache.RetrieveStatuses(player.identifier, player:getIdentityId())
   local config = Config.Modules.Status.StatusInfo
 
   for k,v in ipairs(Config.Modules.Status.StatusIndex) do
