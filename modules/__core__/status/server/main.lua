@@ -17,7 +17,6 @@ local setStatus = Command("setStatus", "admin", _U('set_status'))
 setStatus:addArgument("statusName", "string", _U('status_name'))
 setStatus:addArgument("value", "number", _U('status_value'))
 setStatus:addArgument("player", "player", _U('commandgeneric_playerid'))
-setStatus:setRconAllowed(true)
 setStatus:setHandler(function(player, args)
   if args.statusName and args.value then
 	if not args.player then args.player = player end

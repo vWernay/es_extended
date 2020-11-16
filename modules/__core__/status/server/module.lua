@@ -86,10 +86,7 @@ module.UpdateStatus = function()
                     end
                 elseif module.Cache.Statuses[identifier][id][v]["fadeType"] == "asc" then
                     if module.Cache.Statuses[identifier][id][v]["value"] >= 100 then
-                        module.StatusLow   = true
                         module.StatusDying = true
-                    elseif module.Cache.Statuses[identifier][id][v]["value"] > 75 and module.Cache.Statuses[identifier][id][v]["value"] < 100 then
-                        module.StatusLow = true
                     end
 
                     if module.Cache.Statuses[identifier][id][v]["value"] > 0 then
@@ -128,12 +125,12 @@ module.SetStatus = function(statusName, value)
         for k,v in pairs(Config.Modules.Status.StatusIndex) do
             if tostring(v) == tostring(statusName) then
                 if module.Cache.Statuses[identifier][id][v]["fadeType"] == "asc" then
-                    if module.Cache.Statuses[identifier][id][v]["value"] > 0 then
-                        if tostring(statusName) == "stress" then
-                          module.StatusStress = module.Cache.Statuses[identifier][id][v]["value"]
+                    if value > 0 then
+                        if tostring(statusName) == "drunk" then
+                          module.StatusDrunk = module.Cache.Statuses[identifier][id][v]["value"]
                         elseif tostring(statusName) == "drugs" then
                             module.StatusDrugs = module.Cache.Statuses[identifier][id][v]["value"]
-                        elseif tostring(statusName) == "drunk" then
+                        elseif tostring(statusName) == "stress" then
                             module.StatusStress = module.Cache.Statuses[identifier][id][v]["value"]
                         end
                     end

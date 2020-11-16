@@ -11,17 +11,12 @@
 --   This copyright should appear in every part of the project code
 
 on('esx:startCache', function()
-  if Config.Modules.Cache.UseCache then
-    print("ensuring cache")
+  print("ensuring cache")
 
-    module.StartCache()
+  module.StartCache()
 
-    Wait(1500)
-    emit('esx:cacheReady')
-  else
-    Wait(1500)
-    print('^2ready^7')
-  end
+  Wait(5000)
+  emit('esx:cacheReady')
 end)
 
 on('esx:saveCache', function()

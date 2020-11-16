@@ -29,7 +29,7 @@ onServer('esx:status:statCheck', function(low, dying, drunk, drugs, stress)
     module.StatusDying()
   end
 
-  if drunk > 0 then
+  if drunk then
     print("drunk")
     module.Drunk(drunk)
   end
@@ -40,6 +40,7 @@ onServer('esx:status:statCheck', function(low, dying, drunk, drugs, stress)
   end
 
   if stress > 0 then
+    print(tostring(stress))
     print("stress")
     module.Stress(stress)
   end
@@ -51,4 +52,5 @@ end)
 
 on('esx:skin:loaded', function()
   emitServer('esx:status:initialize')
+  module.Init()
 end)

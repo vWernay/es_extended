@@ -752,22 +752,13 @@ module.startTestDrive = function(model)
 end
 
 module.LoadAssets = function()
-  if Config.Modules.Cache.UseCache then
-    request("vehicleshop:getCategories", function(categories)
-      module.categories = categories
+  request("vehicleshop:getCategories", function(categories)
+    module.categories = categories
 
-      request("vehicleshop:getVehicles", function(vehicles)
-        module.vehicles = vehicles
-      end)
+    request("vehicleshop:getVehicles", function(vehicles)
+      module.vehicles = vehicles
     end)
-  else
-    request("vehicleshop:getVehiclesAndCategories", function(data)
-      if data then
-        module.categories = data.categories
-        module.vehicles   = data.vehicles
-      end
-    end)
-  end
+  end)
 end
 
 module.Exit = function()
