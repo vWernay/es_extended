@@ -11,7 +11,7 @@
 --   This copyright should appear in every part of the project code
 
 M('ui.hud')
-module.Ready, module.Frame, module.isPaused, module.Sick = false, nil, false, false
+module.Ready, module.Frame, module.isPaused, module.Sick, module.CurrentModifier, module.FadedOut, module.CurrentStrength = false, nil, false, false, nil, true, 0
 
 module.StatusDying = function()
   -- INSERT YOUR CRAZY SHIT HERE
@@ -36,45 +36,59 @@ module.Drunk = function(value)
   if value >= 0 and value <= 9 then
     module.Init() -- Clears everything
   elseif value >= 10 and value <= 24 then
+    module.DrunkActive = true
     bool         = true
     fade         = 0
     clipset      = "MOVE_M@BUZZED"
     fallChance   = 0
     modifier     = "MP_corona_heist_DOF"
     sickChance   = 0
+
+    module.IsDrunk(bool, fade, modifier)
+    module.DrunkEffects(clipset, fallChance, sickChance)
   elseif value >= 25 and value <= 49 then
+    module.DrunkActive = true
     bool         = true
     fade         = 0
     clipset      = "MOVE_M@DRUNK@SLIGHTLYDRUNK"
     fallChance   = math.random(0,100)
     modifier     = "MP_corona_heist_DOF"
     sickChance   = math.random(0,100)
+
+    module.IsDrunk(bool, fade, modifier)
+    module.DrunkEffects(clipset, fallChance, sickChance)
   elseif value >= 50 and value <= 75 then
+    module.DrunkActive = true
     bool         = true
     fade         = 0
     clipset      = "MOVE_M@DRUNK@A"
     fallChance   = math.random(10,100)
     modifier     = "MP_corona_heist_DOF"
     sickChance   = math.random(10,100)
-  elseif value >= 76 and value <= 89 then 
+
+    module.IsDrunk(bool, fade, modifier)
+    module.DrunkEffects(clipset, fallChance, sickChance)
+  elseif value >= 76 and value <= 89 then
+    module.DrunkActive = true
     bool         = true
-    fade         = 0
+    fade         = 1000
     clipset      = "MOVE_M@DRUNK@VERYDRUNK"
     fallChance   = math.random(25,100)
     modifier     = "BlackOut"
     sickChance   = math.random(20,100)
+
+    module.IsDrunk(bool, fade, modifier)
+    module.DrunkEffects(clipset, fallChance, sickChance)
   elseif value >= 90 and value <= 100 then
+    module.DrunkActive = true
     bool         = true
-    fade         = 1000
+    fade         = 2000
     clipset      = "MOVE_M@DRUNK@VERYDRUNK"
     fallChance   = math.random(35,100)
     modifier     = "BlackOut"
     sickChance   = math.random(30,100)
-  end
-  
-  module.IsDrunk(bool, fade, modifier)
 
-  if clipset then
+    module.IsDrunk(bool, fade, modifier)
     module.DrunkEffects(clipset, fallChance, sickChance)
   end
 
@@ -141,20 +155,29 @@ module.DrunkEffects = function(clipSet,fallChance,sickChance)
     end
   end
 end
-  
+
 module.IsDrunk = function(bool, fade, modifier)
   SetPedConfigFlag(PlayerPedId(), 100, bool)
-  SetPedIsDrunk(PlayerPedId(), bool) 
-  if index ~= modifier then
-    DoScreenFadeOut(fade)
-    Wait(fade)
-    SetTimecycleModifier(modifier)
-    DoScreenFadeIn(fade)
-  end
-  if fade > 0 then
-    DoScreenFadeOut(fade)
-    Wait(fade)
-    DoScreenFadeIn(fade)
+  SetPedIsDrunk(PlayerPedId(), bool)
+  -- if fade > 0 then
+  --   if math.random(1,100) > 75 then
+  --     DoScreenFadeOut(fade)
+  --     Wait(fade)
+  --     DoScreenFadeIn(fade)
+  --   end
+  -- end
+  if module.CurrentModifier ~= modifier then
+    if module.CurrentModifier ~= nil then
+      module.FadedOut = false
+      module.FadeOutModifier()
+    end
+
+    while module.FadedOut == false do
+      Wait(10)
+    end
+
+    module.CurrentModifier = modifier
+    module.FadeInModifier(modifier)
   end
 end
 
@@ -209,7 +232,44 @@ module.Frame:on('load', function()
 end)
 
 module.Init = function()
+  module.DrunkActive = false
   module.IsDrunk(false, 0)
   ResetPedMovementClipset(PlayerPedId(), 0)
-  ClearTimecycleModifier()
+  module.FadeOutModifier()
+end
+
+module.FadeInModifier = function(modifier)
+  SetTimecycleModifierStrength(0.0)
+  SetTimecycleModifier(modifier)
+  SetTimecycleModifierStrength(0.0)
+
+  Citizen.CreateThread(function()
+    while true do
+      if module.CurrentStrength < 1.0 and module.DrunkActive then
+        module.CurrentStrength = module.CurrentStrength + 0.001
+        -- print(module.CurrentStrength)
+        SetTimecycleModifierStrength(module.CurrentStrength)
+        Wait(10)
+      else
+        break
+      end
+    end
+  end)
+end
+
+module.FadeOutModifier = function()
+  Citizen.CreateThread(function()
+    while true do
+      if module.CurrentStrength > 0 then
+        module.CurrentStrength = module.CurrentStrength - 0.001
+        -- print(module.CurrentStrength)
+        SetTimecycleModifierStrength(module.CurrentStrength)
+        Wait(10)
+      else
+        module.FadedOut = true
+        ClearTimecycleModifier()
+        break
+      end
+    end
+  end)
 end

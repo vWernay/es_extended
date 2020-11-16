@@ -243,369 +243,63 @@ module.RemoveMoneyFromAccount = function(identifier, id, field, value)
   end
 end
 
+-------------------------
+--      Statuses       --
+-------------------------
 
-
-
-
-
-
-
-
-
-
-
-module.InsertIntoBasicCache = function(cacheName, updateData)
-  if module.Cache[cacheName] then
-    if Config.Modules.Cache.EnableDebugging then
-      print("Inserting ^2" .. tostring(updateData) .. "^7 into module.Cache[" .. cacheName .. "]")
+module.RetrieveStatuses = function(identifier, id)
+  if module.Cache["identities"] then
+    if not module.Cache["identities"][identifier] then
+      module.Cache["identities"][identifier] = {}
     end
 
-    table.insert(module.Cache[cacheName], updateData)
-  end
-end
-
-module.InsertIntoIdentityCache = function(cacheName, identifier, id, updateData)
-  if module.Cache[cacheName] then
-    if not module.Cache[cacheName][identifier] then
-      module.Cache[cacheName][identifier] = {}
+    if not module.Cache["identities"][identifier][id] then
+      module.Cache["identities"][identifier][id] = {}
     end
 
-    if not module.Cache[cacheName][identifier][id] then
-      module.Cache[cacheName][identifier][id] = {}
-    end
-
-    if module.Cache[cacheName][identifier][id] then
-      local index = #module.Cache[cacheName][identifier][id]+1
-
-      if not module.Cache[cacheName][identifier][id][index] then
-        module.Cache[cacheName][identifier][id][index] = {}
-      end
-
-      module.Cache[cacheName][identifier][id][index] = updateData
-
-      return true
+    if module.Cache["identities"][identifier][id]["status"] then
+      return module.Cache["identities"][identifier][id]["status"]
     else
-      return false
-    end
-  end
-end
-
-module.InsertTableIntoIdentityCache = function(cacheName, identifier, id, queryIndex, table, field, data)
-  if module.Cache[cacheName] then
-    if not module.Cache[cacheName][identifier] then
-      module.Cache[cacheName][identifier] = {}
-    end
-
-    if not module.Cache[cacheName][identifier][id] then
-      module.Cache[cacheName][identifier][id] = {}
-    end
-
-    if not module.Cache[cacheName][identifier][id][table] then
-      module.Cache[cacheName][identifier][id][table] = {}
-    end
-
-    for k,v in pairs(queryIndex) do
-      if not module.Cache[cacheName][identifier][id][table][v] then
-        module.Cache[cacheName][identifier][id][table][v] = {}
-      end
-
-      if data[v] then
-        if data[v][field] then
-          if Config.Modules.Cache.EnableDebugging then
-            print("module.Cache["..cacheName.."]["..identifier.."]["..id.."]["..table.."]["..v.."] = " .. data[v][field])
-          end
-          module.Cache[cacheName][identifier][id][table][v] = data[v][field]
-        end
-      end
+      return nil
     end
   else
-    return false
+    return nil
   end
 end
 
-module.AddValueInIdentityCache = function(cacheName, identifier, id, table, field, value)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        if module.Cache[cacheName][identifier][id][table] then
-          for k,v in pairs(module.Cache[cacheName][identifier][id][table]) do
-            if tostring(k) == tostring(field) then
-              if module.Cache[cacheName][identifier][id][table][field] >= 0 then
-                module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] + value
-
-                local result = {
-                  type = "success",
-                  value = module.Cache[cacheName][identifier][id][table][field]
-                }
-
-                return result
-              end
-            end
-          end
-        else
-          return false
-        end
-        return false
-      else
-        return false
-      end
-    else
-      return false
-    end
-  else
-    return false
-  end
-end
-
-module.RemoveValueInIdentityCache = function(cacheName, identifier, id, table, field, value)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        if module.Cache[cacheName][identifier][id][table] then
-          for k,v in pairs(module.Cache[cacheName][identifier][id][table]) do
-            if tostring(k) == tostring(field) then
-              if module.Cache[cacheName][identifier][id][table][field] then
-                if (module.Cache[cacheName][identifier][id][table][field] - value) > 0 then
-                  module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] - value
-
-                  local result = {
-                    type = "success",
-                    value = module.Cache[cacheName][identifier][id][table][field]
-                  }
-
-                  return result
-                else
-                  local result = {
-                    type = "not_enough_money"
-                  }
-
-                  return result
-                end
-              end
-            end
-          end
-        else
-          return false
-        end
-        return false
-      else
-        return false
-      end
-    else
-      return false
-    end
-  else
-    return false
-  end
-end
-
-module.CreateTableAndAddValueInIdentityCache = function(cacheName, identifier, id, table, data, field, value)
-  if module.Cache[cacheName] then
-    if not module.Cache[cacheName][identifier] then
-      module.Cache[cacheName][identifier] = {}
-    end
-
-    if not module.Cache[cacheName][identifier][id] then
-      module.Cache[cacheName][identifier][id] = {}
-    end
-
-    if not module.Cache[cacheName][identifier][id][table] then
-      module.Cache[cacheName][identifier][id][table] = data
-    end
-
-    if module.Cache[cacheName][identifier][id][table][field] then
-      if module.Cache[cacheName][identifier][id][table][field] >= 0 then
-        module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] + value
-
-        local result = {
-          type = "success",
-          value = module.Cache[cacheName][identifier][id][table][field]
-        }
-
-        return result
-      end
-    else
-      return false
-    end
-  end
-end
-
-module.CreateTableAndRemoveValueInIdentityCache = function(cacheName, identifier, id, table, data, field, value)
-  if module.Cache[cacheName] then
-    if not module.Cache[cacheName][identifier] then
-      module.Cache[cacheName][identifier] = {}
-    end
-
-    if not module.Cache[cacheName][identifier][id] then
-      module.Cache[cacheName][identifier][id] = {}
-    end
-
-    if not module.Cache[cacheName][identifier][id][table] then
-      module.Cache[cacheName][identifier][id][table] = data
-    end
-
-    if module.Cache[cacheName][identifier][id][table][field] then
-      if (module.Cache[cacheName][identifier][id][table][field] - value) > 0 then
-        module.Cache[cacheName][identifier][id][table][field] = module.Cache[cacheName][identifier][id][table][field] - value
-
-        local result = {
-          type = "success",
-          value = module.Cache[cacheName][identifier][id][table][field]
-        }
-
-        return result
-      else
-        local result = {
-          type = "not_enough_money"
-        }
-
-        return result
-      end
-    else
-      return false
-    end
-  end
-end
-
-module.UpdateTableInIdentityCache = function(cacheName, identifier, id, queryIndex, table, field, data)
-  if not module.Cache[cacheName] then
-    module.Cache[cacheName] = {}
+module.UpdateStatus = function(identifier, id, queryIndex, data)
+  if not module.Cache["identities"] then
+    module.Cache["identities"] = {}
   end
 
-  if not module.Cache[cacheName][identifier] then
-    module.Cache[cacheName][identifier] = {}
+  if not module.Cache["identities"][identifier] then
+    module.Cache["identities"][identifier] = {}
   end
 
-  if not module.Cache[cacheName][identifier][id] then
-    module.Cache[cacheName][identifier][id] = {}
+  if not module.Cache["identities"][identifier][id] then
+    module.Cache["identities"][identifier][id] = {}
   end
 
-  if not module.Cache[cacheName][identifier][id][table] then
-    module.Cache[cacheName][identifier][id][table] = {}
+  if not module.Cache["identities"][identifier][id]["status"] then
+    module.Cache["identities"][identifier][id]["status"] = {}
   end
 
   for k,v in pairs(queryIndex) do
-    if not module.Cache[cacheName][identifier][id][table][v] then
-      module.Cache[cacheName][identifier][id][table][v] = nil
+    if not module.Cache["identities"][identifier][id]["status"][v] then
+      module.Cache["identities"][identifier][id]["status"][v] = nil
     end
 
     if data[v] then
-      if data[v][field] then
-        module.Cache[cacheName][identifier][id][table][v] = data[v][field]
+      if data[v]["value"] then
+        module.Cache["identities"][identifier][id]["status"][v] = data[v]["value"]
       end
     end
   end
 end
 
-module.UpdateValueInIdentityCache = function(cacheName, identifier, id, lKey, lValue, key, value)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
-          if v[lKey] and v[key] then
-            if v[lKey] == lValue then
-              if Config.Modules.Cache.EnableDebugging then
-                print("module.Cache["..cacheName.."]["..identifier.."]["..id.."]["..k.."]["..key.."] = " .. value)
-              end
-
-              module.Cache[cacheName][identifier][id][k][key] = value
-
-              return true
-            end
-          end
-        end
-
-        return false
-      else
-        return false
-      end
-    else
-      return false
-    end
-  else
-    return false
-  end
-end
-
-module.RetrieveEntryFromIdentityCache = function(cacheName, identifier, id, key)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        if module.Cache[cacheName][identifier][id][key] then
-          return module.Cache[cacheName][identifier][id][key]
-        else
-          return nil
-        end
-
-        return nil
-      else
-        return nil
-      end
-    else
-      return nil
-    end
-  else
-    return nil
-  end
-end
-
-module.RetrieveMatchedEntryFromIdentityCache = function(cacheName, identifier, id, key, value)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
-          if v[key] then
-            if v[key] == value then
-              return module.Cache[cacheName][identifier][id][k]
-            end
-          end
-        end
-
-        return nil
-      else
-        return nil
-      end
-    else
-      return nil
-    end
-  else
-    return nil
-  end
-end
-
-module.RetrieveEntryWithLinkerFromIdentityCache = function(cacheName, identifier, id, lKey, lValue, key, value)
-  if module.Cache[cacheName] then
-    if module.Cache[cacheName][identifier] then
-      if module.Cache[cacheName][identifier][id] then
-        for k,v in ipairs(module.Cache[cacheName][identifier][id]) do
-          if v[lKey] and v[key] then
-            if v[lKey] == lValue then
-              return module.Cache[cacheName][identifier][id][k]
-            end
-          end
-        end
-
-        return nil
-      else
-        return nil
-      end
-    else
-      return nil
-    end
-  else
-    return nil
-  end
-end
-
-module.UpdateBasicCache = function(cacheName, updateData)
-  if module.Cache[cacheName] then
-    table.insert(module.Cache[cacheName], updateData)
-
-    return true
-  else
-    return false
-  end
-end
+-------------------------
+--        CORE         --
+-------------------------
 
 module.StartCache = function()
   if Config.Modules.Cache.BasicCachedTables then
