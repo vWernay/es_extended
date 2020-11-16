@@ -16,21 +16,25 @@ local utils    = M("utils")
 
 module.Config = run('data/config.lua', {vector3 = vector3})['Config']
 
-onClient('vehicleshop:updateVehicle', function(vehicleProps, plate)
-  module.UpdateVehicle(vehicleProps, plate)
+onClient('vehicleshop:updateVehicle', function(plate, vehicleProps)
+  local player = Player.fromId(source)
+
+  if player and plate and vehicleProps then
+    Cache.UpdateVehicle(player.identifier, player:getIdentityId(), plate, vehicleProps)
+  end
 end)
 
 onRequest("vehicleshop:checkOwnedVehicle", function(source, cb, plate)
   local player = Player.fromId(source)
 
   if player then
-    local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
+    local ownedVehicle = Cache.GetOwnedVehicle(player.identifier, player:getIdentityId(), plate)
 
-    if vehicleCheck then
-      if vehicleCheck.model and vehicleCheck.sell_price then
+    if ownedVehicle then
+      if ownedVehicle.model and ownedVehicle.sell_price then
         local vehicleData = {
-          model = vehicleCheck.model,
-          resellPrice = vehicleCheck.sell_price
+          model = ownedVehicle.model,
+          resellPrice = ownedVehicle.sell_price
         }
 
         cb(vehicleData)
@@ -47,7 +51,7 @@ end)
 
 onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, formattedPrice, vehicleName, name, resellPrice)
   local player = Player.fromId(source)
-  local playerData = player:getIdentity()
+
   if player then
     local data = {
       identifier   = player.identifier,
@@ -57,14 +61,15 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
       sell_price   = resellPrice,
       sold         = 0,
       stored       = 0,
-      vehicle      = json.encode({model = GetHashKey(model), plate = plate}),
+      vehicle      = {model = GetHashKey(model), plate = plate},
       container_id = nil
     }
 
-    if Cache.InsertIntoIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), data) then
+    local buyVehicle = Cache.BuyVehicle(player.identifier, player:getIdentityId(), data)
+    if buyVehicle then
+      local playerData = player:getIdentity()
 
-      Cache.InsertIntoBasicCache("usedPlates", plate)
-
+      Cache.AddUsedPlates("usedPlates", plate)
       print(_U('vehicleshop:server_buy_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, tostring(formattedPrice)))
 
       utils.game.createVehicle(model, module.Config.ShopOutside.Pos, module.Config.ShopOutside.Heading, function(vehicle)
@@ -79,6 +84,7 @@ onRequest("vehicleshop:buyVehicle", function(source, cb, model, plate, price, fo
       end)
     else
       print(_U('vehicleshop:server_buy_failure'))
+      cb(false)
     end
   else
     cb(false)
@@ -103,19 +109,12 @@ end)
 
 onRequest("vehicleshop:sellVehicle", function(source, cb, plate, name, resellPrice, formattedPrice)
   local player = Player.fromId(source)
-  local playerData = player:getIdentity()
 
   if player then
-    local vehicleCheck = Cache.RetrieveEntryFromIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate)
-
-    if vehicleCheck then
-      if Cache.UpdateValueInIdentityCache("owned_vehicles", player.identifier, player:getIdentityId(), "plate", plate, "sold", 1) then
-        print(_U('vehicleshop:server_sell_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, module.GroupDigits(resellPrice)))
-        cb(true)
-      else
-        print(_U('vehicleshop:server_sell_failure'))
-        cb(false)
-      end
+    if Cache.SellVehicle(player.identifier, player:getIdentityId(), plate) then
+      local playerData = player:getIdentity()
+      print(_U('vehicleshop:server_sell_success', player:getIdentityId(), playerData:getFirstName(), playerData:getLastName(), name, plate, module.GroupDigits(resellPrice)))
+      cb(true)
     else
       print(_U('vehicleshop:server_sell_failure'))
       cb(false)

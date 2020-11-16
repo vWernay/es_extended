@@ -581,7 +581,7 @@ module.OpenBuyMenu = function(category, categorylabel, vehicleData)
                 end
 
                 local vehicleProps = utils.game.getVehicleProperties(vehicle)
-                emitServer('vehicleshop:updateVehicle', vehicleProps, generatedPlate)
+                emitServer('vehicleshop:updateVehicle', generatedPlate, vehicleProps)
 
                 Wait(400)
 

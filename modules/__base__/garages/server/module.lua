@@ -21,11 +21,3 @@ module.Init = function()
   local translations = run('data/locales/' .. Config.Locale .. '.lua')['Translations']
   LoadLocale('garages', Config.Locale, translations)
 end
-
-module.UpdateVehicle = function(vehicleProps, plate)
-  local player = Player.fromId(source)
-
-  if player then
-    Cache.UpdateVehicle(player.identifier, player:getIdentityId(), plate, vehicleProps)
-  end
-end

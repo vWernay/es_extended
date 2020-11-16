@@ -34,7 +34,15 @@ module.RetrieveOwnedVehicles = function(identifier, id)
       module.Cache["owned_vehicles"][identifier][id] = {}
     end
 
-    return module.Cache["owned_vehicles"][identifier][id]
+    local ownedVehicles = {}
+
+    for k,v in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
+      if v["sold"] == 0 then
+        table.insert(ownedVehicles, v)
+      end
+    end
+
+    return ownedVehicles
   else
     return nil
   end
@@ -98,11 +106,11 @@ module.StoreVehicle = function(identifier, id, plate)
   end
 end
 
-module.UpdateVehicle = function(identifier, id, plate, vehicle)
+module.UpdateVehicle = function(identifier, id, plate, props)
   if module.Cache["owned_vehicles"][identifier][id] then
     for k,v in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
       if tostring(v["plate"]) == tostring(plate) then
-        module.Cache["owned_vehicles"][identifier][id][k]["vehicle"] = vehicle
+        module.Cache["owned_vehicles"][identifier][id][k]["vehicle"] = props
       end
     end
   end
@@ -111,6 +119,53 @@ end
 -------------------------
 --     Vehicleshop     --
 -------------------------
+
+module.BuyVehicle = function(identifier, id, data)
+  if module.Cache["owned_vehicles"] then
+    if not module.Cache["owned_vehicles"][identifier] then
+      module.Cache["owned_vehicles"][identifier] = {}
+    end
+
+    if not module.Cache["owned_vehicles"][identifier][id] then
+      module.Cache["owned_vehicles"][identifier][id] = {}
+    end
+
+    if module.Cache["owned_vehicles"][identifier][id] then
+      local index = #module.Cache["owned_vehicles"][identifier][id]+1
+
+      if not module.Cache["owned_vehicles"][identifier][id][index] then
+        module.Cache["owned_vehicles"][identifier][id][index] = {}
+      end
+
+      module.Cache["owned_vehicles"][identifier][id][index] = data
+
+      return true
+    else
+      return false
+    end
+  end
+end
+
+module.SellVehicle = function(identifier, id, plate)
+  if module.Cache["owned_vehicles"][identifier][id] then
+    for k,v in ipairs(module.Cache["owned_vehicles"][identifier][id]) do
+      if tostring(v["plate"]) == tostring(plate) then
+        module.Cache["owned_vehicles"][identifier][id][k]["sold"] = 1
+        return true
+      end
+    end
+
+    return false
+  else
+    return false
+  end
+end
+
+module.AddUsedPlates = function(cacheName, updateData)
+  if module.Cache["usedPlates"] then
+    table.insert(module.Cache["usedPlates"], updateData)
+  end
+end
 
 module.InsertIntoBasicCache = function(cacheName, updateData)
   if module.Cache[cacheName] then
@@ -644,6 +699,7 @@ module.SaveCache = function()
                   if result[1] then
                     if Config.Modules.Cache.EnableDebugging then
                       print("updating owned vehicles with the plates: ^2" .. tostring(data["plate"]) .. "^7")
+                      print("UPDATE owned_vehicles SET id = "..data["id"]..", identifier = "..data["identifier"]..", vehicle = "..tostring(data["vehicle"])..", stored = "..data["stored"]..", sold = "..data["sold"].." WHERE plate = "..data["plate"])
                     end
 
                     MySQL.Async.execute('UPDATE owned_vehicles SET id = @id, identifier = @identifier, vehicle = @vehicle, stored = @stored, sold = @sold WHERE plate = @plate', {
@@ -657,6 +713,7 @@ module.SaveCache = function()
                   else
                     if Config.Modules.Cache.EnableDebugging then
                       print("inserting owned vehicles with the plates: ^2" .. tostring(data["plate"]) .. "^7")
+                      print("INSERT INTO owned_vehicles (id, identifier, plate, model, sell_price, vehicle, stored, sold) VALUES ("..data["id"]..", "..data["identifier"]..", "..data["plate"]..", "..data["model"]..", "..data["sell_price"]..", "..tostring(data["vehicle"])..", "..data["stored"]..", "..data["sold"])
                     end
 
                     MySQL.Async.execute('INSERT INTO owned_vehicles (id, identifier, plate, model, sell_price, vehicle, stored, sold) VALUES (@id, @identifier, @plate, @model, @sell_price, @vehicle, @stored, @sold)', {
@@ -665,7 +722,7 @@ module.SaveCache = function()
                       ['@plate']      = tostring(data["plate"]),
                       ['@model']      = tostring(data["model"]),
                       ['@sell_price'] = tonumber(data["sell_price"]),
-                      ['@vehicle']    = data["vehicle"],
+                      ['@vehicle']    = json.encode(data["vehicle"]),
                       ['@stored']     = tonumber(data["stored"]),
                       ['@sold']       = tonumber(data["sold"])
                     })
