@@ -72,22 +72,23 @@ module.UpdateStatus = function()
         if module.Cache.StatusReady[identifier][id] then
             for k,v in pairs(Config.Modules.Status.StatusIndex) do
                 if module.Cache.Statuses[identifier][id][v]["fadeType"] == "desc" then
-                    if module.Cache.Statuses[identifier][id][v]["value"] > 0 and module.Cache.Statuses[identifier][id][v]["value"] <= 10 then
-                        module.StatusLow   = true
-                    elseif module.Cache.Statuses[identifier][id][v]["value"] == 0 then
-                        module.StatusLow   = true
-                        module.StatusDying = true
-                    end
-
                     if module.Cache.Statuses[identifier][id][v]["value"] > 0 then
                         module.Cache.Statuses[identifier][id][v]["value"] = module.Cache.Statuses[identifier][id][v]["value"] - 1
+
+                        if module.Cache.Statuses[identifier][id][v]["value"] > 0 and module.Cache.Statuses[identifier][id][v]["value"] <= 10 then
+                            module.StatusLow = true
+                        elseif module.Cache.Statuses[identifier][id][v]["value"] == 0 then
+                            module.StatusDying = true
+                        end
+
+                        table.insert(status, {k = module.Cache.Statuses[identifier][id][v]["value"]})
+                    else
+                        module.Cache.Statuses[identifier][id][v]["value"] = 0
+                        module.StatusDying = true
+
                         table.insert(status, {k = module.Cache.Statuses[identifier][id][v]["value"]})
                     end
                 elseif module.Cache.Statuses[identifier][id][v]["fadeType"] == "asc" then
-                    if module.Cache.Statuses[identifier][id][v]["value"] >= 100 then
-                        module.StatusDying = true
-                    end
-
                     if module.Cache.Statuses[identifier][id][v]["value"] > 0 then
                         module.Cache.Statuses[identifier][id][v]["value"] = module.Cache.Statuses[identifier][id][v]["value"] - 1
                         if module.Cache.Statuses[identifier][id][v]["id"] == "drunk" then
@@ -116,6 +117,7 @@ module.SetStatus = function(statusName, value)
     local status           = {}
     module.StatusDying     = false
     module.StatusLow       = false
+    module.SendStatus      = nil
     module.StatusDrunk     = 0
     module.StatusDrugs     = 0
     module.StatusStress    = 0
@@ -128,18 +130,13 @@ module.SetStatus = function(statusName, value)
 
             if module.Cache.Statuses[identifier][id][v]["fadeType"] == "desc" then
                 if module.Cache.Statuses[identifier][id][v]["value"] > 0 and module.Cache.Statuses[identifier][id][v]["value"] <= 10 then
-                    module.StatusLow   = true
+                    module.StatusLow = true
                 elseif module.Cache.Statuses[identifier][id][v]["value"] == 0 then
-                    module.StatusLow   = true
                     module.StatusDying = true
                 end
 
                 table.insert(status, {k = module.Cache.Statuses[identifier][id][v]["value"]})
             elseif module.Cache.Statuses[identifier][id][v]["fadeType"] == "asc" then
-                if module.Cache.Statuses[identifier][id][v]["value"] >= 100 then
-                    module.StatusDying = true
-                end
-
                 if module.Cache.Statuses[identifier][id][v]["id"] == "drunk" then
                     module.StatusDrunk = module.Cache.Statuses[identifier][id][v]["value"]
                 elseif module.Cache.Statuses[identifier][id][v]["id"] == "drugs" then
